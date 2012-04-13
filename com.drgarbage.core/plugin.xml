@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         id="com.drgarbage.bytecodevisualizer.plugin.preferencePages"
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="com.drgarbage.MainPage"
+            class="com.drgarbage.core.preferences.GraphColorsPreferencePage"
+            id="com.drgarbage.bytecodevisualizer.preferences.FigurePreferences"
+            name="%page.Graph_Colors"/>
+      <page
+            class="com.drgarbage.core.preferences.DrGarbagePreferencePage"
+            id="com.drgarbage.MainPage"
+            name="%category.Dr_Garbage">
+      </page>
+      <page
+            category="com.drgarbage.MainPage"
+            class="com.drgarbage.core.preferences.GraphPanelLocationPreferencePage"
+            id="com.drgarbage.bytecodevisualizer.ControlFlowGraphPanel"
+            name="%prefPage_Graph_Panel_Location">
+      </page>
+   </extension>
+   <extension
+         id="com.drgarbage.bytecodevisualizer.plugin.preferences"
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="com.drgarbage.core.preferences.PreferenceInitializer"/>
+   </extension>
+<!--   
+   <extension
+         id="com.drgarbage.bytecodevisualizer.plugin.popupMenus"
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="false"
+            id="com.drgarbage.bytecodevisualizer.objectContribution1"
+            objectClass="org.eclipse.jdt.core.IClassFile">
+         <menu
+               id="com.drgarbage.bytecodevisualizer.popup.open"
+               label="Open with Bytecode Visualizer"
+               path="addition"/>
+         <action
+               class="com.drgarbage.bytecodevisualizer.core.actions.OpenWithBytecodeVisualizerAction"
+               icon="com/drgarbage/resource/bytecode-viewer-16x16.png"
+               id="com.drgarbage.bytecodevisualizer.action.open"
+               label="Open with Bytecode Visualizer"
+               menubarPath="com.drgarbage.bytecodevisualizer.popup.open"/>
+      </objectContribution>
+   </extension>
+-->
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="%category.Dr_Garbage"
+            id="com.drgabage.bytecodevisualizer.category.controlflowgraph_view">
+      </category>
+      <view
+            allowMultiple="false"
+            category="com.drgabage.bytecodevisualizer.category.controlflowgraph_view"
+            class="com.drgarbage.core.views.ControlFlowGraphView"
+            icon="$nl$/com/drgarbage/core/img//bytecode-viewer-16x16.png"
+            id="com.drgabage.bytecodevisualizer.view.controlflowgraph_view"
+            name="%ControlFlowGraphView_title">
+      </view>
+      <stickyView
+            closeable="true"
+            id="com.drgabage.bytecodevisualizer.view.controlflowgraph_view"
+            location="RIGHT"
+            moveable="true">
+      </stickyView>
+   </extension>   
+   <!--
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="%category.Dr_Garbage"
+            id="com.drgabage.bytecodevisualizer.category.controlflowgraph_view">
+      </category>
+      <view
+            allowMultiple="false"
+            category="com.drgabage.bytecodevisualizer.category.controlflowgraph_view"
+            class="com.drgarbage.ast.view.FlowChartView"
+            icon="$nl$/com/drgarbage/core/img/bytecode-viewer-16x16.png"
+            id="com.drgabage.bytecodevisualizer.view.ast_view"
+            name="%view.AST_View">
+      </view>
+      <stickyView
+            closeable="true"
+            id="com.drgabage.bytecodevisualizer.view.ast_view"
+            location="RIGHT"
+            moveable="true">
+      </stickyView>
+   </extension>
+   -->  
+</plugin>

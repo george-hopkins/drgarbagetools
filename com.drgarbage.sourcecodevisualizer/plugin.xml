@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="%pluginName"
+            extensions="java"
+            icon="$nl$/com/drgarbage/sourcecodevisualizer/img/sourcecode-viewer-16x16.png"
+            contributorClass="com.drgarbage.sourcecodevisualizer.actions.SourcecodevizualizerActionBarContributor"
+            class="com.drgarbage.sourcecodevisualizer.editors.JavaCodeEditor"
+            id="com.drgarbage.sourcecodevisualizer.editors.JavaCodeEditor">
+      </editor>
+   </extension>
+   <extension
+         id="com.drgarbage.sourcecodevisualizer.plugin.preferencePages"
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="com.drgarbage.MainPage"
+            class="com.drgarbage.sourcecodevisualizer.preferences.SourcecodeVizualizerPreferences"
+            id="com.drgarbage.sourcecodevisualizer.SourcecodeVizualizerPreferences"
+            name="%pluginName"/>
+      <page
+            category="com.drgarbage.sourcecodevisualizer.SourcecodeVizualizerPreferences"
+            class="com.drgarbage.sourcecodevisualizer.preferences.SyntaxHighlightingPreferencePage"
+            id="com.drgarbage.sourcecodevisualizer.preferences.SyntaxHihlighting"
+            name="%page.Syntax_Highlighting"/>
+   </extension>
+ <!-- coomon feature -->
+        <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            targetID="com.drgarbage.sourcecodevisualizer.editors.JavaCodeEditor"
+            id="com.drgarbage.sourcecodevisualizer.BreakpointRulerActions">
+         <action
+               label="?"
+               class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+               style="push"
+               actionID="RulerDoubleClick"
+               id="com.drgarbage.sourcecodevisualizer.editors.ManageBreakpointRulerAction">
+         </action>
+      </editorContribution>
+      <editorContribution
+            targetID="com.drgarbage.sourcecodevisualizer.editors.JavaCodeEditor"
+            id="com.drgarbage.sourcecodevisualizer.JavaCodeEditor.ruler.actions">
+         <action
+               label="%BookmarkRulerAction.label"
+               helpContextId="org.eclipse.ui.bookmark_action_context"
+               class="org.eclipse.ui.texteditor.BookmarkRulerAction"
+               actionID="RulerDoubleClick"
+               id="com.drgarbage.sourcecodevisualizer.editors.BookmarkRulerAction">
+         </action>
+         <action
+               label="%JavaSelectRulerAction.label"
+               class="org.eclipse.jdt.internal.ui.javaeditor.JavaSelectRulerAction"
+               actionID="RulerClick"
+               id="com.drgarbage.sourcecodevisualizer.editors.JavaSelectRulerAction">
+         </action>
+      </editorContribution>      
+   </extension>
+</plugin>

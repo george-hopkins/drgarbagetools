@@ -1,0 +1,56 @@
+Manifest-Version: 1.0
+Export-Package: com.drgarbage.algorithms;x-friends:="com.drgarbage.con
+ trolflowgraphfactory,com.drgarbage.sourcecodevisualizer",com.drgarbag
+ e.asm.render.intf;uses:="com.drgarbage.bytecode.instructions",com.drg
+ arbage.asm.visitor;x-friends:="com.drgarbage.coverage",com.drgarbage.
+ bytecode;uses:="com.drgarbage.bytecode.instructions",com.drgarbage.by
+ tecode.constant_pool;x-friends:="com.drgarbage.controlflowgraphfactor
+ y,com.drgarbage.sourcecodevisualizer,com.drgarbage.bytecodevisualizer
+ ",com.drgarbage.bytecode.instructions;uses:="com.drgarbage.bytecode",
+ com.drgarbage.controlflowgraph;x-friends:="com.drgarbage.controlflowg
+ raphfactory,com.drgarbage.sourcecodevisualizer",com.drgarbage.control
+ flowgraph.anchors;x-friends:="com.drgarbage.controlflowgraphfactory,c
+ om.drgarbage.sourcecodevisualizer",com.drgarbage.controlflowgraph.fig
+ ures;x-friends:="com.drgarbage.controlflowgraphfactory,com.drgarbage.
+ sourcecodevisualizer",com.drgarbage.controlflowgraph.intf;x-friends:=
+ "com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisual
+ izer",com.drgarbage.core;x-friends:="com.drgarbage.bytecodevisualizer
+ ,com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisual
+ izer",com.drgarbage.core.img;x-friends:="com.drgarbage.bytecodevisual
+ izer,com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevi
+ sualizer",com.drgarbage.core.jface;x-friends:="com.drgarbage.bytecode
+ visualizer,com.drgarbage.controlflowgraphfactory,com.drgarbage.source
+ codevisualizer",com.drgarbage.core.preferences;x-friends:="com.drgarb
+ age.bytecodevisualizer,com.drgarbage.controlflowgraphfactory,com.drga
+ rbage.sourcecodevisualizer",com.drgarbage.core.views;x-friends:="com.
+ drgarbage.bytecodevisualizer,com.drgarbage.controlflowgraphfactory,co
+ m.drgarbage.sourcecodevisualizer",com.drgarbage.draw2d;x-friends:="co
+ m.drgarbage.sourcecodevisualizer,com.drgarbage.bytecodevisualizer",co
+ m.drgarbage.io,com.drgarbage.javalang,com.drgarbage.javasrc;x-friends
+ :="com.drgarbage.bytecodevisualizer",com.drgarbage.utils; x-friends:=
+ "com.drgarbage.bytecodevisualizer,  com.drgarbage.controlflowgraphfac
+ tory,  com.drgarbage.coverage,  com.drgarbage.sourcecodevisualizer"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,lib/com.drgarbage.asm_3.1.jar,lib/com.drgarbage.as
+ m.util_3.1.jar
+Bundle-Name: %pluginName
+Bundle-Localization: plugin
+Created-By: 1.6.0_03-b05 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: com.drgarbage.asm;bundle-version="[3.7.0,3.7.1)",org.e
+ clipse.core.runtime;bundle-version="[3.7.0,3.8.0)",org.eclipse.debug.
+ ui;bundle-version="[3.7.0,3.8.0)",org.eclipse.gef;bundle-version="[3.
+ 7.0,3.8.0)",org.eclipse.jdt.core;bundle-version="[3.7.0,3.8.0)",org.e
+ clipse.jdt.debug;bundle-version="[3.7.0,3.8.0)",org.eclipse.jdt.launc
+ hing;bundle-version="[3.6.0,3.7.0)",org.eclipse.jdt.ui;bundle-version
+ ="[3.7.0,3.8.0)",org.eclipse.jface.text;bundle-version="[3.7.0,3.8.0)
+ ",org.eclipse.ui;bundle-version="[3.7.0,3.8.0)",org.eclipse.ui.editor
+ s;bundle-version="[3.7.0,3.8.0)",org.eclipse.ui.ide;bundle-version="[
+ 3.7.0,3.8.0)",org.eclipse.ui.views;bundle-version="[3.6.0,3.7.0)"
+Ant-Version: Apache Ant 1.7.0
+Bundle-Vendor: %providerName
+Bundle-Version: 3.7.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-Activator: com.drgarbage.core.CorePlugin
+Bundle-SymbolicName: com.drgarbage.core;singleton:=true
+

@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Export-Package: com.drgarbage.sourcecodevisualizer;x-friends:="com.drg
+ arbage.controlflowgraphfactory"
+Bundle-ActivationPolicy: lazy
+Bundle-Name: %pluginName
+Bundle-Localization: plugin
+Created-By: 1.6.0_03-b05 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: com.drgarbage.asm;bundle-version="[3.7.0,3.7.1)",com.d
+ rgarbage.core;bundle-version="[3.7.0,3.7.1)",org.eclipse.core.runtime
+ .compatibility;bundle-version="[3.2.100,3.3.0)",org.eclipse.debug.ui;
+ bundle-version="[3.7.0,3.8.0)",org.eclipse.draw2d;bundle-version="[3.
+ 7.0,3.8.0)",org.eclipse.jdt.core;bundle-version="[3.7.0,3.8.0)",org.e
+ clipse.jdt.launching;bundle-version="[3.6.0,3.7.0)",org.eclipse.jdt.u
+ i;bundle-version="[3.7.0,3.8.0)",org.eclipse.jface.text;bundle-versio
+ n="[3.7.0,3.8.0)",org.eclipse.ui.editors;bundle-version="[3.7.0,3.8.0
+ )",org.eclipse.ui.ide;bundle-version="[3.7.0,3.8.0)",org.eclipse.ui.v
+ iews.properties.tabbed;bundle-version="[3.5.2,3.6.0)",org.eclipse.ui.
+ workbench.texteditor;bundle-version="[3.7.0,3.8.0)"
+Ant-Version: Apache Ant 1.7.0
+Bundle-Vendor: %providerName
+Plugin-Class: com.drgarbage.sourcecodevisualizer.SourcecodeVisualizerP
+ lugin
+Bundle-Version: 3.7.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-Activator: com.drgarbage.sourcecodevisualizer.SourcecodeVisuali
+ zerPlugin
+Bundle-SymbolicName: com.drgarbage.sourcecodevisualizer; singleton:=tr
+ ue
+

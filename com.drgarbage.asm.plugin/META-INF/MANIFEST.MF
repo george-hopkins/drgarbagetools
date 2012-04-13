@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Dr. Garbage
+Ant-Version: Apache Ant 1.7.0
+Bundle-ClassPath: com.drgarbage.asm_3.1.jar,com.drgarbage.asm.util_3.1
+ .jar
+Bundle-Version: 3.5.0.qualifier
+Bundle-Name: Dr. Garbage ASM Distribution
+Bundle-ManifestVersion: 2
+Created-By: 11.0-b15 (Sun Microsystems Inc.)
+Bundle-SymbolicName: com.drgarbage.asm.plugin
+

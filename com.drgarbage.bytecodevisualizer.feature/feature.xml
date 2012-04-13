@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><feature id="com.drgarbage.bytecodevisualizer" label="%featureName" plugin="com.drgarbage.bytecodevisualizer" provider-name="%providerName" version="3.7.0.qualifier"><install-handler/><description url="%productPageUrl">
+      %description
+   </description><copyright url="%copyrightUrl">
+      %copyrightUrl
+   </copyright><license url="%licenseURL">
+      %license
+   </license><url>
+      <update label="%updateSiteName" url="http://www.drgarbage.com/3.7/stable"/>
+   </url><requires><import match="equivalent" plugin="org.eclipse.core.runtime" version="3.7.0"/>
+<import match="equivalent" plugin="org.eclipse.debug.ui" version="3.7.0"/>
+<import match="greaterOrEqual" plugin="org.eclipse.draw2d" version="3.7.0"/>
+<import match="equivalent" plugin="org.eclipse.jdt.core" version="3.7.0"/>
+<import match="equivalent" plugin="org.eclipse.jdt.debug" version="3.7.0"/>
+<import match="equivalent" plugin="org.eclipse.jdt.debug.ui" version="3.6.0"/>
+<import match="equivalent" plugin="org.eclipse.jdt.ui" version="3.7.0"/>
+<import match="equivalent" plugin="org.eclipse.jface.text" version="3.7.0"/>
+<import match="equivalent" plugin="org.eclipse.ui" version="3.7.0"/>
+<import match="equivalent" plugin="org.eclipse.ui.console" version="3.5.100"/>
+<import match="equivalent" plugin="org.eclipse.ui.editors" version="3.7.0"/>
+<import match="equivalent" plugin="org.eclipse.ui.ide" version="3.7.0"/>
+<import match="equivalent" plugin="org.eclipse.ui.views" version="3.6.0"/>
+<import match="equivalent" plugin="org.eclipse.ui.workbench.texteditor" version="3.7.0"/>
+</requires><plugin download-size="200" id="com.drgarbage.bytecodevisualizer" install-size="200" unpack="false" version="3.7.0.qualifier"/>
+<plugin download-size="200" id="com.drgarbage.asm" install-size="200" unpack="false" version="3.7.0.qualifier"/>
+<plugin download-size="200" id="com.drgarbage.core" install-size="200" unpack="false" version="3.7.0.qualifier"/>
+</feature>

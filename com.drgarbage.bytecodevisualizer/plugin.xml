@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.drgarbage.bytecodevisualizer.editors.BytecodeEditor"
+            contributorClass="com.drgarbage.bytecodevisualizer.actions.BytecodevizualizerActionBarContributor"
+            default="true"
+            extensions="class"
+            icon="img/enabled16/bytecode-viewer-16x16.png"
+            id="com.drgarbage.bytecodevisualizer.editor"
+            name="%pluginName">
+         <contentTypeBinding
+               contentTypeId="org.eclipse.jdt.core.javaClass">
+         </contentTypeBinding>
+      </editor>
+   </extension>
+       <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            targetID="com.drgarbage.bytecodevisualizer.editor"
+            id="com.drgarbage.bytecodevisualize.BreakpointRulerActions">
+         <action
+               actionID="RulerDoubleClick"
+               class="com.drgarbage.bytecodevisualizer.actions.RulerToggleBytecodeActionDelegate"
+               id="com.drgarbage.bytecodevisualizer.editors.ManageBreakpointRulerAction"
+               label="?"
+               style="push">
+         </action>
+      </editorContribution>    
+   </extension>
+   <extension
+         id="com.drgarbage.bytecodevisualizer.plugin.preferencePages"
+         point="org.eclipse.ui.preferencePages">
+            
+      <page
+            category="com.drgarbage.MainPage"
+            class="com.drgarbage.bytecodevisualizer.preferences.BytecodeVisualizerPreferencePage"
+            id="com.drgarbage.bytecodevisualizer.BytecodeVizualizerPreferences"
+            name="%page.Bytecode_Visualizer"/>
+      <page
+            category="com.drgarbage.bytecodevisualizer.BytecodeVizualizerPreferences"
+            class="com.drgarbage.bytecodevisualizer.preferences.GeneralPreferencePage"
+            id="com.drgarbage.bytecodevisualizer.preferences.GeneralPreferencesPage"
+            name="%prefPage_Appearance">
+      </page>
+      <page
+            category="com.drgarbage.bytecodevisualizer.BytecodeVizualizerPreferences"
+            class="com.drgarbage.bytecodevisualizer.preferences.SyntaxHighlightingPreferencePage"
+            id="com.drgarbage.plugin.preferences.OpcodeMnemonicPreferences"
+            name="%page.Syntax_Highlighting"/>
+       <page
+            category="com.drgarbage.bytecodevisualizer.BytecodeVizualizerPreferences"
+            class="com.drgarbage.bytecodevisualizer.preferences.SourceCodePreferencePage"
+            id="com.drgarbage.plugin.preferences.SourceCodePreferences"
+            name="%prefPage_Sourcecode">
+      </page>
+            
+   </extension>   
+   <extension
+         id="com.drgarbage.bytecodevisualizer.plugin.popupMenus"
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="false"
+            id="com.drgarbage.bytecodevisualizer.objectContribution1"
+            objectClass="org.eclipse.jdt.core.IClassFile">
+         <menu
+               id="com.drgarbage.bytecodevisualizer.popup.open"
+               label="%act_Open_with_Bytecode_Visualizer"
+               path="addition"/>
+         <action
+               class="com.drgarbage.bytecodevisualizer.actions.OpenWithBytecodeVisualizerAction"
+               icon="img/enabled16/bytecode-viewer-16x16.png"
+               id="com.drgarbage.bytecodevisualizer.action.open"
+               label="%act_Open_with_Bytecode_Visualizer"
+               menubarPath="com.drgarbage.bytecodevisualizer.popup.open"/>
+      </objectContribution>
+   </extension>
+   
+   
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup></startup>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.drgarbage.bytecodevisualizer.preferences.BytecodeVisualizerPreferenceInitializer">
+      </initializer>
+   </extension>
+   
+</plugin>
