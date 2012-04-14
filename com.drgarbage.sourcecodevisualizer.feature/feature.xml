@@ -1,23 +1,59 @@
-<?xml version="1.0" encoding="UTF-8"?><feature id="com.drgarbage.sourcecodevisualizer" label="%featureName" provider-name="%providerName" version="3.7.0.qualifier"><description url="%productPageUrl">
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.drgarbage.sourcecodevisualizer"
+      label="%featureName"
+      version="3.7.1.qualifier"
+      provider-name="%providerName">
+
+   <description url="%productPageUrl">
       %description
-   </description><copyright url="%copyrightUrl">
+   </description>
+
+   <copyright url="%copyrightUrl">
       %copyrightUrl
-   </copyright><license url="%licenseURL">
+   </copyright>
+
+   <license url="%licenseURL">
       %license
-   </license><url>
+   </license>
+
+   <url>
       <update label="%updateSiteName" url="http://www.drgarbage.com/3.7/stable"/>
-   </url><requires><import match="equivalent" plugin="org.eclipse.core.runtime.compatibility" version="3.2.100"/>
-<import match="equivalent" plugin="org.eclipse.debug.ui" version="3.7.0"/>
-<import match="equivalent" plugin="org.eclipse.draw2d" version="3.7.0"/>
-<import match="equivalent" plugin="org.eclipse.jdt.core" version="3.7.0"/>
-<import match="equivalent" plugin="org.eclipse.jdt.launching" version="3.6.0"/>
-<import match="equivalent" plugin="org.eclipse.jdt.ui" version="3.7.0"/>
-<import match="equivalent" plugin="org.eclipse.jface.text" version="3.7.0"/>
-<import match="equivalent" plugin="org.eclipse.ui.editors" version="3.7.0"/>
-<import match="equivalent" plugin="org.eclipse.ui.ide" version="3.7.0"/>
-<import match="equivalent" plugin="org.eclipse.ui.views.properties.tabbed" version="3.5.2"/>
-<import match="equivalent" plugin="org.eclipse.ui.workbench.texteditor" version="3.7.0"/>
-</requires><plugin download-size="200" id="com.drgarbage.sourcecodevisualizer" install-size="200" unpack="false" version="3.7.0.qualifier"/>
-<plugin download-size="200" id="com.drgarbage.asm" install-size="200" unpack="false" version="3.7.0.qualifier"/>
-<plugin download-size="200" id="com.drgarbage.core" install-size="200" unpack="false" version="3.7.0.qualifier"/>
+   </url>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime.compatibility" version="3.2.100" match="equivalent"/>
+      <import plugin="org.eclipse.debug.ui" version="3.7.0" match="equivalent"/>
+      <import plugin="org.eclipse.draw2d" version="3.7.0" match="equivalent"/>
+      <import plugin="org.eclipse.jdt.core" version="3.7.0" match="equivalent"/>
+      <import plugin="org.eclipse.jdt.launching" version="3.6.0" match="equivalent"/>
+      <import plugin="org.eclipse.jdt.ui" version="3.7.0" match="equivalent"/>
+      <import plugin="org.eclipse.jface.text" version="3.7.0" match="equivalent"/>
+      <import plugin="org.eclipse.ui.editors" version="3.7.0" match="equivalent"/>
+      <import plugin="org.eclipse.ui.ide" version="3.7.0" match="equivalent"/>
+      <import plugin="org.eclipse.ui.views.properties.tabbed" version="3.5.2" match="equivalent"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.7.0" match="equivalent"/>
+   </requires>
+
+   <plugin
+         id="com.drgarbage.sourcecodevisualizer"
+         download-size="200"
+         install-size="200"
+         version="3.7.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="com.drgarbage.asm"
+         download-size="200"
+         install-size="200"
+         version="3.7.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="com.drgarbage.core"
+         download-size="200"
+         install-size="200"
+         version="3.7.1.qualifier"
+         unpack="false"/>
+
 </feature>
