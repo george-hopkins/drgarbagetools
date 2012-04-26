@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.drgarbage.ast.view;
+package com.drgarbage.core.views;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -34,16 +34,10 @@ import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
-import org.eclipse.jdt.internal.ui.javaeditor.InternalClassFileEditorInput;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPageListener;
 import org.eclipse.ui.ISelectionListener;
@@ -57,13 +51,22 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
 import com.drgarbage.ast.ASTExplorer;
 import com.drgarbage.core.CoreConstants;
-import com.drgarbage.core.img.CoreImg;
 
 /**
  * @author sa
  *
  */
-public class FlowChartView extends ViewPart {
+public class ASTView extends ViewPart {
+	
+	private ITypeRoot activeTypeRoot;
+	private IJavaElement activeJavaElement;
+	private static ASTParser parser;
+	
+	static {
+		parser = ASTParser.newParser(AST.JLS3);
+	}
+	
+	ASTExplorer astExplorer;
 
 	/**
 	 * Windows listener implementation.
@@ -121,8 +124,7 @@ public class FlowChartView extends ViewPart {
 		 */
 		public void pageOpened(IWorkbenchPage page) {
 			addSelecionListener(page);	
-		}
-		
+		}		
 	};
 	
 	/**
@@ -206,21 +208,9 @@ public class FlowChartView extends ViewPart {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
 		}
 
 	};
-
-	private ITypeRoot activeTypeRoot;
-	private IJavaElement activeJavaElement;
-	private static ASTParser parser;
-	
-	static {
-		parser = ASTParser.newParser(AST.JLS3);
-	}
-	
-	ASTExplorer astExplorer;
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
