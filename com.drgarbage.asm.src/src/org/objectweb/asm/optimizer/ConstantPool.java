@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,20 +31,26 @@ package org.objectweb.asm.optimizer;
 
 import java.util.HashMap;
 
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 /**
  * A constant pool.
- * 
+ *
  * @author Eric Bruneton
  */
-public class ConstantPool extends HashMap {
+public class ConstantPool extends HashMap<Constant, Constant> {
 
     private final Constant key1 = new Constant();
 
     private final Constant key2 = new Constant();
 
     private final Constant key3 = new Constant();
+
+    private final Constant key4 = new Constant();
+
+    private final Constant key5 = new Constant();
 
     public Constant newInteger(final int value) {
         key1.set(value);
@@ -118,6 +124,32 @@ public class ConstantPool extends HashMap {
         return result;
     }
 
+    public Constant newMethodType(final String methodDescriptor) {
+        key2.set('t', methodDescriptor, null, null);
+        Constant result = get(key2);
+        if (result == null) {
+            newUTF8(methodDescriptor);
+            result = new Constant(key2);
+            put(result);
+        }
+        return result;
+    }
+
+    public Constant newHandle(final int tag, final String owner, final String name, final String desc) {
+        key4.set((char)('h' - 1 + tag), owner, name, desc);
+        Constant result = get(key4);
+        if (result == null) {
+            if (tag <= Opcodes.H_PUTSTATIC) {
+                newField(owner, name, desc);
+            } else {
+                newMethod(owner, name, desc, tag == Opcodes.H_INVOKEINTERFACE);
+            }
+            result = new Constant(key4);
+            put(result);
+        }
+        return result;
+    }
+
     public Constant newConst(final Object cst) {
         if (cst instanceof Integer) {
             int val = ((Integer) cst).intValue();
@@ -135,9 +167,17 @@ public class ConstantPool extends HashMap {
             return newString((String) cst);
         } else if (cst instanceof Type) {
             Type t = (Type) cst;
-            return newClass(t.getSort() == Type.OBJECT
-                    ? t.getInternalName()
-                    : t.getDescriptor());
+            int s = t.getSort();
+            if (s == Type.OBJECT) {
+                return newClass(t.getInternalName());
+            } else if (s == Type.METHOD) {
+                return newMethodType(t.getDescriptor());
+            } else { // s == primitive type or array
+                return newClass(t.getDescriptor());
+            } 
+        } else if (cst instanceof Handle) {
+            Handle h = (Handle) cst;
+            return newHandle(h.getTag(), h.getOwner(), h.getName(), h.getDesc());
         } else {
             throw new IllegalArgumentException("value " + cst);
         }
@@ -176,6 +216,22 @@ public class ConstantPool extends HashMap {
         return result;
     }
 
+    public Constant newInvokeDynamic(String name, String desc, Handle bsm, Object... bsmArgs)
+    {
+        key5.set(name, desc, bsm, bsmArgs);
+        Constant result = get(key5);
+        if (result == null) {
+            newNameType(name, desc);
+            newHandle(bsm.getTag(), bsm.getOwner(), bsm.getName(), bsm.getDesc());
+            for(int i=0; i<bsmArgs.length; i++) {
+                newConst(bsmArgs[i]);
+            }
+            result = new Constant(key5);
+            put(result);
+        }
+        return result;
+    }
+
     public Constant newNameType(final String name, final String desc) {
         key2.set('T', name, desc, null);
         Constant result = get(key2);
@@ -189,7 +245,7 @@ public class ConstantPool extends HashMap {
     }
 
     private Constant get(final Constant key) {
-        return (Constant) get((Object) key);
+        return get((Object) key);
     }
 
     private void put(final Constant cst) {

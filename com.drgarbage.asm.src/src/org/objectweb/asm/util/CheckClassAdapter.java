@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,60 +31,64 @@ package org.objectweb.asm.util;
 
 import java.io.FileInputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.ClassAdapter;
+import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.TryCatchBlockNode;
+import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.Analyzer;
-import org.objectweb.asm.tree.analysis.SimpleVerifier;
+import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
+import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 /**
- * A {@link ClassAdapter} that checks that its methods are properly used. More
+ * A {@link ClassVisitor} that checks that its methods are properly used. More
  * precisely this class adapter checks each method call individually, based
  * <i>only</i> on its arguments, but does <i>not</i> check the <i>sequence</i>
  * of method calls. For example, the invalid sequence
  * <tt>visitField(ACC_PUBLIC, "i", "I", null)</tt> <tt>visitField(ACC_PUBLIC,
  * "i", "D", null)</tt>
  * will <i>not</i> be detected by this class adapter.
- * 
+ *
  * <p><code>CheckClassAdapter</code> can be also used to verify bytecode
  * transformations in order to make sure transformed bytecode is sane. For
  * example:
- * 
+ *
  * <pre>
  *   InputStream is = ...; // get bytes for the source class
  *   ClassReader cr = new ClassReader(is);
  *   ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
  *   ClassVisitor cv = new <b>MyClassAdapter</b>(new CheckClassAdapter(cw));
  *   cr.accept(cv, 0);
- * 
+ *
  *   StringWriter sw = new StringWriter();
  *   PrintWriter pw = new PrintWriter(sw);
  *   CheckClassAdapter.verify(new ClassReader(cw.toByteArray()), false, pw);
  *   assertTrue(sw.toString(), sw.toString().length()==0);
  * </pre>
- * 
+ *
  * Above code runs transformed bytecode trough the
  * <code>CheckClassAdapter</code>. It won't be exactly the same verification
  * as JVM does, but it run data flow analysis for the code of each method and
  * checks that expectations are met for each method instruction.
- * 
+ *
  * <p>If method bytecode has errors, assertion text will show the erroneous
  * instruction number and dump of the failed method with information about
  * locals and stack slot for each instruction. For example (format is -
  * insnNumber locals : stack):
- * 
+ *
  * <pre>
  * org.objectweb.asm.tree.analysis.AnalyzerException: Error at instruction 71: Expected I, but found .
  *   at org.objectweb.asm.tree.analysis.Analyzer.analyze(Analyzer.java:289)
@@ -97,26 +101,31 @@ import org.objectweb.asm.tree.analysis.Frame;
  *   ISTORE 2
  * 00001 LinkedBlockingQueue$Itr <b>.</b> I . . . . . .  :
  * ...
- * 
- * 00071 LinkedBlockingQueue$Itr <b>.</b> I . . . . . .  : 
+ *
+ * 00071 LinkedBlockingQueue$Itr <b>.</b> I . . . . . .  :
  *   ILOAD 1
- * 00072 <b>?</b>                
+ * 00072 <b>?</b>
  *   INVOKESPECIAL java/lang/Integer.<init> (I)V
  * ...
  * </pre>
- * 
+ *
  * In the above output you can see that variable 1 loaded by
  * <code>ILOAD 1</code> instruction at position <code>00071</code> is not
  * initialized. You can also see that at the beginning of the method (code
  * inserted by the transformation) variable 2 is initialized.
- * 
+ *
  * <p>Note that when used like that, <code>CheckClassAdapter.verify()</code>
  * can trigger additional class loading, because it is using
  * <code>SimpleVerifier</code>.
- * 
+ *
  * @author Eric Bruneton
  */
-public class CheckClassAdapter extends ClassAdapter {
+public class CheckClassAdapter extends ClassVisitor {
+
+    /**
+     * The class version number.
+     */
+    private int version;
 
     /**
      * <tt>true</tt> if the visit method has been called.
@@ -139,11 +148,22 @@ public class CheckClassAdapter extends ClassAdapter {
     private boolean end;
 
     /**
-     * Checks a given class. <p> Usage: CheckClassAdapter &lt;fully qualified
+     * The already visited labels. This map associate Integer values to Label
+     * keys.
+     */
+    private Map<Label, Integer> labels;
+
+    /**
+     * <tt>true</tt> if the method code must be checked with a BasicVerifier.
+     */
+    private boolean checkDataFlow;
+
+    /**
+     * Checks a given class. <p> Usage: CheckClassAdapter &lt;binary
      * class name or class file name&gt;
-     * 
+     *
      * @param args the command line arguments.
-     * 
+     *
      * @throws Exception if the class cannot be found, or if an IO exception
      *         occurs.
      */
@@ -165,8 +185,62 @@ public class CheckClassAdapter extends ClassAdapter {
     }
 
     /**
+     * Checks a given class.
+     *
+     * @param cr a <code>ClassReader</code> that contains bytecode for the
+     *        analysis.
+     * @param loader a <code>ClassLoader</code> which will be used to load
+     *        referenced classes. This is useful if you are verifiying multiple
+     *        interdependent classes.
+     * @param dump true if bytecode should be printed out not only when errors
+     *        are found.
+     * @param pw write where results going to be printed
+     */
+    public static void verify(
+        final ClassReader cr,
+        final ClassLoader loader,
+        final boolean dump,
+        final PrintWriter pw)
+    {
+        ClassNode cn = new ClassNode();
+        cr.accept(new CheckClassAdapter(cn, false), ClassReader.SKIP_DEBUG);
+
+        Type syperType = cn.superName == null
+                ? null
+                : Type.getObjectType(cn.superName);
+        List<MethodNode> methods = cn.methods;
+
+        List<Type> interfaces = new ArrayList<Type>();
+        for (Iterator<String> i = cn.interfaces.iterator(); i.hasNext();) {
+            interfaces.add(Type.getObjectType(i.next().toString()));
+        }
+
+        for (int i = 0; i < methods.size(); ++i) {
+            MethodNode method = methods.get(i);
+            SimpleVerifier verifier = new SimpleVerifier(Type.getObjectType(cn.name),
+                    syperType,
+                    interfaces,
+                    (cn.access & Opcodes.ACC_INTERFACE) != 0);
+            Analyzer<BasicValue> a = new Analyzer<BasicValue>(verifier);
+            if (loader != null) {
+                verifier.setClassLoader(loader);
+            }
+            try {
+                a.analyze(cn.name, method);
+                if (!dump) {
+                    continue;
+                }
+            } catch (Exception e) {
+                e.printStackTrace(pw);
+            }
+            printAnalyzerResult(method, a, pw);
+        }
+        pw.flush();
+    }
+
+    /**
      * Checks a given class
-     * 
+     *
      * @param cr a <code>ClassReader</code> that contains bytecode for the
      *        analysis.
      * @param dump true if bytecode should be printed out not only when errors
@@ -178,62 +252,48 @@ public class CheckClassAdapter extends ClassAdapter {
         final boolean dump,
         final PrintWriter pw)
     {
-        ClassNode cn = new ClassNode();
-        cr.accept(new CheckClassAdapter(cn), ClassReader.SKIP_DEBUG);
+        verify(cr, null, dump, pw);
+    }
 
-        Type syperType = cn.superName == null
-                ? null
-                : Type.getObjectType(cn.superName);
-        List methods = cn.methods;
-        for (int i = 0; i < methods.size(); ++i) {
-            MethodNode method = (MethodNode) methods.get(i);
-            Analyzer a = new Analyzer(new SimpleVerifier(Type.getObjectType(cn.name),
-                    syperType,
-                    false));
-            try {
-                a.analyze(cn.name, method);
-                if (!dump) {
-                    continue;
+    static void printAnalyzerResult(
+        MethodNode method,
+        Analyzer<BasicValue> a,
+        final PrintWriter pw)
+    {
+        Frame<BasicValue>[] frames = a.getFrames();
+        Textifier t = new Textifier();
+        TraceMethodVisitor mv = new TraceMethodVisitor(t);
+
+        pw.println(method.name + method.desc);
+        for (int j = 0; j < method.instructions.size(); ++j) {
+            method.instructions.get(j).accept(mv);
+
+            StringBuffer s = new StringBuffer();
+            Frame<BasicValue> f = frames[j];
+            if (f == null) {
+                s.append('?');
+            } else {
+                for (int k = 0; k < f.getLocals(); ++k) {
+                    s.append(getShortName(f.getLocal(k).toString()))
+                            .append(' ');
                 }
-            } catch (Exception e) {
-                e.printStackTrace(pw);
-            }
-            Frame[] frames = a.getFrames();
-
-            TraceMethodVisitor mv = new TraceMethodVisitor();
-
-            pw.println(method.name + method.desc);
-            for (int j = 0; j < method.instructions.size(); ++j) {
-                method.instructions.get(j).accept(mv);
-
-                StringBuffer s = new StringBuffer();
-                Frame f = frames[j];
-                if (f == null) {
-                    s.append('?');
-                } else {
-                    for (int k = 0; k < f.getLocals(); ++k) {
-                        s.append(getShortName(f.getLocal(k).toString()))
-                                .append(' ');
-                    }
-                    s.append(" : ");
-                    for (int k = 0; k < f.getStackSize(); ++k) {
-                        s.append(getShortName(f.getStack(k).toString()))
-                                .append(' ');
-                    }
+                s.append(" : ");
+                for (int k = 0; k < f.getStackSize(); ++k) {
+                    s.append(getShortName(f.getStack(k).toString()))
+                            .append(' ');
                 }
-                while (s.length() < method.maxStack + method.maxLocals + 1) {
-                    s.append(' ');
-                }
-                pw.print(Integer.toString(j + 100000).substring(1));
-                pw.print(" " + s + " : " + mv.buf); // mv.text.get(j));
             }
-            for (int j = 0; j < method.tryCatchBlocks.size(); ++j) {
-                ((TryCatchBlockNode) method.tryCatchBlocks.get(j)).accept(mv);
-                pw.print(" " + mv.buf);
+            while (s.length() < method.maxStack + method.maxLocals + 1) {
+                s.append(' ');
             }
-            pw.println();
+            pw.print(Integer.toString(j + 100000).substring(1));
+            pw.print(" " + s + " : " + t.text.get(t.text.size() - 1));
         }
-        pw.flush();
+        for (int j = 0; j < method.tryCatchBlocks.size(); ++j) {
+            method.tryCatchBlocks.get(j).accept(mv);
+            pw.print(" " + t.text.get(t.text.size() - 1));
+        }
+        pw.println();
     }
 
     private static String getShortName(final String name) {
@@ -246,18 +306,58 @@ public class CheckClassAdapter extends ClassAdapter {
     }
 
     /**
-     * Constructs a new {@link CheckClassAdapter}.
-     * 
+     * Constructs a new {@link CheckClassAdapter}. <i>Subclasses must not use
+     * this constructor</i>. Instead, they must use the
+     * {@link #CheckClassAdapter(int, ClassVisitor, boolean)} version.
+     *
      * @param cv the class visitor to which this adapter must delegate calls.
      */
     public CheckClassAdapter(final ClassVisitor cv) {
-        super(cv);
+        this(cv, true);
+    }
+
+    /**
+     * Constructs a new {@link CheckClassAdapter}. <i>Subclasses must not use
+     * this constructor</i>. Instead, they must use the
+     * {@link #CheckClassAdapter(int, ClassVisitor, boolean)} version.
+     *
+     * @param cv the class visitor to which this adapter must delegate calls.
+     * @param checkDataFlow <tt>true</tt> to perform basic data flow checks, or
+     *        <tt>false</tt> to not perform any data flow check (see
+     *        {@link CheckMethodAdapter}). This option requires valid maxLocals
+     *        and maxStack values.
+     */
+    public CheckClassAdapter(final ClassVisitor cv, final boolean checkDataFlow)
+    {
+        this(Opcodes.ASM4, cv, checkDataFlow);
+    }
+
+    /**
+     * Constructs a new {@link CheckClassAdapter}.
+     *
+     * @param api the ASM API version implemented by this visitor. Must be one
+     *        of {@link Opcodes#ASM4}.
+     * @param cv the class visitor to which this adapter must delegate calls.
+     * @param checkDataFlow <tt>true</tt> to perform basic data flow checks, or
+     *        <tt>false</tt> to not perform any data flow check (see
+     *        {@link CheckMethodAdapter}). This option requires valid maxLocals
+     *        and maxStack values.
+     */
+    protected CheckClassAdapter(
+        final int api,
+        final ClassVisitor cv,
+        final boolean checkDataFlow)
+    {
+        super(api, cv);
+        this.labels = new HashMap<Label, Integer>();
+        this.checkDataFlow = checkDataFlow;
     }
 
     // ------------------------------------------------------------------------
     // Implementation of the ClassVisitor interface
     // ------------------------------------------------------------------------
 
+    @Override
     public void visit(
         final int version,
         final int access,
@@ -275,7 +375,8 @@ public class CheckClassAdapter extends ClassAdapter {
                 + Opcodes.ACC_SUPER + Opcodes.ACC_INTERFACE
                 + Opcodes.ACC_ABSTRACT + Opcodes.ACC_SYNTHETIC
                 + Opcodes.ACC_ANNOTATION + Opcodes.ACC_ENUM
-                + Opcodes.ACC_DEPRECATED);
+                + Opcodes.ACC_DEPRECATED
+                + 0x40000); // ClassWriter.ACC_SYNTHETIC_ATTRIBUTE
         if (name == null || !name.endsWith("package-info")) {
             CheckMethodAdapter.checkInternalName(name, "class name");
         }
@@ -300,18 +401,21 @@ public class CheckClassAdapter extends ClassAdapter {
                         "interface name at index " + i);
             }
         }
-        cv.visit(version, access, name, signature, superName, interfaces);
+        this.version = version;
+        super.visit(version, access, name, signature, superName, interfaces);
     }
 
+    @Override
     public void visitSource(final String file, final String debug) {
         checkState();
         if (source) {
             throw new IllegalStateException("visitSource can be called only once.");
         }
         source = true;
-        cv.visitSource(file, debug);
+        super.visitSource(file, debug);
     }
 
+    @Override
     public void visitOuterClass(
         final String owner,
         final String name,
@@ -328,9 +432,10 @@ public class CheckClassAdapter extends ClassAdapter {
         if (desc != null) {
             CheckMethodAdapter.checkMethodDesc(desc);
         }
-        cv.visitOuterClass(owner, name, desc);
+        super.visitOuterClass(owner, name, desc);
     }
 
+    @Override
     public void visitInnerClass(
         final String name,
         final String outerName,
@@ -350,9 +455,10 @@ public class CheckClassAdapter extends ClassAdapter {
                 + Opcodes.ACC_FINAL + Opcodes.ACC_INTERFACE
                 + Opcodes.ACC_ABSTRACT + Opcodes.ACC_SYNTHETIC
                 + Opcodes.ACC_ANNOTATION + Opcodes.ACC_ENUM);
-        cv.visitInnerClass(name, outerName, innerName, access);
+        super.visitInnerClass(name, outerName, innerName, access);
     }
 
+    @Override
     public FieldVisitor visitField(
         final int access,
         final String name,
@@ -365,8 +471,9 @@ public class CheckClassAdapter extends ClassAdapter {
                 + Opcodes.ACC_PROTECTED + Opcodes.ACC_STATIC
                 + Opcodes.ACC_FINAL + Opcodes.ACC_VOLATILE
                 + Opcodes.ACC_TRANSIENT + Opcodes.ACC_SYNTHETIC
-                + Opcodes.ACC_ENUM + Opcodes.ACC_DEPRECATED);
-        CheckMethodAdapter.checkIdentifier(name, "field name");
+                + Opcodes.ACC_ENUM + Opcodes.ACC_DEPRECATED
+                + 0x40000); // ClassWriter.ACC_SYNTHETIC_ATTRIBUTE
+        CheckMethodAdapter.checkUnqualifiedName(version, name, "field name");
         CheckMethodAdapter.checkDesc(desc, false);
         if (signature != null) {
             CheckMethodAdapter.checkFieldSignature(signature);
@@ -374,10 +481,11 @@ public class CheckClassAdapter extends ClassAdapter {
         if (value != null) {
             CheckMethodAdapter.checkConstant(value);
         }
-        FieldVisitor av = cv.visitField(access, name, desc, signature, value);
+        FieldVisitor av = super.visitField(access, name, desc, signature, value);
         return new CheckFieldAdapter(av);
     }
 
+    @Override
     public MethodVisitor visitMethod(
         final int access,
         final String name,
@@ -391,8 +499,9 @@ public class CheckClassAdapter extends ClassAdapter {
                 + Opcodes.ACC_FINAL + Opcodes.ACC_SYNCHRONIZED
                 + Opcodes.ACC_BRIDGE + Opcodes.ACC_VARARGS + Opcodes.ACC_NATIVE
                 + Opcodes.ACC_ABSTRACT + Opcodes.ACC_STRICT
-                + Opcodes.ACC_SYNTHETIC + Opcodes.ACC_DEPRECATED);
-        CheckMethodAdapter.checkMethodIdentifier(name, "method name");
+                + Opcodes.ACC_SYNTHETIC + Opcodes.ACC_DEPRECATED
+                + 0x40000); // ClassWriter.ACC_SYNTHETIC_ATTRIBUTE
+        CheckMethodAdapter.checkMethodIdentifier(version, name, "method name");
         CheckMethodAdapter.checkMethodDesc(desc);
         if (signature != null) {
             CheckMethodAdapter.checkMethodSignature(signature);
@@ -403,34 +512,48 @@ public class CheckClassAdapter extends ClassAdapter {
                         "exception name at index " + i);
             }
         }
-        return new CheckMethodAdapter(cv.visitMethod(access,
-                name,
-                desc,
-                signature,
-                exceptions));
+        CheckMethodAdapter cma;
+        if (checkDataFlow) {
+            cma = new CheckMethodAdapter(access,
+                    name,
+                    desc,
+                    super.visitMethod(access, name, desc, signature, exceptions),
+                    labels);
+        } else {
+            cma = new CheckMethodAdapter(super.visitMethod(access,
+                    name,
+                    desc,
+                    signature,
+                    exceptions), labels);
+        }
+        cma.version = version;
+        return cma;
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation(
         final String desc,
         final boolean visible)
     {
         checkState();
         CheckMethodAdapter.checkDesc(desc, false);
-        return new CheckAnnotationAdapter(cv.visitAnnotation(desc, visible));
+        return new CheckAnnotationAdapter(super.visitAnnotation(desc, visible));
     }
 
+    @Override
     public void visitAttribute(final Attribute attr) {
         checkState();
         if (attr == null) {
             throw new IllegalArgumentException("Invalid attribute (must not be null)");
         }
-        cv.visitAttribute(attr);
+        super.visitAttribute(attr);
     }
 
+    @Override
     public void visitEnd() {
         checkState();
         end = true;
-        cv.visitEnd();
+        super.visitEnd();
     }
 
     // ------------------------------------------------------------------------
@@ -454,7 +577,7 @@ public class CheckClassAdapter extends ClassAdapter {
      * Checks that the given access flags do not contain invalid flags. This
      * method also checks that mutually incompatible flags are not set
      * simultaneously.
-     * 
+     *
      * @param access the access flags to be checked
      * @param possibleAccess the valid access flags.
      */

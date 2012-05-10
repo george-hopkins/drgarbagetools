@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,16 @@
  */
 package org.objectweb.asm.commons;
 
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 /**
- * A {@link ClassAdapter} that merges clinit methods into a single one.
- * 
+ * A {@link ClassVisitor} that merges clinit methods into a single one.
+ *
  * @author Eric Bruneton
  */
-public class StaticInitMerger extends ClassAdapter {
+public class StaticInitMerger extends ClassVisitor {
 
     private String name;
 
@@ -50,10 +49,19 @@ public class StaticInitMerger extends ClassAdapter {
     private int counter;
 
     public StaticInitMerger(final String prefix, final ClassVisitor cv) {
-        super(cv);
+        this(Opcodes.ASM4, prefix, cv);
+    }
+
+    protected StaticInitMerger(
+        final int api,
+        final String prefix,
+        final ClassVisitor cv)
+    {
+        super(api, cv);
         this.prefix = prefix;
     }
 
+    @Override
     public void visit(
         final int version,
         final int access,
@@ -66,6 +74,7 @@ public class StaticInitMerger extends ClassAdapter {
         this.name = name;
     }
 
+    @Override
     public MethodVisitor visitMethod(
         final int access,
         final String name,
@@ -89,6 +98,7 @@ public class StaticInitMerger extends ClassAdapter {
         return mv;
     }
 
+    @Override
     public void visitEnd() {
         if (clinit != null) {
             clinit.visitInsn(Opcodes.RETURN);

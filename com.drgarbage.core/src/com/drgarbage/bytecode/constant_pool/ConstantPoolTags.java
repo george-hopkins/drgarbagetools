@@ -28,5 +28,8 @@ public interface ConstantPoolTags {
     public static final byte CONSTANT_DOUBLE = 6;
     public static final byte CONSTANT_NAME_AND_TYPE = 12;
     public static final byte CONSTANT_UTF8 = 1;
+    public static final byte CONSTANT_METHOD_HANDLE = 15;
+    public static final byte CONSTANT_METHOD_TYPE = 16;
+    public static final byte CONSTANT_INVOKE_DYNAMIC = 18;
 
 }

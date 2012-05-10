@@ -29,8 +29,11 @@ import com.drgarbage.bytecode.constant_pool.ConstantFieldrefInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantFloatInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantIntegerInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantInterfaceMethodrefInfo;
+import com.drgarbage.bytecode.constant_pool.ConstantInvokeDynamicInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantLargeNumeric;
 import com.drgarbage.bytecode.constant_pool.ConstantLongInfo;
+import com.drgarbage.bytecode.constant_pool.ConstantMethodHandleInfo;
+import com.drgarbage.bytecode.constant_pool.ConstantMethodTypeInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantMethodrefInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantNameAndTypeInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantStringInfo;
@@ -141,6 +144,15 @@ public class ConstantPoolParser {
 					break;
 				case ByteCodeConstants.TAG_UTF8:
 					entry = new ConstantUtf8Info(result);
+					break;
+				case ByteCodeConstants.TAG_METHOD_HANDLE:
+					entry = new ConstantMethodHandleInfo(result);
+					break;
+				case ByteCodeConstants.TAG_METHOD_TYPE:
+					entry = new ConstantMethodTypeInfo(result);
+					break;
+				case ByteCodeConstants.TAG_INVOKE_DYNAMIC:
+					entry = new ConstantInvokeDynamicInfo(result);
 					break;
 				default:
 					throw new IllegalStateException(

@@ -1,6 +1,7 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2011 Google
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,18 +30,19 @@
  */
 package org.objectweb.asm.commons;
 
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+
 /**
- * A {@link org.objectweb.asm.MethodAdapter} to insert before, after and around
+ * A {@link org.objectweb.asm.MethodVisitor} to insert before, after and around
  * advices in methods and constructors. <p> The behavior for constructors is
  * like this: <ol>
  *
@@ -59,54 +61,63 @@ import java.util.Map;
  */
 public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
 {
+
     private static final Object THIS = new Object();
+
     private static final Object OTHER = new Object();
 
     protected int methodAccess;
+
     protected String methodDesc;
 
     private boolean constructor;
+
     private boolean superInitialized;
-    private List stackFrame;
-    private Map branches;
+
+    private List<Object> stackFrame;
+
+    private Map<Label, List<Object>> branches;
 
     /**
      * Creates a new {@link AdviceAdapter}.
      *
+     * @param api the ASM API version implemented by this visitor. Must be one
+     *        of {@link Opcodes#ASM4}.
      * @param mv the method visitor to which this adapter delegates calls.
      * @param access the method's access flags (see {@link Opcodes}).
      * @param name the method's name.
      * @param desc the method's descriptor (see {@link Type Type}).
      */
     protected AdviceAdapter(
+        final int api,
         final MethodVisitor mv,
         final int access,
         final String name,
         final String desc)
     {
-        super(mv, access, name, desc);
+        super(api, mv, access, name, desc);
         methodAccess = access;
         methodDesc = desc;
-
         constructor = "<init>".equals(name);
     }
 
+    @Override
     public void visitCode() {
         mv.visitCode();
         if (constructor) {
-            stackFrame = new ArrayList();
-            branches = new HashMap();
+            stackFrame = new ArrayList<Object>();
+            branches = new HashMap<Label, List<Object>>();
         } else {
             superInitialized = true;
             onMethodEnter();
         }
     }
 
+    @Override
     public void visitLabel(final Label label) {
         mv.visitLabel(label);
-
         if (constructor && branches != null) {
-            List frame = (List) branches.get(label);
+            List<Object> frame = branches.get(label);
             if (frame != null) {
                 stackFrame = frame;
                 branches.remove(label);
@@ -114,6 +125,7 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         }
     }
 
+    @Override
     public void visitInsn(final int opcode) {
         if (constructor) {
             int s;
@@ -311,9 +323,9 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         mv.visitInsn(opcode);
     }
 
+    @Override
     public void visitVarInsn(final int opcode, final int var) {
         super.visitVarInsn(opcode, var);
-
         if (constructor) {
             switch (opcode) {
                 case ILOAD:
@@ -342,6 +354,7 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         }
     }
 
+    @Override
     public void visitFieldInsn(
         final int opcode,
         final String owner,
@@ -349,7 +362,6 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         final String desc)
     {
         mv.visitFieldInsn(opcode, owner, name, desc);
-
         if (constructor) {
             char c = desc.charAt(0);
             boolean longOrDouble = c == 'J' || c == 'D';
@@ -382,17 +394,17 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         }
     }
 
+    @Override
     public void visitIntInsn(final int opcode, final int operand) {
         mv.visitIntInsn(opcode, operand);
-
-        if (constructor && opcode!=NEWARRAY) {
+        if (constructor && opcode != NEWARRAY) {
             pushValue(OTHER);
         }
     }
 
+    @Override
     public void visitLdcInsn(final Object cst) {
         mv.visitLdcInsn(cst);
-
         if (constructor) {
             pushValue(OTHER);
             if (cst instanceof Double || cst instanceof Long) {
@@ -401,9 +413,9 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         }
     }
 
+    @Override
     public void visitMultiANewArrayInsn(final String desc, final int dims) {
         mv.visitMultiANewArrayInsn(desc, dims);
-
         if (constructor) {
             for (int i = 0; i < dims; i++) {
                 popValue();
@@ -412,15 +424,16 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         }
     }
 
+    @Override
     public void visitTypeInsn(final int opcode, final String type) {
         mv.visitTypeInsn(opcode, type);
-
         // ANEWARRAY, CHECKCAST or INSTANCEOF don't change stack
         if (constructor && opcode == NEW) {
             pushValue(OTHER);
         }
     }
 
+    @Override
     public void visitMethodInsn(
         final int opcode,
         final String owner,
@@ -428,7 +441,6 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         final String desc)
     {
         mv.visitMethodInsn(opcode, owner, name, desc);
-
         if (constructor) {
             Type[] types = Type.getArgumentTypes(desc);
             for (int i = 0; i < types.length; i++) {
@@ -468,9 +480,36 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         }
     }
 
+    @Override
+    public void visitInvokeDynamicInsn(
+        String name,
+        String desc,
+        Handle bsm,
+        Object... bsmArgs)
+    {
+        mv.visitInvokeDynamicInsn(name, desc, bsm, bsmArgs);
+        if (constructor) {
+            Type[] types = Type.getArgumentTypes(desc);
+            for (int i = 0; i < types.length; i++) {
+                popValue();
+                if (types[i].getSize() == 2) {
+                    popValue();
+                }
+            }
+
+            Type returnType = Type.getReturnType(desc);
+            if (returnType != Type.VOID_TYPE) {
+                pushValue(OTHER);
+                if (returnType.getSize() == 2) {
+                    pushValue(OTHER);
+                }
+            }
+        }
+    }
+
+    @Override
     public void visitJumpInsn(final int opcode, final Label label) {
         mv.visitJumpInsn(opcode, label);
-
         if (constructor) {
             switch (opcode) {
                 case IFEQ:
@@ -504,30 +543,45 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         }
     }
 
+    @Override
     public void visitLookupSwitchInsn(
         final Label dflt,
         final int[] keys,
         final Label[] labels)
     {
         mv.visitLookupSwitchInsn(dflt, keys, labels);
-
         if (constructor) {
             popValue();
             addBranches(dflt, labels);
         }
     }
 
+    @Override
     public void visitTableSwitchInsn(
         final int min,
         final int max,
         final Label dflt,
-        final Label[] labels)
+        final Label... labels)
     {
         mv.visitTableSwitchInsn(min, max, dflt, labels);
-
         if (constructor) {
             popValue();
             addBranches(dflt, labels);
+        }
+    }
+
+    @Override
+    public void visitTryCatchBlock(
+        Label start,
+        Label end,
+        Label handler,
+        String type)
+    {
+        super.visitTryCatchBlock(start, end, handler, type);
+        if (constructor && !branches.containsKey(handler)) {
+            List<Object> stackFrame = new ArrayList<Object>();
+            stackFrame.add(OTHER);
+            branches.put(handler, stackFrame);
         }
     }
 
@@ -542,7 +596,7 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
         if (branches.containsKey(label)) {
             return;
         }
-        branches.put(label, new ArrayList(stackFrame));
+        branches.put(label, new ArrayList<Object>(stackFrame));
     }
 
     private Object popValue() {
@@ -591,7 +645,7 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
      *   }
      *
      *   // an actual call back method
-     *   public static void onExit(int opcode, Object param) {
+     *   public static void onExit(Object param, int opcode) {
      *     ...
      * </pre>
      *
@@ -608,5 +662,4 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes
     }
 
     // TODO onException, onMethodCall
-
 }

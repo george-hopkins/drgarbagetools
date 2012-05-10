@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,18 +34,28 @@ import java.util.List;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InvokeDynamicInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
 /**
  * An extended {@link BasicInterpreter} that checks that bytecode instructions
  * are correctly used.
- * 
+ *
  * @author Eric Bruneton
  * @author Bing Ran
  */
 public class BasicVerifier extends BasicInterpreter {
 
-    public Value copyOperation(final AbstractInsnNode insn, final Value value)
+    public BasicVerifier() {
+        super(ASM4);
+    }
+
+    protected BasicVerifier(final int api) {
+        super(api);
+    }
+
+    @Override
+    public BasicValue copyOperation(final AbstractInsnNode insn, final BasicValue value)
             throws AnalyzerException
     {
         Value expected;
@@ -67,17 +77,19 @@ public class BasicVerifier extends BasicInterpreter {
                 expected = BasicValue.DOUBLE_VALUE;
                 break;
             case ALOAD:
-                if (!((BasicValue) value).isReference()) {
-                    throw new AnalyzerException(null,
+                if (!value.isReference()) {
+                    throw new AnalyzerException(insn,
+                            null,
                             "an object reference",
                             value);
                 }
                 return value;
             case ASTORE:
-                if (!((BasicValue) value).isReference()
-                        && value != BasicValue.RETURNADDRESS_VALUE)
+                if (!value.isReference()
+                        && !BasicValue.RETURNADDRESS_VALUE.equals(value))
                 {
-                    throw new AnalyzerException(null,
+                    throw new AnalyzerException(insn,
+                            null,
                             "an object reference or a return address",
                             value);
                 }
@@ -85,18 +97,17 @@ public class BasicVerifier extends BasicInterpreter {
             default:
                 return value;
         }
-        // type is necessarily a primitive type here,
-        // so value must be == to expected value
-        if (value != expected) {
-            throw new AnalyzerException(null, expected, value);
+        if (!expected.equals(value)) {
+            throw new AnalyzerException(insn, null, expected, value);
         }
         return value;
     }
 
-    public Value unaryOperation(final AbstractInsnNode insn, final Value value)
+    @Override
+    public BasicValue unaryOperation(final AbstractInsnNode insn, final BasicValue value)
             throws AnalyzerException
     {
-        Value expected;
+        BasicValue expected;
         switch (insn.getOpcode()) {
             case INEG:
             case IINC:
@@ -144,15 +155,17 @@ public class BasicVerifier extends BasicInterpreter {
                 expected = newValue(Type.getObjectType(((FieldInsnNode) insn).owner));
                 break;
             case CHECKCAST:
-                if (!((BasicValue) value).isReference()) {
-                    throw new AnalyzerException(null,
+                if (!value.isReference()) {
+                    throw new AnalyzerException(insn,
+                            null,
                             "an object reference",
                             value);
                 }
                 return super.unaryOperation(insn, value);
             case ARRAYLENGTH:
                 if (!isArrayValue(value)) {
-                    throw new AnalyzerException(null,
+                    throw new AnalyzerException(insn,
+                            null,
                             "an array reference",
                             value);
                 }
@@ -164,8 +177,9 @@ public class BasicVerifier extends BasicInterpreter {
             case MONITOREXIT:
             case IFNULL:
             case IFNONNULL:
-                if (!((BasicValue) value).isReference()) {
-                    throw new AnalyzerException(null,
+                if (!value.isReference()) {
+                    throw new AnalyzerException(insn,
+                            null,
                             "an object reference",
                             value);
                 }
@@ -177,18 +191,19 @@ public class BasicVerifier extends BasicInterpreter {
                 throw new Error("Internal error.");
         }
         if (!isSubTypeOf(value, expected)) {
-            throw new AnalyzerException(null, expected, value);
+            throw new AnalyzerException(insn, null, expected, value);
         }
         return super.unaryOperation(insn, value);
     }
 
-    public Value binaryOperation(
+    @Override
+    public BasicValue binaryOperation(
         final AbstractInsnNode insn,
-        final Value value1,
-        final Value value2) throws AnalyzerException
+        final BasicValue value1,
+        final BasicValue value2) throws AnalyzerException
     {
-        Value expected1;
-        Value expected2;
+        BasicValue expected1;
+        BasicValue expected2;
         switch (insn.getOpcode()) {
             case IALOAD:
                 expected1 = newValue(Type.getType("[I"));
@@ -298,9 +313,9 @@ public class BasicVerifier extends BasicInterpreter {
                 throw new Error("Internal error.");
         }
         if (!isSubTypeOf(value1, expected1)) {
-            throw new AnalyzerException("First argument", expected1, value1);
+            throw new AnalyzerException(insn, "First argument", expected1, value1);
         } else if (!isSubTypeOf(value2, expected2)) {
-            throw new AnalyzerException("Second argument", expected2, value2);
+            throw new AnalyzerException(insn, "Second argument", expected2, value2);
         }
         if (insn.getOpcode() == AALOAD) {
             return getElementValue(value1);
@@ -309,14 +324,15 @@ public class BasicVerifier extends BasicInterpreter {
         }
     }
 
-    public Value ternaryOperation(
+    @Override
+    public BasicValue ternaryOperation(
         final AbstractInsnNode insn,
-        final Value value1,
-        final Value value2,
-        final Value value3) throws AnalyzerException
+        final BasicValue value1,
+        final BasicValue value2,
+        final BasicValue value3) throws AnalyzerException
     {
-        Value expected1;
-        Value expected3;
+        BasicValue expected1;
+        BasicValue expected3;
         switch (insn.getOpcode()) {
             case IASTORE:
                 expected1 = newValue(Type.getType("[I"));
@@ -358,47 +374,53 @@ public class BasicVerifier extends BasicInterpreter {
                 throw new Error("Internal error.");
         }
         if (!isSubTypeOf(value1, expected1)) {
-            throw new AnalyzerException("First argument", "a " + expected1
+            throw new AnalyzerException(insn, "First argument", "a " + expected1
                     + " array reference", value1);
-        } else if (value2 != BasicValue.INT_VALUE) {
-            throw new AnalyzerException("Second argument",
+        } else if (!BasicValue.INT_VALUE.equals(value2)) {
+            throw new AnalyzerException(insn, "Second argument",
                     BasicValue.INT_VALUE,
                     value2);
         } else if (!isSubTypeOf(value3, expected3)) {
-            throw new AnalyzerException("Third argument", expected3, value3);
+            throw new AnalyzerException(insn, "Third argument", expected3, value3);
         }
         return null;
     }
 
-    public Value naryOperation(final AbstractInsnNode insn, final List values)
+    @Override
+    public BasicValue naryOperation(final AbstractInsnNode insn, final List<? extends BasicValue> values)
             throws AnalyzerException
     {
         int opcode = insn.getOpcode();
         if (opcode == MULTIANEWARRAY) {
             for (int i = 0; i < values.size(); ++i) {
-                if (values.get(i) != BasicValue.INT_VALUE) {
-                    throw new AnalyzerException(null,
+                if (!BasicValue.INT_VALUE.equals(values.get(i))) {
+                    throw new AnalyzerException(insn,
+                            null,
                             BasicValue.INT_VALUE,
-                            (Value) values.get(i));
+                            values.get(i));
                 }
             }
         } else {
             int i = 0;
             int j = 0;
-            if (opcode != INVOKESTATIC) {
+            if (opcode != INVOKESTATIC && opcode != INVOKEDYNAMIC) {
                 Type owner = Type.getObjectType(((MethodInsnNode) insn).owner);
-                if (!isSubTypeOf((Value) values.get(i++), newValue(owner))) {
-                    throw new AnalyzerException("Method owner",
+                if (!isSubTypeOf(values.get(i++), newValue(owner))) {
+                    throw new AnalyzerException(insn, "Method owner",
                             newValue(owner),
-                            (Value) values.get(0));
+                            values.get(0));
                 }
             }
-            Type[] args = Type.getArgumentTypes(((MethodInsnNode) insn).desc);
+            String desc = (opcode == INVOKEDYNAMIC)?
+                    ((InvokeDynamicInsnNode) insn).desc:
+                        ((MethodInsnNode) insn).desc;
+            Type[] args = Type.getArgumentTypes(desc);
             while (i < values.size()) {
-                Value expected = newValue(args[j++]);
-                Value encountered = (Value) values.get(i++);
+                BasicValue expected = newValue(args[j++]);
+                BasicValue encountered = values.get(i++);
                 if (!isSubTypeOf(encountered, expected)) {
-                    throw new AnalyzerException("Argument " + j,
+                    throw new AnalyzerException(insn,
+                            "Argument " + j,
                             expected,
                             encountered);
                 }
@@ -407,17 +429,31 @@ public class BasicVerifier extends BasicInterpreter {
         return super.naryOperation(insn, values);
     }
 
-    protected boolean isArrayValue(final Value value) {
-        return ((BasicValue) value).isReference();
+    @Override
+    public void returnOperation(
+        final AbstractInsnNode insn,
+        final BasicValue value,
+        final BasicValue expected) throws AnalyzerException
+    {
+        if (!isSubTypeOf(value, expected)) {
+            throw new AnalyzerException(insn,
+                    "Incompatible return type",
+                    expected,
+                    value);
+        }
     }
 
-    protected Value getElementValue(final Value objectArrayValue)
+    protected boolean isArrayValue(final BasicValue value) {
+        return value.isReference();
+    }
+
+    protected BasicValue getElementValue(final BasicValue objectArrayValue)
             throws AnalyzerException
     {
         return BasicValue.REFERENCE_VALUE;
     }
 
-    protected boolean isSubTypeOf(final Value value, final Value expected) {
-        return value == expected;
+    protected boolean isSubTypeOf(final BasicValue value, final BasicValue expected) {
+        return value.equals(expected);
     }
 }

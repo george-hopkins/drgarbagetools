@@ -74,7 +74,7 @@ public class OutlineElementType extends OutlineElement implements IType {
 	 * 
 	 */
 	public OutlineElementType() {
-		super();
+		super(com.drgarbage.asm.Opcodes.ASM4);
 		setElementType(IJavaElement.TYPE);
 	}
 
@@ -221,7 +221,7 @@ public class OutlineElementType extends OutlineElement implements IType {
 	public void setFullyQualifiedName(String fullyQualifiedName) {
 		this.fullyQualifiedName = fullyQualifiedName;
 		
-		this.packageFragment = new PackageFragment();
+		this.packageFragment = new PackageFragment(com.drgarbage.asm.Opcodes.ASM4);
 		this.packageFragment.setElementName(BytecodeUtils.getPackage(fullyQualifiedName));
 	}
 

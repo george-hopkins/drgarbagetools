@@ -178,7 +178,7 @@
   </target>
 
   <target name="compile-debug" depends="init,compile-init,compile-config">
-  	<javac destdir="${out.build}/tmp" debug="on" source="1.3" target="1.2">
+  	<javac destdir="${out.build}/tmp" debug="on" source="5" target="1.5">
       <classpath>
         <pathelement location="${out.build}/tmp"/>
       </classpath>

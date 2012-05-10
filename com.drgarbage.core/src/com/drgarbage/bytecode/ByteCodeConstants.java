@@ -264,7 +264,7 @@ public class ByteCodeConstants implements Opcodes {
         OPCODE_MNEMONICS[OPCODE_INVOKESPECIAL] = "invokespecial";
         OPCODE_MNEMONICS[OPCODE_INVOKESTATIC] = "invokestatic";
         OPCODE_MNEMONICS[OPCODE_INVOKEINTERFACE] = "invokeinterface";
-        OPCODE_MNEMONICS[OPCODE_XXXUNUSEDXXX] = "xxxunusedxxx";
+        OPCODE_MNEMONICS[OPCODE_INVOKEDYNAMIC] = "invokedynamic";
         OPCODE_MNEMONICS[OPCODE_NEW] = "new";
         OPCODE_MNEMONICS[OPCODE_NEWARRAY] = "newarray";
         OPCODE_MNEMONICS[OPCODE_ANEWARRAY] = "anewarray";
@@ -285,7 +285,7 @@ public class ByteCodeConstants implements Opcodes {
         OPCODE_MNEMONICS[OPCODE_IMPDEP2] = "impdep2";
         
         
-        CONSTANT_POOL_TAG_MNEMONICS = new String[13];
+        CONSTANT_POOL_TAG_MNEMONICS = new String[19];
         CONSTANT_POOL_TAG_MNEMONICS[ConstantPoolTags.CONSTANT_CLASS] = "CONSTANT_Class";
         CONSTANT_POOL_TAG_MNEMONICS[ConstantPoolTags.CONSTANT_FIELDREF] = "CONSTANT_Fieldref";
         CONSTANT_POOL_TAG_MNEMONICS[ConstantPoolTags.CONSTANT_METHODREF] = "CONSTANT_Methodref";
@@ -297,6 +297,9 @@ public class ByteCodeConstants implements Opcodes {
         CONSTANT_POOL_TAG_MNEMONICS[ConstantPoolTags.CONSTANT_DOUBLE] = "CONSTANT_Double";
         CONSTANT_POOL_TAG_MNEMONICS[ConstantPoolTags.CONSTANT_NAME_AND_TYPE] = "CONSTANT_NameAndType";
         CONSTANT_POOL_TAG_MNEMONICS[ConstantPoolTags.CONSTANT_UTF8] = "CONSTANT_Utf8";
+        CONSTANT_POOL_TAG_MNEMONICS[ConstantPoolTags.CONSTANT_METHOD_HANDLE] = "CONSTANT_MethodHandle";
+        CONSTANT_POOL_TAG_MNEMONICS[ConstantPoolTags.CONSTANT_METHOD_TYPE] = "CONSTANT_MethodType";
+        CONSTANT_POOL_TAG_MNEMONICS[ConstantPoolTags.CONSTANT_INVOKE_DYNAMIC] = "CONSTANT_InvokeDynamic";
 
     }
     
@@ -320,6 +323,9 @@ public class ByteCodeConstants implements Opcodes {
 	public static final byte TAG_DOUBLE = 6;
 	public static final byte TAG_NAME_AND_TYPE = 12;
 	public static final byte TAG_UTF8 = 1;
+	public static final byte TAG_METHOD_HANDLE = 15;
+	public static final byte TAG_METHOD_TYPE = 16;
+	public static final byte TAG_INVOKE_DYNAMIC = 18;
 	public static final String COVERS_BYTES_X_TO_Y = "covers bytes {0} to {1}";
 	public static final String INNER_CLASS = "inner class";
 	public static final String LINE_NUMBER_TABLE = "LineNumberTable";
@@ -366,6 +372,10 @@ public class ByteCodeConstants implements Opcodes {
 	public static final String string_index = "string_index";
 	public static final String bytes = "bytes";
 	public static final char L_LINE = 'L';
+	public static final String METHOD_HANDLE_REF_KIND = "reference_kind";
+	public static final String METHOD_HANDLE_INDEX = "reference_index";
+	public static final String INVOKE_DYNAMIC_BOOTSTRAP_METHOD_ATTR_INDEX = "bootstrap_method_attr_index";
+	public static final String INVOKE_DYNAMIC_NAME_AND_TYPE_INDEX = "name_and_type_index";
 
 	public static enum Align {LEFT, CENTER, RIGHT};  
     

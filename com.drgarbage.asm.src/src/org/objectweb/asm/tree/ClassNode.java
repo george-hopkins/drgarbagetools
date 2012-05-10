@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,21 +29,23 @@
  */
 package org.objectweb.asm.tree;
 
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.FieldVisitor;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * A node that represents a class.
- * 
+ *
  * @author Eric Bruneton
  */
-public class ClassNode extends MemberNode implements ClassVisitor {
+public class ClassNode extends ClassVisitor {
 
     /**
      * The class version.
@@ -80,7 +82,7 @@ public class ClassNode extends MemberNode implements ClassVisitor {
      * {@link org.objectweb.asm.Type#getInternalName() getInternalName}). This
      * list is a list of {@link String} objects.
      */
-    public List interfaces;
+    public List<String> interfaces;
 
     /**
      * The name of the source file from which this class was compiled. May be
@@ -113,43 +115,83 @@ public class ClassNode extends MemberNode implements ClassVisitor {
     public String outerMethodDesc;
 
     /**
+     * The runtime visible annotations of this class. This list is a list of
+     * {@link AnnotationNode} objects. May be <tt>null</tt>.
+     *
+     * @associates org.objectweb.asm.tree.AnnotationNode
+     * @label visible
+     */
+    public List<AnnotationNode> visibleAnnotations;
+
+    /**
+     * The runtime invisible annotations of this class. This list is a list of
+     * {@link AnnotationNode} objects. May be <tt>null</tt>.
+     *
+     * @associates org.objectweb.asm.tree.AnnotationNode
+     * @label invisible
+     */
+    public List<AnnotationNode> invisibleAnnotations;
+
+    /**
+     * The non standard attributes of this class. This list is a list of
+     * {@link Attribute} objects. May be <tt>null</tt>.
+     *
+     * @associates org.objectweb.asm.Attribute
+     */
+    public List<Attribute> attrs;
+
+    /**
      * Informations about the inner classes of this class. This list is a list
      * of {@link InnerClassNode} objects.
-     * 
+     *
      * @associates org.objectweb.asm.tree.InnerClassNode
      */
-    public List innerClasses;
+    public List<InnerClassNode> innerClasses;
 
     /**
      * The fields of this class. This list is a list of {@link FieldNode}
      * objects.
-     * 
+     *
      * @associates org.objectweb.asm.tree.FieldNode
      */
-    public List fields;
+    public List<FieldNode> fields;
 
     /**
      * The methods of this class. This list is a list of {@link MethodNode}
      * objects.
-     * 
+     *
      * @associates org.objectweb.asm.tree.MethodNode
      */
-    public List methods;
+    public List<MethodNode> methods;
+
+    /**
+     * Constructs a new {@link ClassNode}. <i>Subclasses must not use this
+     * constructor</i>. Instead, they must use the {@link #ClassNode(int)}
+     * version.
+     */
+    public ClassNode() {
+        this(Opcodes.ASM4);
+    }
 
     /**
      * Constructs a new {@link ClassNode}.
+     *
+     * @param api the ASM API version implemented by this visitor. Must be one
+     *        of {@link Opcodes#ASM4}.
      */
-    public ClassNode() {
-        this.interfaces = new ArrayList();
-        this.innerClasses = new ArrayList();
-        this.fields = new ArrayList();
-        this.methods = new ArrayList();
+    public ClassNode(final int api) {
+        super(api);
+        this.interfaces = new ArrayList<String>();
+        this.innerClasses = new ArrayList<InnerClassNode>();
+        this.fields = new ArrayList<FieldNode>();
+        this.methods = new ArrayList<MethodNode>();
     }
 
     // ------------------------------------------------------------------------
-    // Implementation of the ClassVisitor interface
+    // Implementation of the ClassVisitor abstract class
     // ------------------------------------------------------------------------
 
+    @Override
     public void visit(
         final int version,
         final int access,
@@ -168,11 +210,13 @@ public class ClassNode extends MemberNode implements ClassVisitor {
         }
     }
 
+    @Override
     public void visitSource(final String file, final String debug) {
         sourceFile = file;
         sourceDebug = debug;
     }
 
+    @Override
     public void visitOuterClass(
         final String owner,
         final String name,
@@ -183,6 +227,35 @@ public class ClassNode extends MemberNode implements ClassVisitor {
         outerMethodDesc = desc;
     }
 
+    @Override
+    public AnnotationVisitor visitAnnotation(
+        final String desc,
+        final boolean visible)
+    {
+        AnnotationNode an = new AnnotationNode(desc);
+        if (visible) {
+            if (visibleAnnotations == null) {
+                visibleAnnotations = new ArrayList<AnnotationNode>(1);
+            }
+            visibleAnnotations.add(an);
+        } else {
+            if (invisibleAnnotations == null) {
+                invisibleAnnotations = new ArrayList<AnnotationNode>(1);
+            }
+            invisibleAnnotations.add(an);
+        }
+        return an;
+    }
+
+    @Override
+    public void visitAttribute(final Attribute attr) {
+        if (attrs == null) {
+            attrs = new ArrayList<Attribute>(1);
+        }
+        attrs.add(attr);
+    }
+
+    @Override
     public void visitInnerClass(
         final String name,
         final String outerName,
@@ -196,6 +269,7 @@ public class ClassNode extends MemberNode implements ClassVisitor {
         innerClasses.add(icn);
     }
 
+    @Override
     public FieldVisitor visitField(
         final int access,
         final String name,
@@ -208,6 +282,7 @@ public class ClassNode extends MemberNode implements ClassVisitor {
         return fn;
     }
 
+    @Override
     public MethodVisitor visitMethod(
         final int access,
         final String name,
@@ -224,13 +299,29 @@ public class ClassNode extends MemberNode implements ClassVisitor {
         return mn;
     }
 
+    @Override
+    public void visitEnd() {
+    }
+
     // ------------------------------------------------------------------------
     // Accept method
     // ------------------------------------------------------------------------
 
     /**
+     * Checks that this class node is compatible with the given ASM API version.
+     * This methods checks that this node, and all its nodes recursively, do not
+     * contain elements that were introduced in more recent versions of the ASM
+     * API than the given version.
+     *
+     * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}.
+     */
+    public void check(final int api) {
+        // nothing to do
+    }
+
+    /**
      * Makes the given class visitor visit this class.
-     * 
+     *
      * @param cv a class visitor.
      */
     public void accept(final ClassVisitor cv) {
@@ -250,29 +341,29 @@ public class ClassNode extends MemberNode implements ClassVisitor {
         int i, n;
         n = visibleAnnotations == null ? 0 : visibleAnnotations.size();
         for (i = 0; i < n; ++i) {
-            AnnotationNode an = (AnnotationNode) visibleAnnotations.get(i);
+            AnnotationNode an = visibleAnnotations.get(i);
             an.accept(cv.visitAnnotation(an.desc, true));
         }
         n = invisibleAnnotations == null ? 0 : invisibleAnnotations.size();
         for (i = 0; i < n; ++i) {
-            AnnotationNode an = (AnnotationNode) invisibleAnnotations.get(i);
+            AnnotationNode an = invisibleAnnotations.get(i);
             an.accept(cv.visitAnnotation(an.desc, false));
         }
         n = attrs == null ? 0 : attrs.size();
         for (i = 0; i < n; ++i) {
-            cv.visitAttribute((Attribute) attrs.get(i));
+            cv.visitAttribute(attrs.get(i));
         }
         // visits inner classes
         for (i = 0; i < innerClasses.size(); ++i) {
-            ((InnerClassNode) innerClasses.get(i)).accept(cv);
+            innerClasses.get(i).accept(cv);
         }
         // visits fields
         for (i = 0; i < fields.size(); ++i) {
-            ((FieldNode) fields.get(i)).accept(cv);
+            fields.get(i).accept(cv);
         }
         // visits methods
         for (i = 0; i < methods.size(); ++i) {
-            ((MethodNode) methods.get(i)).accept(cv);
+            methods.get(i).accept(cv);
         }
         // visits end
         cv.visitEnd();

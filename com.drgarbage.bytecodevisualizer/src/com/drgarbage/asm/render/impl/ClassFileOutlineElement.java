@@ -27,7 +27,7 @@ import com.drgarbage.asm.render.intf.IClassFileDocument;
 import com.drgarbage.bytecode.ByteCodeConstants;
 import com.drgarbage.bytecode.BytecodeUtils;
 
-public class ClassFileOutlineElement extends OutlineElement implements ClassVisitor {
+public class ClassFileOutlineElement extends OutlineElement {
 	private IClassFileDocument classFileDocument;
 	private int fieldCount = 0;
 	private int methodCount = 0;
@@ -40,7 +40,7 @@ public class ClassFileOutlineElement extends OutlineElement implements ClassVisi
 	 * 
 	 */
 	public ClassFileOutlineElement() {
-		super();
+		super(com.drgarbage.asm.Opcodes.ASM4);
 		typeElement = new OutlineElementType();
 	}
 	
@@ -72,7 +72,7 @@ public class ClassFileOutlineElement extends OutlineElement implements ClassVisi
 	
 		if (i >= 0) {
 			/* create outline object*/
-			OutlineElement packageElement = new OutlineElement();
+			OutlineElement packageElement = new OutlineElement(com.drgarbage.asm.Opcodes.ASM4);
 			packageElement.setElementType(IJavaElement.PACKAGE_DECLARATION);
 			packageElement.setElementName(name.substring(0, i));
 			

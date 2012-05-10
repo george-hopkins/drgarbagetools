@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,25 +32,25 @@ package org.objectweb.asm.optimizer;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * A {@link FieldVisitor} that collects the {@link Constant}s of the fields it
  * visits.
- * 
+ *
  * @author Eric Bruneton
  */
-public class FieldConstantsCollector implements FieldVisitor {
-
-    private final FieldVisitor fv;
+public class FieldConstantsCollector extends FieldVisitor {
 
     private final ConstantPool cp;
 
     public FieldConstantsCollector(final FieldVisitor fv, final ConstantPool cp)
     {
-        this.fv = fv;
+        super(Opcodes.ASM4, fv);
         this.cp = cp;
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation(
         final String desc,
         final boolean visible)
@@ -65,11 +65,13 @@ public class FieldConstantsCollector implements FieldVisitor {
                 visible), cp);
     }
 
+    @Override
     public void visitAttribute(final Attribute attr) {
         // can do nothing
         fv.visitAttribute(attr);
     }
 
+    @Override
     public void visitEnd() {
         fv.visitEnd();
     }

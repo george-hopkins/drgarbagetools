@@ -1,6 +1,6 @@
 /***
  * ASM XML Adapter
- * Copyright (c) 2004, Eugene Kuleshov
+ * Copyright (c) 2004-2011, Eugene Kuleshov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,33 +31,38 @@ package org.objectweb.asm.xml;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Opcodes;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 
 /**
  * SAXFieldAdapter
- * 
+ *
  * @author Eugene Kuleshov
  */
-public class SAXFieldAdapter extends SAXAdapter implements FieldVisitor {
+public final class SAXFieldAdapter extends FieldVisitor {
 
-    public SAXFieldAdapter(final ContentHandler h, final Attributes att) {
-        super(h);
-        addStart("field", att);
+    SAXAdapter sa;
+
+    public SAXFieldAdapter(final SAXAdapter sa, final Attributes att) {
+        super(Opcodes.ASM4);
+        this.sa = sa;
+        sa.addStart("field", att);
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation(
         final String desc,
         final boolean visible)
     {
-        return new SAXAnnotationAdapter(getContentHandler(),
+        return new SAXAnnotationAdapter(sa,
                 "annotation",
                 visible ? 1 : -1,
                 null,
                 desc);
     }
 
+    @Override
     public void visitEnd() {
-        addEnd("field");
+        sa.addEnd("field");
     }
 }

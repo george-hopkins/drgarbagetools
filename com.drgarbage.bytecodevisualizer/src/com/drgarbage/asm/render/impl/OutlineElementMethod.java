@@ -85,7 +85,7 @@ public class OutlineElementMethod extends OutlineElement implements IMethod {
 	 * @param parent
 	 */
 	public OutlineElementMethod(IType parent, IClassFileDocument document, int methodIndex) {
-		super();
+		super(com.drgarbage.asm.Opcodes.ASM4);
 		this.classFileDocument = document;
 		this.methodIndex = methodIndex;
 		setElementType(IJavaElement.METHOD);

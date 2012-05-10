@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,11 +35,11 @@ import org.objectweb.asm.signature.SignatureVisitor;
 /**
  * A {@link SignatureVisitor} that prints a disassembled view of the signature
  * it visits.
- * 
+ *
  * @author Eugene Kuleshov
  * @author Eric Bruneton
  */
-public class TraceSignatureVisitor implements SignatureVisitor {
+public final class TraceSignatureVisitor extends SignatureVisitor {
 
     private final StringBuffer declaration;
 
@@ -75,26 +75,31 @@ public class TraceSignatureVisitor implements SignatureVisitor {
     private String separator = "";
 
     public TraceSignatureVisitor(final int access) {
+        super(Opcodes.ASM4);
         isInterface = (access & Opcodes.ACC_INTERFACE) != 0;
         this.declaration = new StringBuffer();
     }
 
     private TraceSignatureVisitor(final StringBuffer buf) {
+        super(Opcodes.ASM4);
         this.declaration = buf;
     }
 
+    @Override
     public void visitFormalTypeParameter(final String name) {
         declaration.append(seenFormalParameter ? ", " : "<").append(name);
         seenFormalParameter = true;
         seenInterfaceBound = false;
     }
 
+    @Override
     public SignatureVisitor visitClassBound() {
         separator = " extends ";
         startType();
         return this;
     }
 
+    @Override
     public SignatureVisitor visitInterfaceBound() {
         separator = seenInterfaceBound ? ", " : " extends ";
         seenInterfaceBound = true;
@@ -102,6 +107,7 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         return this;
     }
 
+    @Override
     public SignatureVisitor visitSuperclass() {
         endFormals();
         separator = " extends ";
@@ -109,6 +115,7 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         return this;
     }
 
+    @Override
     public SignatureVisitor visitInterface() {
         separator = seenInterface ? ", " : isInterface
                 ? " extends "
@@ -118,6 +125,7 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         return this;
     }
 
+    @Override
     public SignatureVisitor visitParameterType() {
         endFormals();
         if (seenParameter) {
@@ -130,6 +138,7 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         return this;
     }
 
+    @Override
     public SignatureVisitor visitReturnType() {
         endFormals();
         if (seenParameter) {
@@ -142,6 +151,7 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         return new TraceSignatureVisitor(returnType);
     }
 
+    @Override
     public SignatureVisitor visitExceptionType() {
         if (exceptions == null) {
             exceptions = new StringBuffer();
@@ -152,6 +162,7 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         return new TraceSignatureVisitor(exceptions);
     }
 
+    @Override
     public void visitBaseType(final char descriptor) {
         switch (descriptor) {
             case 'V':
@@ -186,17 +197,20 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         endType();
     }
 
+    @Override
     public void visitTypeVariable(final String name) {
         declaration.append(name);
         endType();
     }
 
+    @Override
     public SignatureVisitor visitArrayType() {
         startType();
         arrayStack |= 1;
         return this;
     }
 
+    @Override
     public void visitClassType(final String name) {
         if ("java/lang/Object".equals(name)) {
             // Map<java.lang.Object,java.util.List>
@@ -215,6 +229,7 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         argumentStack *= 2;
     }
 
+    @Override
     public void visitInnerClassType(final String name) {
         if (argumentStack % 2 != 0) {
             declaration.append('>');
@@ -226,6 +241,7 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         argumentStack *= 2;
     }
 
+    @Override
     public void visitTypeArgument() {
         if (argumentStack % 2 == 0) {
             ++argumentStack;
@@ -236,6 +252,7 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         declaration.append('?');
     }
 
+    @Override
     public SignatureVisitor visitTypeArgument(final char tag) {
         if (argumentStack % 2 == 0) {
             ++argumentStack;
@@ -254,6 +271,7 @@ public class TraceSignatureVisitor implements SignatureVisitor {
         return this;
     }
 
+    @Override
     public void visitEnd() {
         if (argumentStack % 2 != 0) {
             declaration.append('>');

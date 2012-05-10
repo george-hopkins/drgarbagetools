@@ -1,6 +1,6 @@
 /**
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,23 +31,23 @@ package org.objectweb.asm.util;
 
 import java.util.Map;
 
+import org.objectweb.asm.Label;
+
 /**
- * An attribute that can print the ASM code to create an equivalent attribute.
- * 
- * Implementation should print the ASM code that generates attribute data
- * structures for current attribute state.
- * 
+ * An {@link org.objectweb.asm.Attribute Attribute} that can print the ASM code
+ * to create an equivalent attribute.
+ *
  * @author Eugene Kuleshov
  */
 public interface ASMifiable {
 
     /**
      * Prints the ASM code to create an attribute equal to this attribute.
-     * 
-     * @param buf A buffer used for printing Java code.
+     *
+     * @param buf a buffer used for printing Java code.
      * @param varName name of the variable in a printed code used to store
      *        attribute instance.
      * @param labelNames map of label instances to their names.
      */
-    void asmify(StringBuffer buf, String varName, Map labelNames);
+    void asmify(StringBuffer buf, String varName, Map<Label, String> labelNames);
 }

@@ -28,6 +28,10 @@ import org.eclipse.jdt.core.WorkingCopyOwner;
 
 public class PackageFragment extends OutlineElement implements IPackageFragment {
 
+	public PackageFragment(int arg0) {
+		super(arg0);
+	}
+
 	public boolean containsJavaResources() throws JavaModelException {
 		return false;
 	}

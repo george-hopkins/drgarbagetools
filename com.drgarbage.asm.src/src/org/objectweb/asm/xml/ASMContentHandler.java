@@ -1,6 +1,6 @@
 /***
  * ASM XML Adapter
- * Copyright (c) 2004, Eugene Kuleshov
+ * Copyright (c) 2004-2011, Eugene Kuleshov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,18 +29,15 @@
  */
 package org.objectweb.asm.xml;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -64,34 +61,23 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * Stack of the intermediate processing contexts.
      */
-    private final List stack = new ArrayList();
+    private final ArrayList<Object> stack = new ArrayList<Object>();
 
     /**
      * Complete name of the current element.
      */
-    private String match = "";
+    String match = "";
 
     /**
-     * <tt>true</tt> if the maximum stack size and number of local variables
-     * must be automatically computed.
+     * Current instance of the {@link ClassVisitor ClassVisitor} used to visit
+     * classfile bytecode.
      */
-    protected boolean computeMax;
-
-    /**
-     * Output stream to write result bytecode.
-     */
-    protected OutputStream os;
-
-    /**
-     * Current instance of the {@link ClassWriter ClassWriter} used to write
-     * class bytecode.
-     */
-    protected ClassWriter cw;
+    protected ClassVisitor cv;
 
     /**
      * Map of the active {@link Label Label} instances for current method.
      */
-    protected Map labels;
+    protected Map<Object, Label> labels;
 
     private static final String BASE = "class";
 
@@ -125,6 +111,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         RULES.add(BASE + "/method/code/LOOKUPSWITCH/label",
                 new LookupSwitchLabelRule());
 
+        RULES.add(BASE + "/method/code/INVOKEDYNAMIC", new InvokeDynamicRule());
+        RULES.add(BASE + "/method/code/INVOKEDYNAMIC/bsmArg", new InvokeDynamicBsmArgumentsRule());
+
         RULES.add(BASE + "/method/code/Label", new LabelRule());
         RULES.add(BASE + "/method/code/TryCatch", new TryCatchRule());
         RULES.add(BASE + "/method/code/LineNumber", new LineNumberRule());
@@ -156,7 +145,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * Map of the opcode names to opcode and opcode group
      */
-    static final Map OPCODES = new HashMap();
+    static final HashMap<String, Opcode> OPCODES = new HashMap<String, Opcode>();
     static {
         addOpcode("NOP", NOP, OpcodeGroup.INSN);
         addOpcode("ACONST_NULL", ACONST_NULL, OpcodeGroup.INSN);
@@ -318,7 +307,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         OPCODES.put(operStr, new Opcode(oper, group));
     }
 
-    private static final Map TYPES = new HashMap();
+    static final HashMap<String, Integer> TYPES = new HashMap<String, Integer>();
     static {
         String[] types = SAXCodeAdapter.TYPES;
         for (int i = 0; i < types.length; i++) {
@@ -329,25 +318,11 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * Constructs a new {@link ASMContentHandler ASMContentHandler} object.
      *
-     * @param os output stream to write generated class.
-     * @param computeMax <tt>true</tt> if the maximum stack size and the
-     *        maximum number of local variables must be automatically computed.
-     *        This value is passed to {@link ClassWriter ClassWriter} instance.
+     * @param cv class visitor that will be called to reconstruct the classfile
+     *        using the XML stream.
      */
-    public ASMContentHandler(final OutputStream os, final boolean computeMax) {
-        this.os = os;
-        this.computeMax = computeMax;
-    }
-
-    /**
-     * Returns the bytecode of the class that was build with underneath class
-     * writer.
-     *
-     * @return the bytecode of the class that was build with underneath class
-     *         writer or null if there are no classwriter created.
-     */
-    public byte[] toByteArray() {
-        return cw == null ? null : cw.toByteArray();
+    public ASMContentHandler(final ClassVisitor cv) {
+        this.cv = cv;
     }
 
     /**
@@ -363,6 +338,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
      *        attributes, it shall be an empty Attributes object.
      * @exception SAXException if a parsing error is to be reported
      */
+    @Override
     public final void startElement(
         final String ns,
         final String lName,
@@ -400,6 +376,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
      *
      * @exception SAXException if a parsing error is to be reported
      */
+    @Override
     public final void endElement(
         final String ns,
         final String lName,
@@ -421,20 +398,6 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
             match = match.substring(0, slash);
         } else {
             match = "";
-        }
-    }
-
-    /**
-     * Process notification of the end of a document and write generated
-     * bytecode into output stream.
-     *
-     * @exception SAXException if parsing or writing error is to be reported.
-     */
-    public final void endDocument() throws SAXException {
-        try {
-            os.write(toByteArray());
-        } catch (IOException ex) {
-            throw new SAXException(ex.toString(), ex);
         }
     }
 
@@ -469,13 +432,13 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         stack.add(object);
     }
 
-    private static final class RuleSet {
+    static final class RuleSet {
 
-        private final Map rules = new HashMap();
+        private final HashMap<String, Object> rules = new HashMap<String, Object>();
 
-        private final List lpatterns = new ArrayList();
+        private final ArrayList<String> lpatterns = new ArrayList<String>();
 
-        private final List rpatterns = new ArrayList();
+        private final ArrayList<String> rpatterns = new ArrayList<String>();
 
         public void add(final String path, final Object rule) {
             String pattern = path;
@@ -495,15 +458,15 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
             }
 
             int n = path.lastIndexOf('/');
-            for (Iterator it = lpatterns.iterator(); it.hasNext();) {
-                String pattern = (String) it.next();
+            for (Iterator<String> it = lpatterns.iterator(); it.hasNext();) {
+                String pattern = it.next();
                 if (path.substring(n).endsWith(pattern)) {
                     return rules.get(pattern);
                 }
             }
 
-            for (Iterator it = rpatterns.iterator(); it.hasNext();) {
-                String pattern = (String) it.next();
+            for (Iterator<String> it = rpatterns.iterator(); it.hasNext();) {
+                String pattern = it.next();
                 if (path.startsWith(pattern)) {
                     return rules.get(pattern);
                 }
@@ -565,6 +528,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
                 } else if (Type.getDescriptor(Type.class).equals(desc)) {
                     value = Type.getType(val);
 
+                } else if (Type.getDescriptor(Handle.class).equals(desc)) {
+                    value = decodeHandle(val);
+
                 } else {
                     // TODO use of default toString().
                     throw new SAXException("Invalid value:" + val + " desc:"
@@ -572,6 +538,23 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
                 }
             }
             return value;
+        }
+
+        Handle decodeHandle(final String val) throws SAXException {
+            try {
+                int dotIndex = val.indexOf('.');
+                int descIndex = val.indexOf('(', dotIndex + 1);
+                int tagIndex = val.lastIndexOf('(');
+
+                int tag = Integer.parseInt(val.substring(tagIndex + 1, val.length() - 1));
+                String owner = val.substring(0, dotIndex);
+                String name = val.substring(dotIndex + 1, descIndex);
+                String desc = val.substring(descIndex, tagIndex - 1);
+                return new Handle(tag, owner, name, desc);
+
+            } catch(RuntimeException e) {
+                throw new SAXException("Malformed handle "+val, e);
+            }
         }
 
         private final String decode(final String val) throws SAXException {
@@ -604,7 +587,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         }
 
         protected final Label getLabel(final Object label) {
-            Label lbl = (Label) labels.get(label);
+            Label lbl = labels.get(label);
             if (lbl == null) {
                 lbl = new Label();
                 labels.put(label, lbl);
@@ -683,95 +666,101 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * ClassRule
      */
-    private final class ClassRule extends Rule {
+    final class ClassRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
             int major = Integer.parseInt(attrs.getValue("major"));
             int minor = Integer.parseInt(attrs.getValue("minor"));
-            cw = new ClassWriter(computeMax ? ClassWriter.COMPUTE_MAXS : 0);
-            Map vals = new HashMap();
+            HashMap<String, Object> vals = new HashMap<String, Object>();
             vals.put("version", new Integer(minor << 16 | major));
             vals.put("access", attrs.getValue("access"));
             vals.put("name", attrs.getValue("name"));
             vals.put("parent", attrs.getValue("parent"));
             vals.put("source", attrs.getValue("source"));
             vals.put("signature", attrs.getValue("signature"));
-            vals.put("interfaces", new ArrayList());
+            vals.put("interfaces", new ArrayList<String>());
             push(vals);
             // values will be extracted in InterfacesRule.end();
         }
     }
 
-    private final class SourceRule extends Rule {
+    final class SourceRule extends Rule {
 
+        @Override
         public void begin(final String name, final Attributes attrs) {
             String file = attrs.getValue("file");
             String debug = attrs.getValue("debug");
-            cw.visitSource(file, debug);
+            cv.visitSource(file, debug);
         }
     }
 
     /**
      * InterfaceRule
      */
-    private final class InterfaceRule extends Rule {
+    final class InterfaceRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
-            ((List) ((HashMap) peek()).get("interfaces")).add(attrs.getValue("name"));
+            ((ArrayList<String>) ((HashMap<?, ?>) peek()).get("interfaces")).add(attrs.getValue("name"));
         }
     }
 
     /**
      * InterfacesRule
      */
-    private final class InterfacesRule extends Rule {
+    final class InterfacesRule extends Rule {
 
+        @Override
         public final void end(final String element) {
-            Map vals = (HashMap) pop();
+            HashMap<?, ?> vals = (HashMap<?, ?>) pop();
             int version = ((Integer) vals.get("version")).intValue();
             int access = getAccess((String) vals.get("access"));
             String name = (String) vals.get("name");
             String signature = (String) vals.get("signature");
             String parent = (String) vals.get("parent");
-            List infs = (List) vals.get("interfaces");
-            String[] interfaces = (String[]) infs.toArray(new String[infs.size()]);
-            cw.visit(version, access, name, signature, parent, interfaces);
-            push(cw);
+            ArrayList<?> infs = (ArrayList<?>) vals.get("interfaces");
+            String[] interfaces = infs.toArray(new String[infs.size()]);
+            cv.visit(version, access, name, signature, parent, interfaces);
+            push(cv);
         }
     }
 
     /**
      * OuterClassRule
      */
-    private final class OuterClassRule extends Rule {
+    final class OuterClassRule extends Rule {
 
+        @Override
         public final void begin(final String element, final Attributes attrs) {
             String owner = attrs.getValue("owner");
             String name = attrs.getValue("name");
             String desc = attrs.getValue("desc");
-            cw.visitOuterClass(owner, name, desc);
+            cv.visitOuterClass(owner, name, desc);
         }
     }
 
     /**
      * InnerClassRule
      */
-    private final class InnerClassRule extends Rule {
+    final class InnerClassRule extends Rule {
 
+        @Override
         public final void begin(final String element, final Attributes attrs) {
             int access = getAccess(attrs.getValue("access"));
             String name = attrs.getValue("name");
             String outerName = attrs.getValue("outerName");
             String innerName = attrs.getValue("innerName");
-            cw.visitInnerClass(name, outerName, innerName, access);
+            cv.visitInnerClass(name, outerName, innerName, access);
         }
     }
 
     /**
      * FieldRule
      */
-    private final class FieldRule extends Rule {
+    final class FieldRule extends Rule {
 
+        @Override
         public final void begin(final String element, final Attributes attrs)
                 throws SAXException
         {
@@ -780,9 +769,10 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
             String signature = attrs.getValue("signature");
             String desc = attrs.getValue("desc");
             Object value = getValue(desc, attrs.getValue("value"));
-            push(cw.visitField(access, name, desc, signature, value));
+            push(cv.visitField(access, name, desc, signature, value));
         }
 
+        @Override
         public void end(final String name) {
             ((FieldVisitor) pop()).visitEnd();
         }
@@ -791,20 +781,22 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * MethodRule
      */
-    private final class MethodRule extends Rule {
+    final class MethodRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
-            labels = new HashMap();
-            Map vals = new HashMap();
+            labels = new HashMap<Object, Label>();
+            HashMap<String, Object> vals = new HashMap<String, Object>();
             vals.put("access", attrs.getValue("access"));
             vals.put("name", attrs.getValue("name"));
             vals.put("desc", attrs.getValue("desc"));
             vals.put("signature", attrs.getValue("signature"));
-            vals.put("exceptions", new ArrayList());
+            vals.put("exceptions", new ArrayList<String>());
             push(vals);
             // values will be extracted in ExceptionsRule.end();
         }
 
+        @Override
         public final void end(final String name) {
             ((MethodVisitor) pop()).visitEnd();
             labels = null;
@@ -814,52 +806,56 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * ExceptionRule
      */
-    private final class ExceptionRule extends Rule {
+    final class ExceptionRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
-            ((List) ((HashMap) peek()).get("exceptions")).add(attrs.getValue("name"));
+            ((ArrayList<String>) ((HashMap<?, ?>) peek()).get("exceptions")).add(attrs.getValue("name"));
         }
     }
 
     /**
      * ExceptionsRule
      */
-    private final class ExceptionsRule extends Rule {
+    final class ExceptionsRule extends Rule {
 
+        @Override
         public final void end(final String element) {
-            Map vals = (HashMap) pop();
+            HashMap<?, ?> vals = (HashMap<?, ?>) pop();
             int access = getAccess((String) vals.get("access"));
             String name = (String) vals.get("name");
             String desc = (String) vals.get("desc");
             String signature = (String) vals.get("signature");
-            List excs = (List) vals.get("exceptions");
-            String[] exceptions = (String[]) excs.toArray(new String[excs.size()]);
+            ArrayList<?> excs = (ArrayList<?>) vals.get("exceptions");
+            String[] exceptions = excs.toArray(new String[excs.size()]);
 
-            push(cw.visitMethod(access, name, desc, signature, exceptions));
+            push(cv.visitMethod(access, name, desc, signature, exceptions));
         }
     }
 
     /**
      * TableSwitchRule
      */
-    private class TableSwitchRule extends Rule {
+    final class TableSwitchRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
-            Map vals = new HashMap();
+            HashMap<String, Object> vals = new HashMap<String, Object>();
             vals.put("min", attrs.getValue("min"));
             vals.put("max", attrs.getValue("max"));
             vals.put("dflt", attrs.getValue("dflt"));
-            vals.put("labels", new ArrayList());
+            vals.put("labels", new ArrayList<String>());
             push(vals);
         }
 
+        @Override
         public final void end(final String name) {
-            Map vals = (HashMap) pop();
+            HashMap<?, ?> vals = (HashMap<?, ?>) pop();
             int min = Integer.parseInt((String) vals.get("min"));
             int max = Integer.parseInt((String) vals.get("max"));
             Label dflt = getLabel(vals.get("dflt"));
-            List lbls = (List) vals.get("labels");
-            Label[] labels = (Label[]) lbls.toArray(new Label[lbls.size()]);
+            ArrayList<?> lbls = (ArrayList<?>) vals.get("labels");
+            Label[] labels = lbls.toArray(new Label[lbls.size()]);
             getCodeVisitor().visitTableSwitchInsn(min, max, dflt, labels);
         }
     }
@@ -867,35 +863,38 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * TableSwitchLabelRule
      */
-    private final class TableSwitchLabelRule extends Rule {
+    final class TableSwitchLabelRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
-            ((List) ((HashMap) peek()).get("labels")).add(getLabel(attrs.getValue("name")));
+            ((ArrayList<Label>) ((HashMap<?, ?>) peek()).get("labels")).add(getLabel(attrs.getValue("name")));
         }
     }
 
     /**
      * LookupSwitchRule
      */
-    private final class LookupSwitchRule extends Rule {
+    final class LookupSwitchRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
-            Map vals = new HashMap();
+            HashMap<String, Object> vals = new HashMap<String, Object>();
             vals.put("dflt", attrs.getValue("dflt"));
-            vals.put("labels", new ArrayList());
-            vals.put("keys", new ArrayList());
+            vals.put("labels", new ArrayList<Label>());
+            vals.put("keys", new ArrayList<String>());
             push(vals);
         }
 
+        @Override
         public final void end(final String name) {
-            Map vals = (HashMap) pop();
+            HashMap<?, ?> vals = (HashMap<?, ?>) pop();
             Label dflt = getLabel(vals.get("dflt"));
-            List keyList = (List) vals.get("keys");
-            List lbls = (List) vals.get("labels");
-            Label[] labels = (Label[]) lbls.toArray(new Label[lbls.size()]);
+            ArrayList<String> keyList = (ArrayList<String>) vals.get("keys");
+            ArrayList<?> lbls = (ArrayList<?>) vals.get("labels");
+            Label[] labels = lbls.toArray(new Label[lbls.size()]);
             int[] keys = new int[keyList.size()];
             for (int i = 0; i < keys.length; i++) {
-                keys[i] = Integer.parseInt((String) keyList.get(i));
+                keys[i] = Integer.parseInt(keyList.get(i));
             }
             getCodeVisitor().visitLookupSwitchInsn(dflt, keys, labels);
         }
@@ -904,24 +903,26 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * LookupSwitchLabelRule
      */
-    private final class LookupSwitchLabelRule extends Rule {
+    final class LookupSwitchLabelRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
-            Map vals = (HashMap) peek();
-            ((List) vals.get("labels")).add(getLabel(attrs.getValue("name")));
-            ((List) vals.get("keys")).add(attrs.getValue("key"));
+            HashMap<?, ?> vals = (HashMap<?, ?>) peek();
+            ((ArrayList<Label>) vals.get("labels")).add(getLabel(attrs.getValue("name")));
+            ((ArrayList<String>) vals.get("keys")).add(attrs.getValue("key"));
         }
     }
 
     /**
      * FrameRule
      */
-    private final class FrameRule extends Rule {
+    final class FrameRule extends Rule {
 
+        @Override
         public void begin(final String name, final Attributes attrs) {
-            Map typeLists = new HashMap();
-            typeLists.put("local", new ArrayList());
-            typeLists.put("stack", new ArrayList());
+            HashMap<String,Object> typeLists = new HashMap<String,Object>();
+            typeLists.put("local", new ArrayList<Object>());
+            typeLists.put("stack", new ArrayList<Object>());
             push(attrs.getValue("type"));
             push(attrs.getValue("count") == null
                     ? "0"
@@ -929,12 +930,13 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
             push(typeLists);
         }
 
+        @Override
         public void end(final String name) {
-            Map typeLists = (HashMap) pop();
-            List locals = (List) typeLists.get("local");
+            HashMap<?, ?> typeLists = (HashMap<?, ?>) pop();
+            ArrayList<?> locals = (ArrayList<?>) typeLists.get("local");
             int nLocal = locals.size();
             Object[] local = locals.toArray();
-            List stacks = (List) typeLists.get("stack");
+            ArrayList<?> stacks = (ArrayList<?>) typeLists.get("stack");
             int nStack = stacks.size();
             Object[] stack = stacks.toArray();
             String count = (String) pop();
@@ -975,15 +977,16 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         }
     }
 
-    private final class FrameTypeRule extends Rule {
+    final class FrameTypeRule extends Rule {
 
+        @Override
         public void begin(final String name, final Attributes attrs) {
-            List types = (List) ((HashMap) peek()).get(name);
+            ArrayList<Object> types = (ArrayList<Object>) ((HashMap<?, ?>) peek()).get(name);
             String type = attrs.getValue("type");
             if ("uninitialized".equals(type)) {
                 types.add(getLabel(attrs.getValue("label")));
             } else {
-                Integer t = (Integer) TYPES.get(type);
+                Integer t = TYPES.get(type);
                 if (t == null) {
                     types.add(type);
                 } else {
@@ -996,8 +999,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * LabelRule
      */
-    private final class LabelRule extends Rule {
+    final class LabelRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
             getCodeVisitor().visitLabel(getLabel(attrs.getValue("name")));
         }
@@ -1006,8 +1010,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * TryCatchRule
      */
-    private final class TryCatchRule extends Rule {
+    final class TryCatchRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
             Label start = getLabel(attrs.getValue("start"));
             Label end = getLabel(attrs.getValue("end"));
@@ -1020,8 +1025,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * LineNumberRule
      */
-    private final class LineNumberRule extends Rule {
+    final class LineNumberRule extends Rule {
 
+        @Override
         public final void begin(final String name, final Attributes attrs) {
             int line = Integer.parseInt(attrs.getValue("line"));
             Label start = getLabel(attrs.getValue("start"));
@@ -1032,8 +1038,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * LocalVarRule
      */
-    private final class LocalVarRule extends Rule {
+    final class LocalVarRule extends Rule {
 
+        @Override
         public final void begin(final String element, final Attributes attrs) {
             String name = attrs.getValue("name");
             String desc = attrs.getValue("desc");
@@ -1051,18 +1058,53 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     }
 
     /**
+     * InvokeDynamicRule
+     */
+    final class InvokeDynamicRule extends Rule {
+        @Override
+        public final void begin(final String element, final Attributes attrs) throws SAXException {
+            push(attrs.getValue("name"));
+            push(attrs.getValue("desc"));
+            push(decodeHandle(attrs.getValue("bsm")));
+            push(new ArrayList<Object>());
+        }
+
+        @Override
+        public final void end(final String element) {
+            ArrayList<?> bsmArgs = (ArrayList<?>)pop();
+            Handle bsm = (Handle)pop();
+            String desc = (String)pop();
+            String name = (String)pop();
+            getCodeVisitor().visitInvokeDynamicInsn(name, desc, bsm, bsmArgs.toArray());
+        }
+    }
+
+    /**
+     * InvokeDynamicBsmArgumentsRule
+     */
+    final class InvokeDynamicBsmArgumentsRule extends Rule {
+        @Override
+        public final void begin(final String element, final Attributes attrs) throws SAXException {
+            ArrayList<Object> bsmArgs = (ArrayList<Object>)peek();
+            bsmArgs.add(getValue(attrs.getValue("desc"),
+                    attrs.getValue("cst")));
+        }
+    }
+
+    /**
      * OpcodesRule
      */
-    private final class OpcodesRule extends Rule {
+    final class OpcodesRule extends Rule {
 
         // public boolean match( String match, String element) {
         // return match.startsWith( path) && OPCODES.containsKey( element);
         // }
 
+        @Override
         public final void begin(final String element, final Attributes attrs)
                 throws SAXException
         {
-            Opcode o = (Opcode) OPCODES.get(element);
+            Opcode o = OPCODES.get(element);
             if (o == null) {
                 throw new SAXException("Invalid element: " + element + " at "
                         + match);
@@ -1132,8 +1174,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * MaxRule
      */
-    private final class MaxRule extends Rule {
+    final class MaxRule extends Rule {
 
+        @Override
         public final void begin(final String element, final Attributes attrs) {
             int maxStack = Integer.parseInt(attrs.getValue("maxStack"));
             int maxLocals = Integer.parseInt(attrs.getValue("maxLocals"));
@@ -1141,8 +1184,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         }
     }
 
-    private final class AnnotationRule extends Rule {
+    final class AnnotationRule extends Rule {
 
+        @Override
         public void begin(final String name, final Attributes attrs) {
             String desc = attrs.getValue("desc");
             boolean visible = Boolean.valueOf(attrs.getValue("visible"))
@@ -1158,6 +1202,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
             }
         }
 
+        @Override
         public void end(final String name) {
             AnnotationVisitor av = (AnnotationVisitor) pop();
             if (av != null) {
@@ -1166,8 +1211,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         }
     }
 
-    private final class AnnotationParameterRule extends Rule {
+    final class AnnotationParameterRule extends Rule {
 
+        @Override
         public void begin(final String name, final Attributes attrs) {
             int parameter = Integer.parseInt(attrs.getValue("parameter"));
             String desc = attrs.getValue("desc");
@@ -1179,6 +1225,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
                     visible));
         }
 
+        @Override
         public void end(final String name) {
             AnnotationVisitor av = (AnnotationVisitor) pop();
             if (av != null) {
@@ -1187,8 +1234,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         }
     }
 
-    private final class AnnotationValueRule extends Rule {
+    final class AnnotationValueRule extends Rule {
 
+        @Override
         public void begin(final String nm, final Attributes attrs)
                 throws SAXException
         {
@@ -1201,8 +1249,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         }
     }
 
-    private final class AnnotationValueEnumRule extends Rule {
+    final class AnnotationValueEnumRule extends Rule {
 
+        @Override
         public void begin(final String nm, final Attributes attrs) {
             AnnotationVisitor av = (AnnotationVisitor) peek();
             if (av != null) {
@@ -1213,14 +1262,16 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         }
     }
 
-    private final class AnnotationValueAnnotationRule extends Rule {
+    final class AnnotationValueAnnotationRule extends Rule {
 
+        @Override
         public void begin(final String nm, final Attributes attrs) {
             AnnotationVisitor av = (AnnotationVisitor) peek();
             push(av == null ? null : av.visitAnnotation(attrs.getValue("name"),
                     attrs.getValue("desc")));
         }
 
+        @Override
         public void end(final String name) {
             AnnotationVisitor av = (AnnotationVisitor) pop();
             if (av != null) {
@@ -1229,13 +1280,15 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         }
     }
 
-    private final class AnnotationValueArrayRule extends Rule {
+    final class AnnotationValueArrayRule extends Rule {
 
+        @Override
         public void begin(final String nm, final Attributes attrs) {
             AnnotationVisitor av = (AnnotationVisitor) peek();
             push(av == null ? null : av.visitArray(attrs.getValue("name")));
         }
 
+        @Override
         public void end(final String name) {
             AnnotationVisitor av = (AnnotationVisitor) pop();
             if (av != null) {
@@ -1244,13 +1297,15 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         }
     }
 
-    private final class AnnotationDefaultRule extends Rule {
+    final class AnnotationDefaultRule extends Rule {
 
+        @Override
         public void begin(final String nm, final Attributes attrs) {
             MethodVisitor av = (MethodVisitor) peek();
             push(av == null ? null : av.visitAnnotationDefault());
         }
 
+        @Override
         public void end(final String name) {
             AnnotationVisitor av = (AnnotationVisitor) pop();
             if (av != null) {
@@ -1262,13 +1317,13 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * Opcode
      */
-    private static final class Opcode {
+    static final class Opcode {
 
         public final int opcode;
 
         public final int type;
 
-        private Opcode(final int opcode, final int type) {
+        Opcode(final int opcode, final int type) {
             this.opcode = opcode;
             this.type = type;
         }

@@ -21,6 +21,7 @@ import com.drgarbage.asm.Attribute;
 import com.drgarbage.asm.ClassVisitor;
 import com.drgarbage.asm.FieldVisitor;
 import com.drgarbage.asm.MethodVisitor;
+import com.drgarbage.asm.Opcodes;
 import com.drgarbage.asm_ext.IConstantPoolVisitor;
 import com.drgarbage.bytecode.ConstantPoolParser;
 import com.drgarbage.bytecode.constant_pool.AbstractConstantPoolEntry;
@@ -30,7 +31,7 @@ import com.drgarbage.bytecode.constant_pool.AbstractConstantPoolEntry;
  * @version $Revision: 1523 $
  * $Id: MethodFilteringVisitor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
-public class MethodFilteringVisitor implements ClassVisitor, IConstantPoolVisitor {
+public class MethodFilteringVisitor extends ClassVisitor implements IConstantPoolVisitor {
 	
 	private AbstractCodeVisitor abstractCodeVisitor;
 	private String className;
@@ -41,7 +42,7 @@ public class MethodFilteringVisitor implements ClassVisitor, IConstantPoolVisito
 	 * @param abstractCodeVisitor
 	 */
 	public MethodFilteringVisitor(AbstractCodeVisitor abstractCodeVisitor) {
-		super();
+		super(Opcodes.ASM4);
 		this.abstractCodeVisitor = abstractCodeVisitor;
 	}
 	

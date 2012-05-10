@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,13 @@ package org.objectweb.asm.tree.analysis;
 
 import java.util.List;
 
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.IntInsnNode;
+import org.objectweb.asm.tree.InvokeDynamicInsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MultiANewArrayInsnNode;
@@ -43,13 +45,24 @@ import org.objectweb.asm.tree.TypeInsnNode;
 
 /**
  * An {@link Interpreter} for {@link BasicValue} values.
- * 
+ *
  * @author Eric Bruneton
  * @author Bing Ran
  */
-public class BasicInterpreter implements Opcodes, Interpreter {
+public class BasicInterpreter extends Interpreter<BasicValue> implements
+        Opcodes
+{
 
-    public Value newValue(final Type type) {
+    public BasicInterpreter() {
+        super(ASM4);
+    }
+
+    protected BasicInterpreter(final int api) {
+        super(api);
+    }
+
+    @Override
+    public BasicValue newValue(final Type type) {
         if (type == null) {
             return BasicValue.UNINITIALIZED_VALUE;
         }
@@ -76,7 +89,10 @@ public class BasicInterpreter implements Opcodes, Interpreter {
         }
     }
 
-    public Value newOperation(final AbstractInsnNode insn) {
+    @Override
+    public BasicValue newOperation(final AbstractInsnNode insn)
+            throws AnalyzerException
+    {
         switch (insn.getOpcode()) {
             case ACONST_NULL:
                 return newValue(Type.getObjectType("null"));
@@ -111,10 +127,21 @@ public class BasicInterpreter implements Opcodes, Interpreter {
                     return BasicValue.LONG_VALUE;
                 } else if (cst instanceof Double) {
                     return BasicValue.DOUBLE_VALUE;
+                } else if (cst instanceof String) {
+                    return newValue(Type.getObjectType("java/lang/String"));
                 } else if (cst instanceof Type) {
-                    return newValue(Type.getObjectType("java/lang/Class"));
+                    int sort = ((Type) cst).getSort();
+                    if (sort == Type.OBJECT || sort == Type.ARRAY) {
+                        return newValue(Type.getObjectType("java/lang/Class"));
+                    } else if (sort == Type.METHOD) {
+                        return newValue(Type.getObjectType("java/lang/invoke/MethodType"));
+                    } else {
+                        throw new IllegalArgumentException("Illegal LDC constant " + cst);
+                    }
+                } else if (cst instanceof Handle) {
+                    return newValue(Type.getObjectType("java/lang/invoke/MethodHandle"));
                 } else {
-                    return newValue(Type.getType(cst.getClass()));
+                    throw new IllegalArgumentException("Illegal LDC constant " + cst);
                 }
             case JSR:
                 return BasicValue.RETURNADDRESS_VALUE;
@@ -127,13 +154,15 @@ public class BasicInterpreter implements Opcodes, Interpreter {
         }
     }
 
-    public Value copyOperation(final AbstractInsnNode insn, final Value value)
+    @Override
+    public BasicValue copyOperation(final AbstractInsnNode insn, final BasicValue value)
             throws AnalyzerException
     {
         return value;
     }
 
-    public Value unaryOperation(final AbstractInsnNode insn, final Value value)
+    @Override
+    public BasicValue unaryOperation(final AbstractInsnNode insn, final BasicValue value)
             throws AnalyzerException
     {
         switch (insn.getOpcode()) {
@@ -197,7 +226,7 @@ public class BasicInterpreter implements Opcodes, Interpreter {
                     case T_LONG:
                         return newValue(Type.getType("[J"));
                     default:
-                        throw new AnalyzerException("Invalid array type");
+                        throw new AnalyzerException(insn, "Invalid array type");
                 }
             case ANEWARRAY:
                 String desc = ((TypeInsnNode) insn).desc;
@@ -221,10 +250,11 @@ public class BasicInterpreter implements Opcodes, Interpreter {
         }
     }
 
-    public Value binaryOperation(
+    @Override
+    public BasicValue binaryOperation(
         final AbstractInsnNode insn,
-        final Value value1,
-        final Value value2) throws AnalyzerException
+        final BasicValue value1,
+        final BasicValue value2) throws AnalyzerException
     {
         switch (insn.getOpcode()) {
             case IALOAD:
@@ -293,26 +323,40 @@ public class BasicInterpreter implements Opcodes, Interpreter {
         }
     }
 
-    public Value ternaryOperation(
+    @Override
+    public BasicValue ternaryOperation(
         final AbstractInsnNode insn,
-        final Value value1,
-        final Value value2,
-        final Value value3) throws AnalyzerException
+        final BasicValue value1,
+        final BasicValue value2,
+        final BasicValue value3) throws AnalyzerException
     {
         return null;
     }
 
-    public Value naryOperation(final AbstractInsnNode insn, final List values)
+    @Override
+    public BasicValue naryOperation(final AbstractInsnNode insn, final List<? extends BasicValue> values)
             throws AnalyzerException
     {
-        if (insn.getOpcode() == MULTIANEWARRAY) {
+        int opcode = insn.getOpcode();
+        if (opcode == MULTIANEWARRAY) {
             return newValue(Type.getType(((MultiANewArrayInsnNode) insn).desc));
+        } else if (opcode == INVOKEDYNAMIC){
+            return newValue(Type.getReturnType(((InvokeDynamicInsnNode) insn).desc));
         } else {
             return newValue(Type.getReturnType(((MethodInsnNode) insn).desc));
         }
     }
 
-    public Value merge(final Value v, final Value w) {
+    @Override
+    public void returnOperation(
+        final AbstractInsnNode insn,
+        final BasicValue value,
+        final BasicValue expected) throws AnalyzerException
+    {
+    }
+
+    @Override
+    public BasicValue merge(final BasicValue v, final BasicValue w) {
         if (!v.equals(w)) {
             return BasicValue.UNINITIALIZED_VALUE;
         }

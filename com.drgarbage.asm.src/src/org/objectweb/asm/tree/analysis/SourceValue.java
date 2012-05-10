@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 /**
  * A {@link Value} that is represented by its type in a two types type system.
  * This type system distinguishes the ONEWORD and TWOWORDS types.
- * 
+ *
  * @author Eric Bruneton
  */
 public class SourceValue implements Value {
@@ -50,7 +50,7 @@ public class SourceValue implements Value {
      * The instructions that can produce this value. For example, for the Java
      * code below, the instructions that can produce the value of <tt>i</tt>
      * at line 5 are the txo ISTORE instructions at line 1 and 3:
-     * 
+     *
      * <pre>
      * 1: i = 0;
      * 2: if (...) {
@@ -58,21 +58,21 @@ public class SourceValue implements Value {
      * 4: }
      * 5: return i;
      * </pre>
-     * 
+     *
      * This field is a set of {@link AbstractInsnNode} objects.
      */
-    public final Set insns;
+    public final Set<AbstractInsnNode> insns;
 
     public SourceValue(final int size) {
-        this(size, SmallSet.EMPTY_SET);
+        this(size, SmallSet.<AbstractInsnNode>emptySet());
     }
 
     public SourceValue(final int size, final AbstractInsnNode insn) {
         this.size = size;
-        this.insns = new SmallSet(insn, null);
+        this.insns = new SmallSet<AbstractInsnNode>(insn, null);
     }
 
-    public SourceValue(final int size, final Set insns) {
+    public SourceValue(final int size, final Set<AbstractInsnNode> insns) {
         this.size = size;
         this.insns = insns;
     }
@@ -81,6 +81,7 @@ public class SourceValue implements Value {
         return size;
     }
 
+    @Override
     public boolean equals(final Object value) {
         if (!(value instanceof SourceValue)) {
         	return false;
@@ -89,6 +90,7 @@ public class SourceValue implements Value {
         return size == v.size && insns.equals(v.insns);
     }
 
+    @Override
     public int hashCode() {
         return insns.hashCode();
     }

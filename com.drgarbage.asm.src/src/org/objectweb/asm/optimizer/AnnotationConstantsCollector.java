@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,17 +30,16 @@
 package org.objectweb.asm.optimizer;
 
 import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 /**
  * An {@link AnnotationVisitor} that collects the {@link Constant}s of the
  * annotations it visits.
- * 
+ *
  * @author Eric Bruneton
  */
-public class AnnotationConstantsCollector implements AnnotationVisitor {
-
-    private final AnnotationVisitor av;
+public class AnnotationConstantsCollector extends AnnotationVisitor {
 
     private final ConstantPool cp;
 
@@ -48,10 +47,11 @@ public class AnnotationConstantsCollector implements AnnotationVisitor {
         final AnnotationVisitor av,
         final ConstantPool cp)
     {
-        this.av = av;
+        super(Opcodes.ASM4, av);
         this.cp = cp;
     }
 
+    @Override
     public void visit(final String name, final Object value) {
         if (name != null) {
             cp.newUTF8(name);
@@ -112,6 +112,7 @@ public class AnnotationConstantsCollector implements AnnotationVisitor {
         av.visit(name, value);
     }
 
+    @Override
     public void visitEnum(
         final String name,
         final String desc,
@@ -125,6 +126,7 @@ public class AnnotationConstantsCollector implements AnnotationVisitor {
         av.visitEnum(name, desc, value);
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation(
         final String name,
         final String desc)
@@ -137,6 +139,7 @@ public class AnnotationConstantsCollector implements AnnotationVisitor {
                 cp);
     }
 
+    @Override
     public AnnotationVisitor visitArray(final String name) {
         if (name != null) {
             cp.newUTF8(name);
@@ -144,6 +147,7 @@ public class AnnotationConstantsCollector implements AnnotationVisitor {
         return new AnnotationConstantsCollector(av.visitArray(name), cp);
     }
 
+    @Override
     public void visitEnd() {
         av.visitEnd();
     }

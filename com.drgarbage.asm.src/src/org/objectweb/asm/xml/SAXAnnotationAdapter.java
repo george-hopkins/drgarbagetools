@@ -1,6 +1,6 @@
 /***
  * ASM XML Adapter
- * Copyright (c) 2004, Eugene Kuleshov
+ * Copyright (c) 2004-2011, Eugene Kuleshov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,49 +30,52 @@
 package org.objectweb.asm.xml;
 
 import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * SAXAnnotationAdapter
- * 
+ *
  * @author Eugene Kuleshov
  */
-public class SAXAnnotationAdapter extends SAXAdapter implements
-        AnnotationVisitor
-{
+public final class SAXAnnotationAdapter extends AnnotationVisitor {
+
+    SAXAdapter sa;
+
     private final String elementName;
 
     public SAXAnnotationAdapter(
-        final ContentHandler h,
+        final SAXAdapter sa,
         final String elementName,
         final int visible,
         final String name,
         final String desc)
     {
-        this(h, elementName, visible, desc, name, -1);
+        this(Opcodes.ASM4, sa, elementName, visible, desc, name, -1);
     }
 
     public SAXAnnotationAdapter(
-        final ContentHandler h,
+        final SAXAdapter sa,
         final String elementName,
         final int visible,
         final int parameter,
         final String desc)
     {
-        this(h, elementName, visible, desc, null, parameter);
+        this(Opcodes.ASM4, sa, elementName, visible, desc, null, parameter);
     }
 
-    private SAXAnnotationAdapter(
-        final ContentHandler h,
+    protected SAXAnnotationAdapter(
+        final int api,
+        final SAXAdapter sa,
         final String elementName,
         final int visible,
         final String desc,
         final String name,
         final int parameter)
     {
-        super(h);
+        super(api);
+        this.sa = sa;
         this.elementName = elementName;
 
         AttributesImpl att = new AttributesImpl();
@@ -95,11 +98,12 @@ public class SAXAnnotationAdapter extends SAXAdapter implements
             att.addAttribute("", "desc", "desc", "", desc);
         }
 
-        addStart(elementName, att);
+        sa.addStart(elementName, att);
     }
 
+    @Override
     public void visit(final String name, final Object value) {
-        Class c = value.getClass();
+        Class<?> c = value.getClass();
         if (c.isArray()) {
             AnnotationVisitor av = visitArray(name);
             if (value instanceof byte[]) {
@@ -160,6 +164,7 @@ public class SAXAnnotationAdapter extends SAXAdapter implements
         }
     }
 
+    @Override
     public void visitEnum(
         final String name,
         final String desc,
@@ -168,27 +173,30 @@ public class SAXAnnotationAdapter extends SAXAdapter implements
         addValueElement("annotationValueEnum", name, desc, value);
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation(
         final String name,
         final String desc)
     {
-        return new SAXAnnotationAdapter(getContentHandler(),
+        return new SAXAnnotationAdapter(sa,
                 "annotationValueAnnotation",
                 0,
                 name,
                 desc);
     }
 
+    @Override
     public AnnotationVisitor visitArray(final String name) {
-        return new SAXAnnotationAdapter(getContentHandler(),
+        return new SAXAnnotationAdapter(sa,
                 "annotationValueArray",
                 0,
                 name,
                 null);
     }
 
+    @Override
     public void visitEnd() {
-        addEnd(elementName);
+        sa.addEnd(elementName);
     }
 
     private void addValueElement(
@@ -212,7 +220,6 @@ public class SAXAnnotationAdapter extends SAXAdapter implements
                     SAXClassAdapter.encode(value));
         }
 
-        addElement(element, att);
+        sa.addElement(element, att);
     }
-
 }

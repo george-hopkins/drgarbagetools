@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,6 @@ package org.objectweb.asm.optimizer;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -40,19 +39,20 @@ import org.objectweb.asm.Opcodes;
 /**
  * A {@link ClassVisitor} that collects the {@link Constant}s of the classes it
  * visits.
- * 
+ *
  * @author Eric Bruneton
  */
-public class ClassConstantsCollector extends ClassAdapter {
+public class ClassConstantsCollector extends ClassVisitor {
 
     private final ConstantPool cp;
 
     public ClassConstantsCollector(final ClassVisitor cv, final ConstantPool cp)
     {
-        super(cv);
+        super(Opcodes.ASM4, cv);
         this.cp = cp;
     }
 
+    @Override
     public void visit(
         final int version,
         final int access,
@@ -83,6 +83,7 @@ public class ClassConstantsCollector extends ClassAdapter {
         cv.visit(version, access, name, signature, superName, interfaces);
     }
 
+    @Override
     public void visitSource(final String source, final String debug) {
         if (source != null) {
             cp.newUTF8("SourceFile");
@@ -94,6 +95,7 @@ public class ClassConstantsCollector extends ClassAdapter {
         cv.visitSource(source, debug);
     }
 
+    @Override
     public void visitOuterClass(
         final String owner,
         final String name,
@@ -107,6 +109,7 @@ public class ClassConstantsCollector extends ClassAdapter {
         cv.visitOuterClass(owner, name, desc);
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation(
         final String desc,
         final boolean visible)
@@ -121,11 +124,13 @@ public class ClassConstantsCollector extends ClassAdapter {
                 visible), cp);
     }
 
+    @Override
     public void visitAttribute(final Attribute attr) {
         // can do nothing
         cv.visitAttribute(attr);
     }
 
+    @Override
     public void visitInnerClass(
         final String name,
         final String outerName,
@@ -145,6 +150,7 @@ public class ClassConstantsCollector extends ClassAdapter {
         cv.visitInnerClass(name, outerName, innerName, access);
     }
 
+    @Override
     public FieldVisitor visitField(
         final int access,
         final String name,
@@ -174,6 +180,7 @@ public class ClassConstantsCollector extends ClassAdapter {
                 value), cp);
     }
 
+    @Override
     public MethodVisitor visitMethod(
         final int access,
         final String name,

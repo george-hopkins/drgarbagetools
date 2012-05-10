@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,6 @@ package org.objectweb.asm.optimizer;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -40,24 +39,34 @@ import org.objectweb.asm.commons.Remapper;
 import org.objectweb.asm.commons.RemappingClassAdapter;
 
 /**
- * A {@link ClassAdapter} that renames fields and methods, and removes debug
+ * A {@link ClassVisitor} that renames fields and methods, and removes debug
  * info.
- * 
+ *
  * @author Eric Bruneton
  * @author Eugene Kuleshov
  */
 public class ClassOptimizer extends RemappingClassAdapter {
 
     private String pkgName;
+    String clsName;
+    boolean class$;
 
     public ClassOptimizer(final ClassVisitor cv, final Remapper remapper) {
         super(cv, remapper);
+    }
+
+    FieldVisitor syntheticFieldVisitor(final int access,
+        final String name,
+        final String desc)
+    {
+        return super.visitField(access, name, desc, null, null);
     }
 
     // ------------------------------------------------------------------------
     // Overridden methods
     // ------------------------------------------------------------------------
 
+    @Override
     public void visit(
         final int version,
         final int access,
@@ -66,14 +75,22 @@ public class ClassOptimizer extends RemappingClassAdapter {
         final String superName,
         final String[] interfaces)
     {
-        super.visit(version, access, name, null, superName, interfaces);
-        pkgName = name.substring(0, name.lastIndexOf('/'));
+        super.visit(Opcodes.V1_2, access, name, null, superName, interfaces);
+        clsName = name;
+        int index = name.lastIndexOf('/');
+        if (index > 0) {
+            pkgName = name.substring(0, index);
+        } else {
+            pkgName = "";
+        }
     }
 
+    @Override
     public void visitSource(final String source, final String debug) {
         // remove debug info
     }
 
+    @Override
     public void visitOuterClass(
         final String owner,
         final String name,
@@ -82,6 +99,7 @@ public class ClassOptimizer extends RemappingClassAdapter {
         // remove debug info
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation(
         final String desc,
         final boolean visible)
@@ -90,10 +108,12 @@ public class ClassOptimizer extends RemappingClassAdapter {
         return null;
     }
 
+    @Override
     public void visitAttribute(final Attribute attr) {
         // remove non standard attributes
     }
 
+    @Override
     public void visitInnerClass(
         final String name,
         final String outerName,
@@ -103,6 +123,7 @@ public class ClassOptimizer extends RemappingClassAdapter {
         // remove debug info
     }
 
+    @Override
     public FieldVisitor visitField(
         final int access,
         final String name,
@@ -121,7 +142,7 @@ public class ClassOptimizer extends RemappingClassAdapter {
                 return null;
             }
             if ("org/objectweb/asm".equals(pkgName) && s.equals(name)) {
-                System.out.println("INFO: " + s + " could be renamed");
+                System.out.println("INFO: " + clsName + "." + s + " could be renamed");
             }
             super.visitField(access, name, desc, null, value);
         } else {
@@ -134,6 +155,7 @@ public class ClassOptimizer extends RemappingClassAdapter {
         return null; // remove debug info
     }
 
+    @Override
     public MethodVisitor visitMethod(
         final int access,
         final String name,
@@ -141,32 +163,34 @@ public class ClassOptimizer extends RemappingClassAdapter {
         final String signature,
         final String[] exceptions)
     {
-        String s = remapper.mapMethodName(className, name, desc); 
+        String s = remapper.mapMethodName(className, name, desc);
         if ("-".equals(s)) {
             return null;
         }
+
         if ((access & (Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED)) == 0) {
             if ("org/objectweb/asm".equals(pkgName) && !name.startsWith("<")
                     && s.equals(name))
             {
-                System.out.println("INFO: " + s + " could be renamed");
+                System.out.println("INFO: " + clsName + "." + s + " could be renamed");
             }
-            return super.visitMethod(access, name, desc, null, exceptions); 
+            return super.visitMethod(access, name, desc, null, exceptions);
         } else {
             if (!s.equals(name)) {
                 throw new RuntimeException("The public or protected method "
                         + className + '.' + name + desc
                         + " must not be renamed.");
             }
-            return super.visitMethod(access, name, desc, null, exceptions); 
+            return super.visitMethod(access, name, desc, null, exceptions);
         }
     }
-    
+
+    @Override
     protected MethodVisitor createRemappingMethodAdapter(
         int access,
         String newDesc,
         MethodVisitor mv)
     {
-        return new MethodOptimizer(access, newDesc, mv, remapper); 
+        return new MethodOptimizer(this, access, newDesc, mv, remapper);
     }
 }

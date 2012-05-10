@@ -1,6 +1,6 @@
 /***
  * ASM XML Adapter
- * Copyright (c) 2004, Eugene Kuleshov
+ * Copyright (c) 2004-2011, Eugene Kuleshov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
 import org.objectweb.asm.ClassReader;
-
+import org.objectweb.asm.ClassWriter;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -71,20 +71,20 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * directed by XSL transformation. <p> In order to use a concrete XSLT engine,
  * system property <tt>javax.xml.transform.TransformerFactory</tt> must be set
  * to one of the following values.
- * 
+ *
  * <blockquote> <table border="1" cellspacing="0" cellpadding="3"> <tr> <td>jd.xslt</td>
  * <td>jd.xml.xslt.trax.TransformerFactoryImpl</td> </tr>
- * 
+ *
  * <tr> <td>Saxon</td> <td>net.sf.saxon.TransformerFactoryImpl</td> </tr>
- * 
+ *
  * <tr> <td>Caucho</td> <td>com.caucho.xsl.Xsl</td> </tr>
- * 
+ *
  * <tr> <td>Xalan interpeter</td> <td>org.apache.xalan.processor.TransformerFactory</td>
  * </tr>
- * 
+ *
  * <tr> <td>Xalan xsltc</td> <td>org.apache.xalan.xsltc.trax.TransformerFactoryImpl</td>
  * </tr> </table> </blockquote>
- * 
+ *
  * @author Eugene Kuleshov
  */
 public class Processor {
@@ -107,8 +107,6 @@ public class Processor {
 
     private final Source xslt;
 
-    private final boolean computeMax;
-
     private int n = 0;
 
     public Processor(
@@ -123,7 +121,6 @@ public class Processor {
         this.input = input;
         this.output = output;
         this.xslt = xslt;
-        this.computeMax = true;
     }
 
     public int process() throws TransformerException, IOException, SAXException
@@ -156,8 +153,7 @@ public class Processor {
         ContentHandler outDocHandler = null;
         switch (outRepresentation) {
             case BYTECODE:
-                outDocHandler = new OutputSlicingHandler(new ASMContentHandlerFactory(zos,
-                        computeMax),
+                outDocHandler = new OutputSlicingHandler(new ASMContentHandlerFactory(zos),
                         entryElement,
                         false);
                 break;
@@ -362,7 +358,7 @@ public class Processor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
      */
     protected void update(final Object arg, final int n) {
@@ -453,23 +449,27 @@ public class Processor {
     private static final class ProtectedInputStream extends InputStream {
         private final InputStream is;
 
-        private ProtectedInputStream(final InputStream is) {
+        ProtectedInputStream(final InputStream is) {
             this.is = is;
         }
 
+        @Override
         public final void close() throws IOException {
         }
 
+        @Override
         public final int read() throws IOException {
             return is.read();
         }
 
+        @Override
         public final int read(final byte[] b, final int off, final int len)
                 throws IOException
         {
             return is.read(b, off, len);
         }
 
+        @Override
         public final int available() throws IOException {
             return is.available();
         }
@@ -484,7 +484,7 @@ public class Processor {
 
         /**
          * Creates an instance of the content handler.
-         * 
+         *
          * @return content handler
          */
         ContentHandler createContentHandler();
@@ -501,7 +501,7 @@ public class Processor {
 
         private final boolean optimizeEmptyElements;
 
-        private SAXWriterFactory(
+        SAXWriterFactory(
             final Writer w,
             final boolean optimizeEmptyElements)
         {
@@ -521,20 +521,26 @@ public class Processor {
     private static final class ASMContentHandlerFactory implements
             ContentHandlerFactory
     {
-        private OutputStream os;
+        final OutputStream os;
 
-        private final boolean computeMax;
-
-        private ASMContentHandlerFactory(
-            final OutputStream os,
-            final boolean computeMax)
+        ASMContentHandlerFactory(final OutputStream os)
         {
             this.os = os;
-            this.computeMax = computeMax;
         }
 
         public final ContentHandler createContentHandler() {
-            return new ASMContentHandler(os, computeMax);
+            final ClassWriter cw = new ClassWriter(
+                    ClassWriter.COMPUTE_MAXS);
+            return new ASMContentHandler(cw) {
+                @Override
+                public void endDocument() throws SAXException {
+                    try {
+                        os.write(cw.toByteArray());
+                    } catch(IOException e) {
+                        throw new SAXException(e);
+                    }
+                }
+            };
         }
 
     }
@@ -551,7 +557,7 @@ public class Processor {
 
         private ContentHandler outputHandler;
 
-        private TransformerHandlerFactory(
+        TransformerHandlerFactory(
             final SAXTransformerFactory saxtf,
             final Templates templates,
             final ContentHandler outputHandler)
@@ -580,7 +586,7 @@ public class Processor {
     {
         private final ContentHandler subdocumentHandler;
 
-        private SubdocumentHandlerFactory(final ContentHandler subdocumentHandler)
+        SubdocumentHandlerFactory(final ContentHandler subdocumentHandler)
         {
             this.subdocumentHandler = subdocumentHandler;
         }
@@ -595,7 +601,7 @@ public class Processor {
      * A {@link org.xml.sax.ContentHandler ContentHandler} and
      * {@link org.xml.sax.ext.LexicalHandler LexicalHandler} that serializes XML
      * from SAX 2.0 events into {@link java.io.Writer Writer}.
-     * 
+     *
      * <i><blockquote> This implementation does not support namespaces, entity
      * definitions (uncluding DTD), CDATA and text elements. </blockquote></i>
      */
@@ -614,16 +620,17 @@ public class Processor {
 
         /**
          * Creates <code>SAXWriter</code>.
-         * 
+         *
          * @param w writer
          * @param optimizeEmptyElements if set to <code>true</code>, short
          *        XML syntax will be used for empty elements
          */
-        private SAXWriter(final Writer w, final boolean optimizeEmptyElements) {
+        SAXWriter(final Writer w, final boolean optimizeEmptyElements) {
             this.w = w;
             this.optimizeEmptyElements = optimizeEmptyElements;
         }
 
+        @Override
         public final void startElement(
             final String ns,
             final String localName,
@@ -652,6 +659,7 @@ public class Processor {
             }
         }
 
+        @Override
         public final void endElement(
             final String ns,
             final String localName,
@@ -673,6 +681,7 @@ public class Processor {
             }
         }
 
+        @Override
         public final void endDocument() throws SAXException {
             try {
                 w.flush();
@@ -739,7 +748,7 @@ public class Processor {
 
         /**
          * Encode string with escaping.
-         * 
+         *
          * @param str string to encode.
          * @return encoded string
          */
@@ -823,7 +832,7 @@ public class Processor {
         /**
          * Constructs a new {@link InputSlicingHandler SubdocumentHandler}
          * object.
-         * 
+         *
          * @param subdocumentRoot name/path to the root element of the
          *        subdocument
          * @param rootHandler content handler for the entire document
@@ -833,7 +842,7 @@ public class Processor {
          *        create {@link ContentHandler ContentHandler} instances for
          *        subdocuments.
          */
-        private InputSlicingHandler(
+        InputSlicingHandler(
             final String subdocumentRoot,
             final ContentHandler rootHandler,
             final ContentHandlerFactory subdocumentHandlerFactory)
@@ -843,6 +852,7 @@ public class Processor {
             this.subdocumentHandlerFactory = subdocumentHandlerFactory;
         }
 
+        @Override
         public final void startElement(
             final String namespaceURI,
             final String localName,
@@ -867,6 +877,7 @@ public class Processor {
             }
         }
 
+        @Override
         public final void endElement(
             final String namespaceURI,
             final String localName,
@@ -883,12 +894,14 @@ public class Processor {
             }
         }
 
+        @Override
         public final void startDocument() throws SAXException {
             if (rootHandler != null) {
                 rootHandler.startDocument();
             }
         }
 
+        @Override
         public final void endDocument() throws SAXException {
             if (rootHandler != null) {
                 rootHandler.endDocument();
@@ -896,6 +909,7 @@ public class Processor {
             }
         }
 
+        @Override
         public final void characters(
             final char[] buff,
             final int offset,
@@ -917,7 +931,7 @@ public class Processor {
      * {@link java.net.ContentHandlerFactory ContentHandlerFactory}. This is
      * useful for running XSLT engine against large XML document that will
      * hardly fit into the memory all together.
-     * 
+     *
      * <p> TODO use complete path for subdocumentRoot
      */
     private static final class OutputSlicingHandler extends DefaultHandler {
@@ -936,7 +950,7 @@ public class Processor {
         /**
          * Constructs a new {@link OutputSlicingHandler SubdocumentHandler}
          * object.
-         * 
+         *
          * @param subdocumentHandlerFactory a
          *        {@link ContentHandlerFactory ContentHandlerFactory} used to
          *        create {@link ContentHandler ContentHandler} instances for
@@ -944,7 +958,7 @@ public class Processor {
          * @param entryElement TODO.
          * @param isXml TODO.
          */
-        private OutputSlicingHandler(
+        OutputSlicingHandler(
             final ContentHandlerFactory subdocumentHandlerFactory,
             final EntryElement entryElement,
             final boolean isXml)
@@ -955,6 +969,7 @@ public class Processor {
             this.isXml = isXml;
         }
 
+        @Override
         public final void startElement(
             final String namespaceURI,
             final String localName,
@@ -988,6 +1003,7 @@ public class Processor {
             }
         }
 
+        @Override
         public final void endElement(
             final String namespaceURI,
             final String localName,
@@ -1007,12 +1023,15 @@ public class Processor {
             }
         }
 
+        @Override
         public final void startDocument() throws SAXException {
         }
 
+        @Override
         public final void endDocument() throws SAXException {
         }
 
+        @Override
         public final void characters(
             final char[] buff,
             final int offset,
@@ -1036,7 +1055,7 @@ public class Processor {
     private static final class SingleDocElement implements EntryElement {
         private final OutputStream os;
 
-        private SingleDocElement(final OutputStream os) {
+        SingleDocElement(final OutputStream os) {
             this.os = os;
         }
 
@@ -1053,7 +1072,7 @@ public class Processor {
     private static final class ZipEntryElement implements EntryElement {
         private ZipOutputStream zos;
 
-        private ZipEntryElement(final ZipOutputStream zos) {
+        ZipEntryElement(final ZipOutputStream zos) {
             this.zos = zos;
         }
 

@@ -31,6 +31,7 @@ import org.eclipse.jdt.core.IParent;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JavaProject;
 
+import com.drgarbage.asm.ClassVisitor;
 import com.drgarbage.asm.render.intf.IOutlineElement;
 import com.drgarbage.bytecode.ByteCodeConstants;
 
@@ -42,7 +43,11 @@ import com.drgarbage.bytecode.ByteCodeConstants;
  * @version $Revision: 1523 $
  * $Id: OutlineElement.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
-public class OutlineElement implements IJavaElement, IParent, IOutlineElement {
+public class OutlineElement extends ClassVisitor implements IJavaElement, IParent, IOutlineElement {
+
+	public OutlineElement(int arg0) {
+		super(arg0);
+	}
 
 	/**
 	 * The name of the element

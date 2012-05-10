@@ -64,7 +64,7 @@ public class OutlineElementField extends OutlineElement implements IField, IOutl
 	 * @param parent
 	 */
 	public OutlineElementField(IType parent, IClassFileDocument document, int fieldIndex) {
-		super();
+		super(com.drgarbage.asm.Opcodes.ASM4);
 		this.classFileDocument = document;
 		this.fieldIndex = fieldIndex;
 		setElementType(IJavaElement.FIELD);

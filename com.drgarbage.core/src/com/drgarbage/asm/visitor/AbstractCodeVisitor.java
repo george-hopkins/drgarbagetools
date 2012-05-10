@@ -23,6 +23,7 @@ import com.drgarbage.asm.AnnotationVisitor;
 import com.drgarbage.asm.Attribute;
 import com.drgarbage.asm.Label;
 import com.drgarbage.asm.MethodVisitor;
+import com.drgarbage.asm.Opcodes;
 import com.drgarbage.asm_ext.ICodeVisitor;
 import com.drgarbage.bytecode.ByteCodeConstants;
 import com.drgarbage.bytecode.constant_pool.AbstractConstantPoolEntry;
@@ -33,7 +34,7 @@ import com.drgarbage.bytecode.constant_pool.AbstractConstantPoolEntry;
  * @version $Revision: 1523 $
  * $Id: AbstractCodeVisitor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
-public abstract class AbstractCodeVisitor implements MethodVisitor, ICodeVisitor {
+public abstract class AbstractCodeVisitor extends MethodVisitor implements ICodeVisitor {
 	protected AbstractConstantPoolEntry[] constantPool;
 	protected Set<String> attributeNames;
 
@@ -41,7 +42,7 @@ public abstract class AbstractCodeVisitor implements MethodVisitor, ICodeVisitor
 	 * Constructor.
 	 */
 	public AbstractCodeVisitor() {
-		super();
+		super(Opcodes.ASM4);
 		attributeNames = new HashSet<String>();
 		attributeNames.add(ByteCodeConstants.LINE_NUMBER_TABLE);
 	}

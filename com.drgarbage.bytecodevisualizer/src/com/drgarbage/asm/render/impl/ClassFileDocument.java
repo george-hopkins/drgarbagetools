@@ -38,7 +38,7 @@ import com.drgarbage.bytecode.BytecodeUtils;
 import com.drgarbage.bytecode.ExceptionTableEntry;
 import com.drgarbage.javasrc.JavaKeywords;
 
-public class ClassFileDocument extends AbstractClassFileDocument implements ClassVisitor {
+public class ClassFileDocument extends AbstractClassFileDocument {
 
 	/**
 	 * Renderer Class for Exception Table Objects.

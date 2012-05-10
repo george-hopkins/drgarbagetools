@@ -359,7 +359,7 @@ public class InstructionParser implements Opcodes {
             case OPCODE_DRETURN:
             case OPCODE_ARETURN:
             case OPCODE_RETURN:
-            case OPCODE_XXXUNUSEDXXX:
+//            case OPCODE_XXXUNUSEDXXX:
             case OPCODE_ARRAYLENGTH:
             case OPCODE_ATHROW:
             case OPCODE_MONITORENTER:
@@ -534,6 +534,7 @@ public class InstructionParser implements Opcodes {
             case OPCODE_INVOKEVIRTUAL:
             case OPCODE_INVOKESPECIAL:
             case OPCODE_INVOKESTATIC:
+            case OPCODE_INVOKEDYNAMIC:
             case OPCODE_NEW:
             case OPCODE_ANEWARRAY:
             case OPCODE_CHECKCAST:

@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
  */
 package org.objectweb.asm.optimizer;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -36,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.io.BufferedReader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,19 +48,21 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.commons.EmptyVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * A Jar file optimizer.
- * 
+ *
  * @author Eric Bruneton
  */
 public class JarOptimizer {
 
-    private static final Set API= new HashSet();
-    private static final Map HIERARCHY = new HashMap();
+    static final Set<String> API= new HashSet<String>();
+    static final Map<String, String> HIERARCHY = new HashMap<String, String>();
+    static boolean nodebug = false;
 
     public static void main(final String[] args) throws IOException {
         File f = new File(args[0]);
@@ -80,10 +82,21 @@ public class JarOptimizer {
                 break;
             }
         }
-        optimize(new File(args[1]));
+
+        int argIndex = 1;
+        if (args[argIndex].equals("-nodebug")) {
+            nodebug = true;
+            argIndex++;
+        }
+
+        optimize(new File(args[argIndex]));
     }
 
     static void optimize(final File f) throws IOException {
+        if (nodebug && f.getName().contains("debug")) {
+            return;
+        }
+
         if (f.isDirectory()) {
             File[] files = f.listFiles();
             for (int i = 0; i < files.length; ++i) {
@@ -93,10 +106,10 @@ public class JarOptimizer {
             File g = new File(f.getParentFile(), f.getName() + ".new");
             ZipFile zf = new ZipFile(f);
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(g));
-            Enumeration e = zf.entries();
+            Enumeration<? extends ZipEntry> e = zf.entries();
             byte[] buf = new byte[10000];
             while (e.hasMoreElements()) {
-                ZipEntry ze = (ZipEntry) e.nextElement();
+                ZipEntry ze = e.nextElement();
                 if (ze.isDirectory()) {
                     continue;
                 }
@@ -118,15 +131,24 @@ public class JarOptimizer {
             }
             out.close();
             zf.close();
-            f.delete();
-            g.renameTo(f);
+            if (!f.delete()) {
+                throw new IOException("Cannot delete file " + f);
+            }
+            if (!g.renameTo(f)) {
+                throw new IOException("Cannot rename file " + g);
+            }
         }
     }
 
-    static class ClassDump extends EmptyVisitor {
+    static class ClassDump extends ClassVisitor {
 
         String owner;
 
+        public ClassDump() {
+            super(Opcodes.ASM4);
+        }
+
+        @Override
         public void visit(
             final int version,
             final int access,
@@ -141,6 +163,7 @@ public class JarOptimizer {
             }
         }
 
+        @Override
         public FieldVisitor visitField(
             final int access,
             final String name,
@@ -154,6 +177,7 @@ public class JarOptimizer {
             return null;
         }
 
+        @Override
         public MethodVisitor visitMethod(
             final int access,
             final String name,
@@ -168,11 +192,17 @@ public class JarOptimizer {
         }
     }
 
-    static class ClassVerifier extends EmptyVisitor {
+    static class ClassVerifier extends ClassVisitor {
 
         String owner;
+
         String method;
 
+        public ClassVerifier() {
+            super(Opcodes.ASM4);
+        }
+
+        @Override
         public void visit(
             final int version,
             final int access,
@@ -184,6 +214,7 @@ public class JarOptimizer {
             owner = name;
         }
 
+        @Override
         public MethodVisitor visitMethod(
             final int access,
             final String name,
@@ -192,35 +223,37 @@ public class JarOptimizer {
             final String[] exceptions)
         {
             method = name + desc;
-            return this;
+            return new MethodVisitor(Opcodes.ASM4) {
+                @Override
+                public void visitFieldInsn(
+                    final int opcode,
+                    final String owner,
+                    final String name,
+                    final String desc)
+                {
+                    check(owner, name);
+                }
+
+                @Override
+                public void visitMethodInsn(
+                    final int opcode,
+                    final String owner,
+                    final String name,
+                    final String desc)
+                {
+                    check(owner, name + desc);
+                }
+            };
         }
 
-        public void visitFieldInsn(
-            final int opcode,
-            final String owner,
-            final String name,
-            final String desc)
-        {
-            check(owner, name);
-        }
-
-        public void visitMethodInsn(
-            final int opcode,
-            final String owner,
-            final String name,
-            final String desc)
-        {
-            check(owner, name + desc);
-        }
-
-        private void check(String owner, String member) {
+        void check(String owner, String member) {
             if (owner.startsWith("java/")) {
                 String o = owner;
                 while (o != null) {
                     if (API.contains(o + ' ' + member)) {
                         return;
                     }
-                    o = (String) HIERARCHY.get(o);
+                    o = HIERARCHY.get(o);
                 }
                 System.out.println("WARNING: " + owner + ' ' + member
                         + " called in " + this.owner + ' ' + method

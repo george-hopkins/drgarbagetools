@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,27 +31,37 @@
 package org.objectweb.asm.commons;
 
 import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
- * A <code>ClassAdapter</code> for type remapping.
- * 
+ * A {@link ClassVisitor} for type remapping.
+ *
  * @author Eugene Kuleshov
  */
-public class RemappingClassAdapter extends ClassAdapter {
+public class RemappingClassAdapter extends ClassVisitor {
 
     protected final Remapper remapper;
-    
+
     protected String className;
 
-    public RemappingClassAdapter(ClassVisitor cv, Remapper remapper) {
-        super(cv);
+    public RemappingClassAdapter(final ClassVisitor cv, final Remapper remapper)
+    {
+        this(Opcodes.ASM4, cv, remapper);
+    }
+
+    protected RemappingClassAdapter(
+        final int api,
+        final ClassVisitor cv,
+        final Remapper remapper)
+    {
+        super(api, cv);
         this.remapper = remapper;
     }
 
+    @Override
     public void visit(
         int version,
         int access,
@@ -66,16 +76,18 @@ public class RemappingClassAdapter extends ClassAdapter {
                 remapper.mapType(name),
                 remapper.mapSignature(signature, false),
                 remapper.mapType(superName),
-                interfaces == null ? null 
+                interfaces == null ? null
                         : remapper.mapTypes(interfaces));
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         AnnotationVisitor av;
-        av = super.visitAnnotation(remapper.mapType(desc), visible);
+        av = super.visitAnnotation(remapper.mapDesc(desc), visible);
         return av == null ? null : createRemappingAnnotationAdapter(av);
     }
 
+    @Override
     public FieldVisitor visitField(
         int access,
         String name,
@@ -91,6 +103,7 @@ public class RemappingClassAdapter extends ClassAdapter {
         return fv == null ? null : createRemappingFieldAdapter(fv);
     }
 
+    @Override
     public MethodVisitor visitMethod(
         int access,
         String name,
@@ -107,6 +120,7 @@ public class RemappingClassAdapter extends ClassAdapter {
         return mv == null ? null : createRemappingMethodAdapter(access, newDesc, mv);
     }
 
+    @Override
     public void visitInnerClass(
         String name,
         String outerName,
@@ -119,16 +133,17 @@ public class RemappingClassAdapter extends ClassAdapter {
                 access);
     }
 
+    @Override
     public void visitOuterClass(String owner, String name, String desc) {
-        super.visitOuterClass(remapper.mapType(owner), 
-                name == null ? null : remapper.mapMethodName(owner, name, desc), 
+        super.visitOuterClass(remapper.mapType(owner),
+                name == null ? null : remapper.mapMethodName(owner, name, desc),
                 desc == null ? null : remapper.mapMethodDesc(desc));
     }
 
     protected FieldVisitor createRemappingFieldAdapter(FieldVisitor fv) {
         return new RemappingFieldAdapter(fv, remapper);
     }
-    
+
     protected MethodVisitor createRemappingMethodAdapter(
         int access,
         String newDesc,

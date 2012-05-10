@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,38 +35,49 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Remapper;
 import org.objectweb.asm.commons.SimpleRemapper;
 
 /**
  * A class file shrinker utility.
- * 
+ *
  * @author Eric Bruneton
  * @author Eugene Kuleshov
  */
 public class Shrinker {
 
-    static final Properties MAPPING = new Properties();
-    
+    static final HashMap<String, String> MAPPING = new HashMap<String, String>();
+
     public static void main(final String[] args) throws IOException {
+        Properties properties = new Properties();
         int n = args.length - 1;
         for (int i = 0; i < n - 1; ++i) {
-            MAPPING.load(new FileInputStream(args[i]));
+            properties.load(new FileInputStream(args[i]));
         }
-        final Set unused = new HashSet(MAPPING.keySet());
+
+        for(Map.Entry<Object, Object> entry: properties.entrySet()) {
+            MAPPING.put((String)entry.getKey(), (String)entry.getValue());
+        }
+
+        final Set<String> unused = new HashSet<String>(MAPPING.keySet());
 
         File f = new File(args[n - 1]);
         File d = new File(args[n]);
 
         optimize(f, d, new SimpleRemapper(MAPPING) {
+            @Override
             public String map(String key) {
                 String s = super.map(key);
                 if (s != null) {
@@ -75,10 +86,10 @@ public class Shrinker {
                 return s;
             }
         });
-        
-        Iterator i = unused.iterator();
+
+        Iterator<String> i = unused.iterator();
         while (i.hasNext()) {
-            String s = (String) i.next();
+            String s = i.next();
             if (!s.endsWith("/remove")) {
                 System.out.println("INFO: unused mapping " + s);
             }
@@ -101,37 +112,40 @@ public class Shrinker {
             ClassOptimizer co = new ClassOptimizer(ccc, remapper);
             cr.accept(co, ClassReader.SKIP_DEBUG);
 
-            Set constants = new TreeSet(new ConstantComparator());
+            Set<Constant> constants = new TreeSet<Constant>(new ConstantComparator());
             constants.addAll(cp.values());
 
             cr = new ClassReader(cw.toByteArray());
             cw = new ClassWriter(0);
-            Iterator i = constants.iterator();
+            Iterator<Constant> i = constants.iterator();
             while (i.hasNext()) {
-                Constant c = (Constant) i.next();
+                Constant c = i.next();
                 c.write(cw);
             }
             cr.accept(cw, ClassReader.SKIP_DEBUG);
 
-            if (MAPPING.getProperty(cr.getClassName() + "/remove") != null) {
+            if (MAPPING.get(cr.getClassName() + "/remove") != null) {
                 return;
             }
             String n = remapper.mapType(cr.getClassName());
             File g = new File(d, n + ".class");
             if (!g.exists() || g.lastModified() < f.lastModified()) {
-                g.getParentFile().mkdirs();
+                if (!g.getParentFile().exists() && !g.getParentFile().mkdirs()) {
+                    throw new IOException("Cannot create directory " + g.getParentFile());
+                }
                 OutputStream os = new FileOutputStream(g);
-                os.write(cw.toByteArray());
-                os.close();
+                try {
+                    os.write(cw.toByteArray());
+                } finally {
+                    os.close();
+                }
             }
         }
     }
 
-    static class ConstantComparator implements Comparator {
+    static class ConstantComparator implements Comparator<Constant> {
 
-        public int compare(final Object o1, final Object o2) {
-            Constant c1 = (Constant) o1;
-            Constant c2 = (Constant) o2;
+        public int compare(final Constant c1, final Constant c2) {
             int d = getSort(c1) - getSort(c2);
             if (d == 0) {
                 switch (c1.type) {
@@ -146,6 +160,7 @@ public class Shrinker {
                     case 's':
                     case 'S':
                     case 'C':
+                    case 't':
                         return c1.strVal1.compareTo(c2.strVal1);
                     case 'T':
                         d = c1.strVal1.compareTo(c2.strVal1);
@@ -153,17 +168,77 @@ public class Shrinker {
                             d = c1.strVal2.compareTo(c2.strVal2);
                         }
                         break;
+                    case 'y':
+                        d = c1.strVal1.compareTo(c2.strVal1);
+                        if (d == 0) {
+                            d = c1.strVal2.compareTo(c2.strVal2);
+                            if (d == 0) {
+                                Handle bsm1 = (Handle)c1.objVal3;
+                                Handle bsm2 = (Handle)c2.objVal3;
+                                d = compareHandle(bsm1, bsm2);
+                                if (d == 0) {
+                                    d = compareObjects(c1.objVals, c2.objVals);
+                                }
+                            }
+                        }
+                        break;
+
                     default:
                         d = c1.strVal1.compareTo(c2.strVal1);
                         if (d == 0) {
                             d = c1.strVal2.compareTo(c2.strVal2);
                             if (d == 0) {
-                                d = c1.strVal3.compareTo(c2.strVal3);
+                                d = ((String)c1.objVal3).compareTo((String)c2.objVal3);
                             }
                         }
                 }
             }
             return d;
+        }
+
+        private static int compareHandle(Handle h1, Handle h2) {
+            int d = h1.getTag() - h2.getTag();
+            if (d == 0) {
+                d = h1.getOwner().compareTo(h2.getOwner());
+                if (d == 0) {
+                    d = h1.getName().compareTo(h2.getName());
+                    if (d == 0) {
+                        d = h1.getDesc().compareTo(h2.getDesc());
+                    }
+                }
+            }
+            return d;
+        }
+
+        private static int compareType(Type mtype1, Type mtype2) {
+            return mtype1.getDescriptor().compareTo(mtype2.getDescriptor());
+        }
+
+        private static int compareObjects(Object[] objVals1, Object[] objVals2)
+        {
+            int length = objVals1.length;
+            int d = length - objVals2.length;
+            if (d == 0) {
+                for(int i=0; i<length; i++) {
+                    Object objVal1 = objVals1[i];
+                    Object objVal2 = objVals2[i];
+                    d = objVal1.getClass().getName().compareTo(objVal2.getClass().getName());
+                    if (d == 0) {
+                        if (objVal1 instanceof Type) {
+                            d = compareType((Type) objVal1, (Type) objVal2);
+                        } else if (objVal1 instanceof Handle) {
+                            d = compareHandle((Handle) objVal1,(Handle) objVal2);
+                        } else {
+                            d = ((Comparable) objVal1).compareTo(objVal2);
+                        }
+                    }
+
+                    if (d != 0) {
+                        return d;
+                    }
+                }
+            }
+            return 0;
         }
 
         private static int getSort(final Constant c) {
@@ -188,8 +263,14 @@ public class Shrinker {
                     return 8;
                 case 'M':
                     return 9;
-                default:
+                case 'N':
                     return 10;
+                case 'y':
+                    return 11;
+                case 't':
+                    return 12;
+                default:
+                    return 100 + c.type - 'h';
             }
         }
     }

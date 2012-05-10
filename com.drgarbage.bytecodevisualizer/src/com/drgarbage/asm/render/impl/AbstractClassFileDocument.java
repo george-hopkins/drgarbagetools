@@ -33,6 +33,7 @@ import org.osgi.framework.Bundle;
 
 import com.drgarbage.asm.AnnotationVisitor;
 import com.drgarbage.asm.Attribute;
+import com.drgarbage.asm.ClassVisitor;
 import com.drgarbage.asm.FieldVisitor;
 import com.drgarbage.asm.Label;
 import com.drgarbage.asm.MethodVisitor;
@@ -47,7 +48,6 @@ import com.drgarbage.asm.render.intf.IMethodSection;
 import com.drgarbage.asm.render.intf.ITryBlock;
 import com.drgarbage.asm.signature.SignatureReader;
 import com.drgarbage.asm.signature.SignatureVisitor;
-import com.drgarbage.asm.util.Traceable;
 import com.drgarbage.asm_ext.ICodeVisitor;
 import com.drgarbage.asm_ext.IConstantPoolVisitor;
 import com.drgarbage.asm_ext.ILocalVariableTableVisitor;
@@ -67,7 +67,10 @@ import com.drgarbage.bytecode.constant_pool.ConstantFieldrefInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantFloatInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantIntegerInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantInterfaceMethodrefInfo;
+import com.drgarbage.bytecode.constant_pool.ConstantInvokeDynamicInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantLongInfo;
+import com.drgarbage.bytecode.constant_pool.ConstantMethodHandleInfo;
+import com.drgarbage.bytecode.constant_pool.ConstantMethodTypeInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantMethodrefInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantNameAndTypeInfo;
 import com.drgarbage.bytecode.constant_pool.ConstantStringInfo;
@@ -95,14 +98,14 @@ import com.drgarbage.javasrc.JavaKeywords;
 import com.drgarbage.javasrc.JavaLexicalConstants;
 import com.drgarbage.javasrc.JavaSourceUtils;
 
-public abstract class AbstractClassFileDocument 
+public abstract class AbstractClassFileDocument extends ClassVisitor
 	implements com.drgarbage.asm.Opcodes, 
 		IClassFileDocument, 
 		IConstantPoolVisitor,
 		BytecodeVisualizerPreferenceConstats
 	{
 
-	protected abstract class AbstractClassFileElement {
+	protected abstract class AbstractClassFileElement extends MethodVisitor {
 	
 	
 	    // ------------------------------------------------------------------------
@@ -110,7 +113,11 @@ public abstract class AbstractClassFileDocument
 	    // ------------------------------------------------------------------------
 	
 	
-	    /**
+	    public AbstractClassFileElement(int arg0) {
+			super(arg0);
+		}
+
+		/**
 	     * Appends an internal name, a type descriptor or a type signature to
 	     * {@link #buf buf}.
 	     * 
@@ -127,7 +134,7 @@ public abstract class AbstractClassFileDocument
 	}
 
 	protected abstract class AbstractMethodRenderer extends AbstractClassFileElement implements
-	    MethodVisitor, com.drgarbage.asm.Opcodes, ICodeVisitor, 
+	    com.drgarbage.asm.Opcodes, ICodeVisitor, 
 	    ILocalVariableTableVisitor, IMethodSection
 	    {
 	
@@ -490,6 +497,7 @@ public abstract class AbstractClassFileDocument
 	         *        calls. May be <tt>null</tt>.
 	         */
 	        public AbstractMethodRenderer(int access, String name, String descriptor, String signature, String[] exceptions, final MethodVisitor mv) {
+	        	super(com.drgarbage.asm.Opcodes.ASM4);
 				this.access = access;
 				this.name = name;
 				this.descriptor = descriptor;
@@ -1310,8 +1318,7 @@ public abstract class AbstractClassFileDocument
 
 	    }
 
-	protected class AnnotationRenderer extends AbstractClassFileElement implements
-    AnnotationVisitor
+	protected class AnnotationRenderer extends AnnotationVisitor
     {
         /**
          * The {@link AnnotationVisitor} to which this visitor delegates calls. May
@@ -1325,6 +1332,7 @@ public abstract class AbstractClassFileDocument
          * Constructs a new {@link AnnotationRenderer}.
          */
         public AnnotationRenderer() {
+        	super(com.drgarbage.asm.Opcodes.ASM4);
         }
 
         // ------------------------------------------------------------------------
@@ -1537,8 +1545,8 @@ public abstract class AbstractClassFileDocument
         }
     }
 
-	protected class FieldRenderer extends AbstractClassFileElement implements
-    FieldVisitor, IFieldSection
+	protected class FieldRenderer extends FieldVisitor implements
+    IFieldSection
     {
         /**
 		 * Type signature.
@@ -1554,7 +1562,7 @@ public abstract class AbstractClassFileDocument
 		
 		
 		public FieldRenderer(String name, String descriptor, int documentLine) {
-			super();
+	    	super(com.drgarbage.asm.Opcodes.ASM4);
 			this.name = name;
 			this.descriptor = descriptor;
 			this.documentLine = documentLine;
@@ -1801,6 +1809,31 @@ public abstract class AbstractClassFileDocument
 									const_ = JavaKeywords.INSTANCEOF + JavaLexicalConstants.SPACE + className;
 								}
 							}
+							else if (cpInfo instanceof ConstantMethodHandleInfo) {
+//								ConstantMethodHandleInfo constantMethodHandleInfo = (ConstantMethodHandleInfo) cpInfo;
+//								int index = constantMethodHandleInfo.getReferenceIndex();
+							}
+							else if (cpInfo instanceof ConstantMethodTypeInfo) {
+								ConstantMethodTypeInfo constantMethodTypeInfo = (ConstantMethodTypeInfo) cpInfo;
+								String descriptor = ((ConstantUtf8Info)constantPool[constantMethodTypeInfo.getDescriptorIndex()]).getString();
+								const_ = descriptor;
+							}
+							else if (cpInfo instanceof ConstantInvokeDynamicInfo) {
+								ConstantInvokeDynamicInfo constantInvokeDynamicInfo = (ConstantInvokeDynamicInfo) cpInfo;
+								ConstantNameAndTypeInfo nameAndTypeInfo = (ConstantNameAndTypeInfo)constantPool[constantInvokeDynamicInfo.getNameAndTypeIndex()];
+								String nameAndType_name = ((ConstantUtf8Info)constantPool[nameAndTypeInfo.getNameIndex()]).getString();
+								String nameAndType_descr = ((ConstantUtf8Info)constantPool[nameAndTypeInfo.getDescriptorIndex()]).getString();
+								
+								StringBuilder sb = new StringBuilder();
+								boolean isConstructor = false;
+								boolean isStatic = false;
+								BytecodeUtils.appendMethodDescriptor(nameAndType_name, isConstructor, isStatic, nameAndType_descr, 
+										0, 
+										methodRenderer.localVariableTable,
+										constantPool, 
+										sb);
+								const_ = sb.toString();
+							}
 							else {
 								throw new RuntimeException("invalid type "+ cpInfo.getClass());
 							}
@@ -2019,7 +2052,7 @@ public abstract class AbstractClassFileDocument
 	
 	
 		}
-	protected class SignatureRenderer implements SignatureVisitor {
+	protected class SignatureRenderer extends SignatureVisitor {
 	
 	
 		/**
@@ -2056,11 +2089,13 @@ public abstract class AbstractClassFileDocument
 	    private String separator = "";
 	
 	    public SignatureRenderer(final int access) {
+	    	super(com.drgarbage.asm.Opcodes.ASM4);
 	        isInterface = (access & ACC_INTERFACE) != 0;
 	        this.declaration = new StringBuffer();
 	    }
 	
 	    private SignatureRenderer(final StringBuffer buf) {
+	    	super(com.drgarbage.asm.Opcodes.ASM4);
 	        this.declaration = buf;
 	    }
 	
@@ -2497,7 +2532,7 @@ public abstract class AbstractClassFileDocument
 	
 	
 	public AbstractClassFileDocument() {
-		super();
+    	super(com.drgarbage.asm.Opcodes.ASM4);
 		
 		/* initialize preferences */
 		if (BytecodeVisualizerPlugin.getDefault() != null) {
@@ -2814,12 +2849,6 @@ public abstract class AbstractClassFileDocument
 		Bundle bundle = BytecodeVisualizerPlugin.getDefault().getBundle();
 		
 		bundle = Platform.getBundle(CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID);
-		if (bundle != null) {
-			/* com.drgarbage.bytecodevisualizer installed
-			 * look if its license is valid */
-			// TODO: license handling
-		}
-		
 		if (bundle == null) {
 			/* this should not happen */
 			throw new RuntimeException(""+ CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID +" not installed.");
@@ -3357,9 +3386,9 @@ public abstract class AbstractClassFileDocument
     	appendCommentEnd();
     	appendNewline();
 
-        if (attr instanceof Traceable) {
-            ((Traceable) attr).trace(sb, null);
-        }
+//        if (attr instanceof Traceable) {
+//            ((Traceable) attr).trace(sb, null);
+//        }
     }
 	public void visitConstantPool(final byte[] bytes, int offset, int entryCount) {
     	if (bytes == null || entryCount == 0) {
