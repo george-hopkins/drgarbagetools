@@ -17,7 +17,7 @@
 package com.drgarbage.ast;
 
 /**
- * AST node Visitor used by the ASTExplorer
+ * AST node Visitor.
  */
 
 import java.util.List;
@@ -163,17 +163,14 @@ public class ASTExplorerVisitor extends ASTVisitor {
 		/* set image */
 		child.setImage(getImage(node));
 
-		// Comments that have null parent are not visited and do not show in the Tree. 
-		// If you would like to see them under the Compilation Unit node, uncomment the
-		// code below:
-	//	if (node instanceof CompilationUnit) 
-	//		visitComments((CompilationUnit)node);
-	}
+	}	
 	
-	
+	/**
+	 * Returns an image corresponding to the AST element.
+	 * @param node
+	 * @return image
+	 */
 	private Image getImage(ASTNode node){
-		
-		
 		switch(node.getNodeType()){
 		case ASTNode.COMPILATION_UNIT:
 			return JavaPluginImages.DESC_OBJS_CUNIT.createImage();
@@ -220,17 +217,11 @@ public class ASTExplorerVisitor extends ASTVisitor {
 		return JavaPluginImages.DESC_FIELD_PRIVATE.createImage();
 	}
 	
-	private void visitComments(CompilationUnit node) {
-		List comments = ((CompilationUnit)node).getCommentList();
-		if (comments != null) {
-			for (int i=0; i < comments.size(); ++i) {
-				Comment comment = (Comment) comments.get(i);
-				if (comment != null && comment.getParent() == null) 
-					comment.accept(this);
-			}
-		}
-	}
-	
+	/**
+	 * Returns nodes as a string.
+	 * @param node
+	 * @return string
+	 */
 	static private String getNodeAsString(ASTNode node) {
 		String className = node.getClass().getName();
 		int index = className.lastIndexOf(".");
@@ -318,7 +309,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 		this.stack.pop();
 	}
 
-
 	/**
 	 * Visits the given type-specific AST node.
 	 * <p>
@@ -328,9 +318,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(AnnotationTypeDeclaration node) {
 		return isVisitChildren();
@@ -346,9 +334,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(AnnotationTypeMemberDeclaration node) {
 		return isVisitChildren();
@@ -363,8 +349,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(AnonymousClassDeclaration node) {
 		return isVisitChildren();
@@ -379,8 +364,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ArrayAccess node) {
 		return isVisitChildren();
@@ -395,8 +379,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ArrayCreation node) {
 		return isVisitChildren();
@@ -411,8 +394,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ArrayInitializer node) {
 		return isVisitChildren();
@@ -427,8 +409,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ArrayType node) {
 		return isVisitChildren();
@@ -443,8 +424,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(AssertStatement node) {
 		return isVisitChildren();
@@ -459,8 +439,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(Assignment node) {
 		return isVisitChildren();
@@ -475,8 +454,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(Block node) {
 		return isVisitChildren();
@@ -492,9 +470,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(BlockComment node) {
 		return isVisitChildren();
@@ -509,8 +485,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(BooleanLiteral node) {
 		return isVisitChildren();
@@ -525,8 +500,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(BreakStatement node) {
 		return isVisitChildren();
@@ -541,8 +515,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(CastExpression node) {
 		return isVisitChildren();
@@ -557,8 +530,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(CatchClause node) {
 		return isVisitChildren();
@@ -573,8 +545,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(CharacterLiteral node) {
 		return isVisitChildren();
@@ -589,8 +560,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ClassInstanceCreation node) {
 		return isVisitChildren();
@@ -605,8 +575,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(CompilationUnit node) {
 		return isVisitChildren();
@@ -621,8 +590,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ConditionalExpression node) {
 		return isVisitChildren();
@@ -637,8 +605,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ConstructorInvocation node) {
 		return isVisitChildren();
@@ -653,8 +620,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ContinueStatement node) {
 		return isVisitChildren();
@@ -669,8 +635,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(DoStatement node) {
 		return isVisitChildren();
@@ -685,8 +650,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(EmptyStatement node) {
 		return isVisitChildren();
@@ -701,9 +665,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(EnhancedForStatement node) {
 		return isVisitChildren();
@@ -718,9 +680,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(EnumConstantDeclaration node) {
 		return isVisitChildren();
@@ -735,9 +695,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(EnumDeclaration node) {
 		return isVisitChildren();
@@ -752,8 +710,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ExpressionStatement node) {
 		return isVisitChildren();
@@ -768,8 +725,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(FieldAccess node) {
 		return isVisitChildren();
@@ -784,8 +740,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(FieldDeclaration node) {
 		return isVisitChildren();
@@ -800,8 +755,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ForStatement node) {
 		return isVisitChildren();
@@ -816,8 +770,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(IfStatement node) {
 		return isVisitChildren();
@@ -832,8 +785,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ImportDeclaration node) {
 		return isVisitChildren();
@@ -848,8 +800,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(InfixExpression node) {
 		return isVisitChildren();
@@ -864,8 +815,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(InstanceofExpression node) {
 		return isVisitChildren();
@@ -880,8 +830,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(Initializer node) {
 		return isVisitChildren();
@@ -889,20 +838,10 @@ public class ASTExplorerVisitor extends ASTVisitor {
 
 	/**
 	 * Visits the given AST node.
-	 * <p>
-	 * Unlike other node types, the boolean returned by the default
-	 * implementation is controlled by a constructor-supplied
-	 * parameter  {@link #ASTVisitor(boolean) ASTVisitor(boolean)} 
-	 * which is <code>false</code> by default.
-	 * Subclasses may reimplement.
-	 * </p>
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @see #ASTVisitor()
-	 * @see #ASTVisitor(boolean)
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(Javadoc node) {
 		return isVisitChildren();
@@ -917,8 +856,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(LabeledStatement node) {
 		return isVisitChildren();
@@ -934,9 +872,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(LineComment node) {
 		return isVisitChildren();
@@ -952,9 +888,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(MarkerAnnotation node) {
 		return isVisitChildren();
@@ -970,9 +904,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(MemberRef node) {
 		return isVisitChildren();
@@ -988,9 +920,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(MemberValuePair node) {
 		return isVisitChildren();
@@ -1006,9 +936,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(MethodRef node) {
 		return isVisitChildren();
@@ -1024,9 +952,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(MethodRefParameter node) {
 		return isVisitChildren();
@@ -1042,8 +968,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(MethodDeclaration node) {
 		return isVisitChildren();
@@ -1058,8 +983,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(MethodInvocation node) {
 		return isVisitChildren();
@@ -1075,9 +999,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(Modifier node) {
 		return isVisitChildren();
@@ -1093,9 +1015,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(NormalAnnotation node) {
 		return isVisitChildren();
@@ -1110,8 +1030,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(NullLiteral node) {
 		return isVisitChildren();
@@ -1126,8 +1045,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(NumberLiteral node) {
 		return isVisitChildren();
@@ -1142,8 +1060,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(PackageDeclaration node) {
 		return isVisitChildren();
@@ -1159,9 +1076,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ParameterizedType node) {
 		return isVisitChildren();
@@ -1176,8 +1091,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ParenthesizedExpression node) {
 		return isVisitChildren();
@@ -1192,8 +1106,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(PostfixExpression node) {
 		return isVisitChildren();
@@ -1208,8 +1121,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(PrefixExpression node) {
 		return isVisitChildren();
@@ -1224,8 +1136,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(PrimitiveType node) {
 		return isVisitChildren();
@@ -1240,8 +1151,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(QualifiedName node) {
 		return isVisitChildren();
@@ -1256,9 +1166,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(QualifiedType node) {
 		return isVisitChildren();
@@ -1273,8 +1181,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ReturnStatement node) {
 		return isVisitChildren();
@@ -1289,8 +1196,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(SimpleName node) {
 		return isVisitChildren();
@@ -1305,8 +1211,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(SimpleType node) {
 		return isVisitChildren();
@@ -1322,9 +1227,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(SingleMemberAnnotation node) {
 		return isVisitChildren();
@@ -1340,8 +1243,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(SingleVariableDeclaration node) {
 		return isVisitChildren();
@@ -1356,8 +1258,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(StringLiteral node) {
 		return isVisitChildren();
@@ -1372,8 +1273,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(SuperConstructorInvocation node) {
 		return isVisitChildren();
@@ -1388,8 +1288,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(SuperFieldAccess node) {
 		return isVisitChildren();
@@ -1404,8 +1303,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(SuperMethodInvocation node) {
 		return isVisitChildren();
@@ -1420,8 +1318,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(SwitchCase node) {
 		return isVisitChildren();
@@ -1436,8 +1333,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(SwitchStatement node) {
 		return isVisitChildren();
@@ -1452,8 +1348,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(SynchronizedStatement node) {
 		return isVisitChildren();
@@ -1469,9 +1364,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(TagElement node) {
 		return isVisitChildren();
@@ -1487,9 +1380,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(TextElement node) {
 		return isVisitChildren();
@@ -1505,8 +1396,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ThisExpression node) {
 		return isVisitChildren();
@@ -1521,8 +1411,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(ThrowStatement node) {
 		return isVisitChildren();
@@ -1537,8 +1426,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(TryStatement node) {
 		return isVisitChildren();
@@ -1553,8 +1441,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(TypeDeclaration node) {
 		return isVisitChildren();
@@ -1569,8 +1456,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(TypeDeclarationStatement node) {
 		return isVisitChildren();
@@ -1585,8 +1471,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(TypeLiteral node) {
 		return isVisitChildren();
@@ -1601,9 +1486,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(TypeParameter node) {
 		return isVisitChildren();
@@ -1618,8 +1501,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(VariableDeclarationExpression node) {
 		return isVisitChildren();
@@ -1634,8 +1516,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(VariableDeclarationStatement node) {
 		return isVisitChildren();
@@ -1650,8 +1531,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(VariableDeclarationFragment node) {
 		return isVisitChildren();
@@ -1666,8 +1546,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(WhileStatement node) {
 		return isVisitChildren();
@@ -1682,9 +1561,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 * @since 3.0
+	 * visited, otherwise <code>false</code>.
 	 */
 	public boolean visit(WildcardType node) {
 		return isVisitChildren();
@@ -1697,10 +1574,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(AnnotationTypeDeclaration node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1710,10 +1585,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(AnnotationTypeMemberDeclaration node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1725,7 +1598,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(AnonymousClassDeclaration node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1737,7 +1609,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ArrayAccess node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1749,7 +1620,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ArrayCreation node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1761,7 +1631,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ArrayInitializer node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1773,7 +1642,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ArrayType node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1785,7 +1653,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(AssertStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1797,7 +1664,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(Assignment node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1809,7 +1675,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(Block node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -1819,10 +1684,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(BlockComment node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1834,7 +1697,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(BooleanLiteral node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1846,7 +1708,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(BreakStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1858,7 +1719,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(CastExpression node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1870,7 +1730,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(CatchClause node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1882,7 +1741,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(CharacterLiteral node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1894,7 +1752,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ClassInstanceCreation node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1906,7 +1763,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(CompilationUnit node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1918,7 +1774,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ConditionalExpression node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1930,7 +1785,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ConstructorInvocation node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1942,7 +1796,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ContinueStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1954,7 +1807,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(DoStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -1966,7 +1818,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(EmptyStatement node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -1976,10 +1827,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(EnhancedForStatement node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -1989,10 +1838,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(EnumConstantDeclaration node) {
-		// default implementation: do nothing
 	}	
 	
 	/**
@@ -2002,10 +1849,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(EnumDeclaration node) {
-		// default implementation: do nothing
 	}	
 
 	/**
@@ -2017,7 +1862,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ExpressionStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2029,7 +1873,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(FieldAccess node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2041,7 +1884,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(FieldDeclaration node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2053,7 +1895,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ForStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2065,7 +1906,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(IfStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2077,7 +1917,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ImportDeclaration node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2089,7 +1928,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(InfixExpression node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2101,7 +1939,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(InstanceofExpression node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2113,7 +1950,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(Initializer node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2125,7 +1961,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(Javadoc node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2137,7 +1972,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(LabeledStatement node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2147,10 +1981,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(LineComment node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2160,10 +1992,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(MarkerAnnotation node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2173,10 +2003,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(MemberRef node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2186,10 +2014,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(MemberValuePair node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2199,10 +2025,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(MethodRef node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2212,10 +2036,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(MethodRefParameter node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2227,7 +2049,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(MethodDeclaration node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2239,7 +2060,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(MethodInvocation node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2249,10 +2069,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(Modifier node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2262,10 +2080,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(NormalAnnotation node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2277,7 +2093,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(NullLiteral node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2289,7 +2104,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(NumberLiteral node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2301,7 +2115,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(PackageDeclaration node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2311,10 +2124,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(ParameterizedType node) {
-		// default implementation: do nothing
 	}	
 
 	/**
@@ -2326,7 +2137,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ParenthesizedExpression node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2338,7 +2148,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(PostfixExpression node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2350,7 +2159,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(PrefixExpression node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2362,7 +2170,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(PrimitiveType node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2374,7 +2181,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(QualifiedName node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2384,10 +2190,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(QualifiedType node) {
-		// default implementation: do nothing
 	}	
 
 	/**
@@ -2399,7 +2203,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ReturnStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2411,7 +2214,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(SimpleName node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2423,7 +2225,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(SimpleType node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2433,10 +2234,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(SingleMemberAnnotation node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2448,7 +2247,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(SingleVariableDeclaration node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2460,7 +2258,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(StringLiteral node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2472,7 +2269,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(SuperConstructorInvocation node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2484,7 +2280,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(SuperFieldAccess node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2496,7 +2291,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(SuperMethodInvocation node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2508,7 +2302,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(SwitchCase node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2520,7 +2313,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(SwitchStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2532,7 +2324,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(SynchronizedStatement node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2542,10 +2333,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(TagElement node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2555,10 +2344,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(TextElement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2570,7 +2357,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ThisExpression node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2582,7 +2368,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ThrowStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2594,7 +2379,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(TryStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2606,7 +2390,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(TypeDeclaration node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2618,7 +2401,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(TypeDeclarationStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2630,7 +2412,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(TypeLiteral node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2640,10 +2421,8 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(TypeParameter node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2655,7 +2434,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(VariableDeclarationExpression node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2667,7 +2445,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(VariableDeclarationStatement node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2679,7 +2456,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(VariableDeclarationFragment node) {
-		// default implementation: do nothing
 	}
 
 	/**
@@ -2691,7 +2467,6 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param node the node to visit
 	 */
 	public void endVisit(WhileStatement node) {
-		// default implementation: do nothing
 	}
 	
 	/**
@@ -2701,9 +2476,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * </p>
 	 * 
 	 * @param node the node to visit
-	 * @since 3.0
 	 */
 	public void endVisit(WildcardType node) {
-		// default implementation: do nothing
 	}
 }

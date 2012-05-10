@@ -16,9 +16,6 @@
 
 package com.drgarbage.ast;
 
-/**
- * Parses a source file and displays its nodes in a SWT Tree widget
-*/
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -33,7 +30,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
@@ -61,12 +57,25 @@ import com.drgarbage.core.CorePlugin;
 import com.drgarbage.core.IExternalCommunication;
 import com.drgarbage.utils.Messages;
 
+/**
+ * Parses a source file and creates a tree.
+ */
 public class ASTExplorer extends Composite {
+	
+	/**
+	 * AST Eclipse parser.
+	 */
+	private final ASTParser parser = ASTParser.newParser(AST.JLS3);
 	
 	AbstractDecoratedTextEditor editorPart;
 	private Tree treeControl;
-	private TreeItem[] selectedItems = null;
+	private TreeItem[] selectedItems = null;	
 		
+	/**
+	 * Constructor.
+	 * @param parent
+	 * @param style
+	 */
 	public ASTExplorer(Composite parent,int style) {
 		super(parent,style);		
 		GridLayout gridLayout = new GridLayout();
@@ -101,7 +110,6 @@ public class ASTExplorer extends Composite {
 			 * @see org.eclipse.jface.action.Action#run()
 			 */
 			public void run() {
-				System.out.println("run");
 				if(selectedItems != null && selectedItems.length == 1){
 					selectedItems[0].setExpanded(true);
 					IDirectedGraphExt graph = 	createGraphFromASTtree(selectedItems[0]);
@@ -140,16 +148,16 @@ public class ASTExplorer extends Composite {
 		};
 		mm.add(action);
 		
-		mm.add(new Separator());
-		
-		action = new Action("hello2"){};
-		mm.add(action);
-		
 		Menu menu = mm.createContextMenu(treeControl);
 		treeControl.setMenu(menu);
 		
 	}
 	
+	/**
+	 * Creates graphs from the tree view.
+	 * @param item
+	 * @return
+	 */
 	private IDirectedGraphExt createGraphFromASTtree(TreeItem item){
 		IDirectedGraphExt cfg = GraphExtentionFactory.createDirectedGraphExtention();
 		INodeListExt nodes = cfg.getNodeList();
@@ -160,9 +168,7 @@ public class ASTExplorer extends Composite {
 		root.setToolTipText(item.getText());
 		root.setVertexType(INodeType.NODE_TYPE_SIMPLE);
 		nodes.add(root);
-		item.setData(root); /* set reference*/
-		
-		System.out.println("CR ROOT: " + item.getText());		
+		item.setData(root); /* set reference*/	
 		
 		for(TreeItem i: item.getItems()){
 			createGraphFromASTtree(item, i, nodes, edges);
@@ -171,6 +177,13 @@ public class ASTExplorer extends Composite {
 		return cfg;
 	}
 		
+	/**
+	 * Creates graphs from the tree view.
+	 * @param parent
+	 * @param item
+	 * @param nodes
+	 * @param edges
+	 */
 	private void createGraphFromASTtree(TreeItem parent, TreeItem item, INodeListExt nodes, IEdgeListExt edges){
 		
 		System.out.println("CR NODE: " + item.getText());	
@@ -195,19 +208,40 @@ public class ASTExplorer extends Composite {
 		}
 	}
 	
+	/**
+	 * Resets the tree view.
+	 */
 	private void reset() {
 		treeControl.removeAll();
 	}
 	
+	/**
+	 * Sets source.
+	 * @param source
+	 * @throws InterruptedException
+	 * @throws InvocationTargetException
+	 */
 	public void setSource(ICompilationUnit source) throws InterruptedException, InvocationTargetException {
 		createContent(source, null);
 	}
+	
+	/**
+	 * Sets the source.
+	 * @param source
+	 * @throws InterruptedException
+	 * @throws InvocationTargetException
+	 */
 	public void setSource(IClassFile source) throws InterruptedException, InvocationTargetException {
 		createContent(null, source);
 	}
 	
-	private final ASTParser parser = ASTParser.newParser(AST.JLS3);
-	
+	/**
+	 * Creates content for the view.
+	 * @param compilationUnit
+	 * @param classFile
+	 * @throws InvocationTargetException
+	 * @throws InterruptedException
+	 */
 	private void createContent(final ICompilationUnit compilationUnit, final IClassFile classFile) throws InvocationTargetException, InterruptedException{
 		reset();
 		ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
@@ -231,34 +265,7 @@ public class ASTExplorer extends Composite {
 					getDisplay().syncExec(new Runnable() {
 						public void run() {
 							ASTVisitor visitor = new ASTExplorerVisitor(treeControl,monitor);
-							node.accept(visitor);
-//							if (!monitor.isCanceled()) {
-//								textControl.setText(text);	
-//								IProblem[] errors = node.getProblems();
-//								if (errors != null && errors.length > 0) {
-//									problems = errors;
-//									int startSelection = -1;
-//									StringBuffer msg = new StringBuffer(); 
-//									for (int i=0; i < problems.length; ++i) {
-//										IProblem problem = problems[i];
-//										StyleRange errorRange = createRange(problem.getSourceStart(),
-//													problem.getSourceEnd() - problem.getSourceStart() + 1,red);
-//										textControl.setStyleRange(errorRange);
-//										if (startSelection < 0 || errorRange.start < startSelection)
-//											startSelection = errorRange.start;
-//										
-//										String message = problem.getMessage() + " line: " + 
-//												problem.getSourceLineNumber();	
-//										msg.append(message);
-//										msg.append("\n");
-//									}
-//									if (startSelection >= 0)
-//										textControl.setSelection(startSelection);
-//									
-//									if (msg.length() > 0)
-//										errorsTextControl.setText(msg.toString());
-//								}
-//							}	
+							node.accept(visitor);	
 						}
 					}); 					
 
@@ -266,13 +273,18 @@ public class ASTExplorer extends Composite {
 		});	
 	}
 
-	// do not allow layout modifications
+	/* (non-Javadoc)
+	 * @see org.eclipse.swt.widgets.Composite#setLayout(org.eclipse.swt.widgets.Layout)
+	 */
 	public void setLayout(Layout layout) {
 	}
 	
+	/**
+	 * Sets the editor pasrt.
+	 * @param the editor part
+	 */
 	public void setEditorPart(AbstractDecoratedTextEditor cue) {
 		editorPart = cue;
-		
 	}
 
 }

@@ -59,4 +59,27 @@
          </action>
       </editorContribution>      
    </extension>
+   <!--
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="%category.Dr_Garbage"
+            id="com.drgabage.bytecodevisualizer.category.controlflowgraph_view">
+      </category>
+      <view
+            allowMultiple="false"
+            category="com.drgabage.bytecodevisualizer.category.controlflowgraph_view"
+            class="com.drgarbage.core.views.ASTView"
+            icon="$nl$/com/drgarbage/core/img/bytecode-viewer-16x16.png"
+            id="com.drgabage.bytecodevisualizer.view.ast_view"
+            name="%view.AST_View">
+      </view>
+      <stickyView
+            closeable="true"
+            id="com.drgabage.bytecodevisualizer.view.ast_view"
+            location="RIGHT"
+            moveable="true">
+      </stickyView>
+   </extension>
+   -->
 </plugin>

@@ -17,24 +17,14 @@
 package com.drgarbage.core.views;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -51,22 +41,15 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
 import com.drgarbage.ast.ASTExplorer;
 import com.drgarbage.core.CoreConstants;
+import com.drgarbage.core.CorePlugin;
 
 /**
- * @author sa
- *
+ * Simple AST View
  */
 public class ASTView extends ViewPart {
 	
-	private ITypeRoot activeTypeRoot;
-	private IJavaElement activeJavaElement;
-	private static ASTParser parser;
-	
-	static {
-		parser = ASTParser.newParser(AST.JLS3);
-	}
-	
-	ASTExplorer astExplorer;
+	private ITypeRoot activeTypeRoot;	
+	private ASTExplorer astExplorer;
 
 	/**
 	 * Windows listener implementation.
@@ -144,9 +127,6 @@ public class ASTView extends ViewPart {
 					!part.getSite().getId().equals(CoreConstants.BYTECODE_VISUALIZER_EDITOR_ID)){
 				return;
 			}
-			
-//			System.out.println("post selectionChanged: " + part.getSite().getId());
-//			System.out.println("post selection: " + selection);
 
 			IEditorPart editorPart = (IEditorPart)part;
 			ITypeRoot typeRoot = EditorUtility.getEditorInputJavaElement(editorPart, false);
@@ -164,49 +144,10 @@ public class ASTView extends ViewPart {
 					astExplorer.setEditorPart((AbstractDecoratedTextEditor) part);
 					
 				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (InvocationTargetException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,CorePlugin.PLUGIN_ID, e1.getMessage(), e1));
+				} catch (InvocationTargetException e2) {
+					CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,CorePlugin.PLUGIN_ID, e2.getMessage(), e2));
 				}
-			}
-			
-			ITextSelection textSelection = (ITextSelection) selection;			
-			int position = textSelection.getOffset(); 
-			try {
-				IJavaElement javaElement = typeRoot.getElementAt(position);
-				System.out.println("javaElement: " + javaElement);
-				if(activeJavaElement == null ||activeJavaElement != javaElement){
-					activeJavaElement = javaElement;
-				}
-				else{
-					return;
-				}
-				
-				
-				if(javaElement != null && javaElement.getElementType() == IJavaElement.METHOD){
-					IMethod method = (IMethod)javaElement;
-					try {
-						System.out.println(method.getSource());
-						parser.setSource(method.getSource().toCharArray());
-						parser.setKind(ASTParser.K_CLASS_BODY_DECLARATIONS);
-						ASTNode astNode = parser.createAST(null);
-						
-						System.out.println(astNode);
-						
-						createGraphFromAST((TypeDeclaration) astNode);
-						
-					} catch (JavaModelException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				}
-				
-			} catch (JavaModelException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 
@@ -237,7 +178,6 @@ public class ASTView extends ViewPart {
 	 */
 	@Override
 	public void setFocus() {
-		System.out.println("setFocus");
 	}
 	
 	/* (non-Javadoc)
@@ -270,26 +210,5 @@ public class ASTView extends ViewPart {
 	private void addSelecionListener(IWorkbenchPage page){
 		page.addPostSelectionListener(selectionListener);		
 
-	}
-	
-	
-	public static void createGraphFromAST(TypeDeclaration astNode){
-		MethodDeclaration[] methods =  astNode.getMethods();
-		if(methods.length != 1){
-			//TODO: ERROR
-			return;
-		}
-
-		Block block = methods[0].getBody();
-		System.out.println(block);
-		
-		List statements = block.statements();
-		for(int i = 0; i < statements.size(); i++){
-			Object o = statements.get(i);
-			System.out.println(o);
-			Statement statement = (Statement)o;
-			System.out.println(statement.getNodeType());
-		}
-		
 	}
 }
