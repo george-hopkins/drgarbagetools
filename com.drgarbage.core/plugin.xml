@@ -67,7 +67,7 @@
             location="RIGHT"
             moveable="true">
       </stickyView>
-   </extension>   
+   </extension>
    <!--
    <extension
          point="org.eclipse.ui.views">
@@ -78,7 +78,7 @@
       <view
             allowMultiple="false"
             category="com.drgabage.bytecodevisualizer.category.controlflowgraph_view"
-            class="com.drgarbage.ast.view.FlowChartView"
+            class="com.drgarbage.core.views.ASTView"
             icon="$nl$/com/drgarbage/core/img/bytecode-viewer-16x16.png"
             id="com.drgabage.bytecodevisualizer.view.ast_view"
             name="%view.AST_View">
@@ -90,5 +90,5 @@
             moveable="true">
       </stickyView>
    </extension>
-   -->  
+   -->
 </plugin>

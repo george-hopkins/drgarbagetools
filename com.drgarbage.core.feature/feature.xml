@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><feature id="com.drgarbage.core" label="%featureName" provider-name="%providerName" version="3.7.2.qualifier"><description url="%productPageUrl">
+<?xml version="1.0" encoding="UTF-8"?><feature id="com.drgarbage.core" label="%featureName" provider-name="%providerName" version="3.7.4.qualifier"><description url="%productPageUrl">
       %description
    </description><copyright url="%copyrightUrl">
       %copyrightUrl
@@ -18,5 +18,5 @@
 <import match="greaterOrEqual" plugin="org.eclipse.ui.editors" version="3.6.0"/>
 <import match="greaterOrEqual" plugin="org.eclipse.ui.ide" version="3.6.0"/>
 <import match="greaterOrEqual" plugin="org.eclipse.ui.views" version="3.5.0"/>
-</requires><plugin download-size="200" id="com.drgarbage.core" install-size="200" unpack="false" version="3.7.2.qualifier"/>
+</requires><plugin download-size="200" id="com.drgarbage.core" install-size="200" unpack="false" version="3.7.4.qualifier"/>
 </feature>
