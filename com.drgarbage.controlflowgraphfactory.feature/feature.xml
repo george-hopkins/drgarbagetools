@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><feature id="com.drgarbage.controlflowgraphfactory" label="%featureName" plugin="com.drgarbage.controlflowgraphfactory" provider-name="%providerName" version="3.7.4.qualifier"><description url="%productPageUrl">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><feature id="com.drgarbage.controlflowgraphfactory" label="%featureName" plugin="com.drgarbage.controlflowgraphfactory" provider-name="%providerName" version="4.2.0.qualifier"><description url="%productPageUrl">
       %description
    </description><copyright url="%copyrightUrl">
       %copyrightUrl
@@ -18,7 +18,7 @@
 <import match="greaterOrEqual" plugin="org.eclipse.ui.editors" version="3.8.0"/>
 <import match="greaterOrEqual" plugin="org.eclipse.ui.ide" version="3.8.0"/>
 <import match="greaterOrEqual" plugin="org.eclipse.ui.views" version="3.5.0"/>
-</requires><plugin download-size="200" id="com.drgarbage.controlflowgraphfactory" install-size="200" unpack="false" version="3.7.4.qualifier"/>
+</requires><plugin download-size="200" id="com.drgarbage.controlflowgraphfactory" install-size="200" unpack="false" version="4.2.0.qualifier"/>
 <plugin download-size="200" id="com.drgarbage.asm" install-size="200" unpack="false" version="4.2.0.qualifier"/>
 <plugin download-size="200" id="com.drgarbage.core" install-size="200" unpack="false" version="4.2.0.qualifier"/>
 </feature>
