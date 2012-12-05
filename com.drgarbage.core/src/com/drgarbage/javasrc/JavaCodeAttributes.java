@@ -20,7 +20,7 @@ package com.drgarbage.javasrc;
  * Java Code Attributes.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: JavaCodeAttributes.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class JavaCodeAttributes {

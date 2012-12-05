@@ -22,7 +22,7 @@ import org.eclipse.ui.part.IPage;
 /**
  * Marker interface for control flow view pages.
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: IControlFlowGraphViewPage.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public interface IControlFlowGraphViewPage extends IPage, ISelectionProvider {

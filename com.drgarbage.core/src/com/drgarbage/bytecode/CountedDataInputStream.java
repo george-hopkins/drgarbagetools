@@ -33,7 +33,7 @@ public class CountedDataInputStream extends DataInputStream
     /**
 	  * <code>InputStream</code> which counts the number of bytes read.
 	  *
-	  *  @version $Revision: 1523 $
+	  *  @version $Revision$
 	  *  $Id: CountedDataInputStream.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
 	  */
 	static class CountedInputStream extends FilterInputStream {

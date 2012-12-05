@@ -22,7 +22,7 @@ import org.eclipse.draw2d.IFigure;
  * Vertex properties for graph algorithms.
  *
  * @author Sergej Alekseev  
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: INodeExt.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public interface INodeExt {

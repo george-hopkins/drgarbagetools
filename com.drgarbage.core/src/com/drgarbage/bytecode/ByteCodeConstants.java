@@ -23,7 +23,7 @@ import com.drgarbage.bytecode.instructions.Opcodes;
   * Byte code Constants.
   *
   * @author Sergej Alekseev and Peter Palaga
-  * @version $Revision: 1523 $
+  * @version $Revision$
   * $Id: ByteCodeConstants.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
   */
 public class ByteCodeConstants implements Opcodes {

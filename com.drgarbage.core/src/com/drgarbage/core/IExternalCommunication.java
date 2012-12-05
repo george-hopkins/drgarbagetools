@@ -25,7 +25,7 @@ import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
  * Interface for external communication with other plugins.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: IExternalCommunication.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public interface IExternalCommunication {

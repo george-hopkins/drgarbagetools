@@ -88,7 +88,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  *   </pre>
  *   
  *  @author Sergej Alekseev  
- *  @version $Revision: 1523 $
+ *  @version $Revision$
  *  $Id: KnuthStevensonTransformation.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class KnuthStevensonTransformation extends BFSBase {

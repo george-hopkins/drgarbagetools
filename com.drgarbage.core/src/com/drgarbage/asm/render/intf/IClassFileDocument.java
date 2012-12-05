@@ -24,7 +24,7 @@ import com.drgarbage.bytecode.ByteCodeConstants;
  * A visualized class file.
  * 
  * @author Peter Palaga
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: IClassFileDocument.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public interface IClassFileDocument extends Appendable {

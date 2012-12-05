@@ -20,7 +20,7 @@ package com.drgarbage.bytecode.instructions;
   *  Describes an instructions with no immediate arguments.
   *
   * @author Sergej Alekseev and Peter Palaga
-  *  @version $Revision: 1523 $
+  *  @version $Revision$
   *  $Id: SimpleInstruction.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
   */
 public class SimpleInstruction extends AbstractInstruction {

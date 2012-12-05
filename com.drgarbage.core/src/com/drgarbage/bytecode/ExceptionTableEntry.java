@@ -24,7 +24,7 @@ import java.io.IOException;
   * Describes an exception table entry in a <code>Code</code> attribute structure.
   *
   * @author Sergej Alekseev and Peter Palaga    
-  * @version $Revision: 1523 $
+  * @version $Revision$
   * $Id: ExceptionTableEntry.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
   */
 public class ExceptionTableEntry {

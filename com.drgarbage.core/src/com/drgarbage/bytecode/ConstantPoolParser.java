@@ -44,7 +44,7 @@ import com.drgarbage.bytecode.instructions.AbstractInstruction;
  * Converts code to a list of instructions.
  * 
  * @author Sergej Alekseev and Peter Palaga
- * @version $Revision: 1523 $ $Id: InstructionParser.java 164 2008-01-06
+ * @version $Revision$ $Id: InstructionParser.java 164 2008-01-06
  *          13:00:25Z sa $
  */
 public class ConstantPoolParser {

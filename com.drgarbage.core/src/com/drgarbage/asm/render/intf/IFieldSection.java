@@ -22,7 +22,7 @@ import com.drgarbage.bytecode.ByteCodeConstants;
  * Representation of a filed.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: IFieldSection.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public interface IFieldSection {

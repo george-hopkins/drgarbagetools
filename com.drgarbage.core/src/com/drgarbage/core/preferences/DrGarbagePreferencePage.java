@@ -30,7 +30,7 @@ import com.drgarbage.core.CoreMessages;
  * Main Page of Dr. GArbage products.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: DrGarbagePreferencePage.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class DrGarbagePreferencePage extends AbstractPreferencePage {

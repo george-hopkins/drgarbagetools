@@ -28,7 +28,7 @@ import com.drgarbage.core.img.CoreImg;
  * Message Boxes.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: Messages.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class Messages {

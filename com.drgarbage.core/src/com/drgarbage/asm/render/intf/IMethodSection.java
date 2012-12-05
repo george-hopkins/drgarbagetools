@@ -24,7 +24,7 @@ import com.drgarbage.bytecode.ByteCodeConstants;
  * Representation of a method.
  * 
  * @author Peter Palaga
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: IMethodSection.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public interface IMethodSection {

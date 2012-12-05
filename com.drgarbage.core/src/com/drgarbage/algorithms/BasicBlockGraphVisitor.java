@@ -34,7 +34,7 @@ import com.drgarbage.logger.TraceTopics;
  *  Find Basic Block in the graph.
  *
  *  @author Sergej Alekseev  
- *  @version $Revision: 1523 $
+ *  @version $Revision$
  *  $Id: BasicBlockGraphVisitor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class BasicBlockGraphVisitor extends DepthFirstSearchForward {

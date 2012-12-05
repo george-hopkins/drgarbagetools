@@ -24,7 +24,7 @@ import java.io.IOException;
   * Contains common attributes to a local variable table entry structure.
   *
   * @author Sergej Alekseev and Peter Palaga    
-  * @version $Revision: 1523 $
+  * @version $Revision$
   * $Id: LocalVariableCommonEntry.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
   */
 public abstract class LocalVariableCommonEntry {

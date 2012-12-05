@@ -54,7 +54,7 @@ import com.drgarbage.utils.WebUtils;
  * @see org.eclipse.ui.plugin.AbstractUIPlugin#getPreferenceStore()
  *
  * @author Sergej Alekseev and Peter Palaga
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: CorePlugin.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 @SuppressWarnings("restriction")

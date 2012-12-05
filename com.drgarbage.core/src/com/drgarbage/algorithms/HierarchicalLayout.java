@@ -29,7 +29,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  *  Hierarchical layout for placing of nodes.
  *
  * @author Sergej Alekseev
- *  @version $Revision: 1523 $
+ *  @version $Revision$
  *  $Id: HierarchicalLayout.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class HierarchicalLayout {

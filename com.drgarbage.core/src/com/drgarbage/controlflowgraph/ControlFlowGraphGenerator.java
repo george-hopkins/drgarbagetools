@@ -54,7 +54,7 @@ import com.drgarbage.javalang.JavaLangUtils;
  * Colection of methods for generating control flow graphs from the byte code
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: ControlFlowGraphGenerator.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class ControlFlowGraphGenerator  implements Opcodes{

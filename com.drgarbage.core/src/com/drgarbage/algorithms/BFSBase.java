@@ -31,7 +31,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  *  Basis class for the Breadth First Search algorithm.
  *
  *  @author Sergej Alekseev  
- *  @version $Revision: 1523 $
+ *  @version $Revision$
  *  $Id: BFSBase.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public abstract class BFSBase {

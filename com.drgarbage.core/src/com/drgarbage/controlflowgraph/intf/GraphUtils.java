@@ -19,7 +19,7 @@ package com.drgarbage.controlflowgraph.intf;
  * Common graph methods.
  *
  * @author Sergej Alekseev  
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: GraphUtils.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class GraphUtils {

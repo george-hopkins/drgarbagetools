@@ -31,7 +31,7 @@ import com.drgarbage.bytecode.constant_pool.AbstractConstantPoolEntry;
 
 /**
  * Basis class for visitor implementations.
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: AbstractCodeVisitor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public abstract class AbstractCodeVisitor extends MethodVisitor implements ICodeVisitor {

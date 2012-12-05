@@ -24,7 +24,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  *  Depth first search algorithm. Traverse of arcs is allowed only in forward direction
  *
  *  @author Sergej Alekseev 
- *  @version $Revision: 1523 $
+ *  @version $Revision$
  *  $Id: DepthFirstSearchForward.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public abstract class DepthFirstSearchForward extends DepthFirstSearchBaseVisitor {

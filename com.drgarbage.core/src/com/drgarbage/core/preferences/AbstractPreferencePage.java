@@ -27,7 +27,7 @@ import com.drgarbage.core.img.CoreImg;
  * it sets the Gr. Garbage logo as image descriptor.
  * 
  * @author Peter Palaga
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: AbstractPreferencePage.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  *
  */
