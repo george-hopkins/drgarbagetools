@@ -27,7 +27,7 @@ import org.eclipse.jface.text.rules.Token;
  * DOT partition scanner. It is necessary for multiple line comments.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: DOTPartitionScanner.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class DOTPartitionScanner extends RuleBasedPartitionScanner {

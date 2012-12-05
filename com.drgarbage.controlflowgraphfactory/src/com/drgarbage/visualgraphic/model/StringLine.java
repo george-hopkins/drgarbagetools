@@ -27,7 +27,7 @@ package com.drgarbage.visualgraphic.model;
  * 	int b = sl.getMaxLineLenght();
  * </pre>
  * @author Sergej Alekseev
- * @version $Revision: 1523 $ 
+ * @version $Revision$ 
  * $Id: StringLine.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 

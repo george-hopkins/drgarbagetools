@@ -30,7 +30,7 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
  * DOT Source code view configuration.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: DOTConfiguration.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class DOTConfiguration extends SourceViewerConfiguration {

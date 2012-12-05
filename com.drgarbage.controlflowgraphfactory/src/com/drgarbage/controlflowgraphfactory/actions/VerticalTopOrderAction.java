@@ -28,7 +28,7 @@ import com.drgarbage.visualgraphic.commands.VerticalTopOrderCommand;
  * Action for ordering the vertices.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: VerticalTopOrderAction.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class VerticalTopOrderAction extends OrderAbstractAction {

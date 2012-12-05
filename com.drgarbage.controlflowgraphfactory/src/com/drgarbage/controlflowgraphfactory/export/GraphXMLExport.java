@@ -30,7 +30,7 @@ import com.drgarbage.xml.XmlLexicalConstants;
  * Utility for export of graphs in GraphXML format.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: GraphXMLExport.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class GraphXMLExport extends AbstractExport {

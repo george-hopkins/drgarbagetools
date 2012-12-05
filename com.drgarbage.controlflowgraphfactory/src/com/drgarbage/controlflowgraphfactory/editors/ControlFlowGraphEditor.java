@@ -129,7 +129,7 @@ import com.drgarbage.visualgraphic.model.ControlFlowGraphDiagramFactory;
  * binding between the .graph file extension and this editor is done in
  * plugin.xml
  *  
- * @version $Revision: 1523 $ 
+ * @version $Revision$ 
  * $Id: ControlFlowGraphEditor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class ControlFlowGraphEditor extends GraphicalEditorWithFlyoutPalette

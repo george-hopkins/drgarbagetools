@@ -62,7 +62,7 @@ import com.drgarbage.visualgraphic.model.ControlFlowGraphDiagram;
  * Action for generation of graphs from the byte code
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: GenerateGraphAction.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public abstract class GenerateGraphAction implements IObjectActionDelegate {

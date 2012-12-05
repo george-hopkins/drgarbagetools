@@ -45,7 +45,7 @@ import com.drgarbage.visualgraphic.model.ControlFlowGraphDiagram;
  * Helper class for exporting resources to the file system.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: ControlFlowGraphExporter.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class ControlFlowGraphExporter extends DefaultGraphSpecification {

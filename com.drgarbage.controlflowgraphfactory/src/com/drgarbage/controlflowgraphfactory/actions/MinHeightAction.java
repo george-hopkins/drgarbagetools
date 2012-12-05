@@ -28,7 +28,7 @@ import com.drgarbage.visualgraphic.commands.MinHeightCommand;
  * Action for resizing the vertices.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: MinHeightAction.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class MinHeightAction extends OrderAbstractAction {

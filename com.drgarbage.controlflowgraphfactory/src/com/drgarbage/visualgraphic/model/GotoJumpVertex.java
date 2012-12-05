@@ -25,7 +25,7 @@ import com.drgarbage.controlflowgraphfactory.img.ControlFlowFactoryResource;
  * A goto vertex.
  *  
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: GotoJumpVertex.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class GotoJumpVertex extends VertexBase {

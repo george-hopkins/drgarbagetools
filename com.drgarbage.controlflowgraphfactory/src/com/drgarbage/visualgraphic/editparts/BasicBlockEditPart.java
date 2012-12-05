@@ -34,7 +34,7 @@ import com.drgarbage.visualgraphic.policy.VertexBaseComponentEditPolicy;
  * Edit Part for the basic block element.
  *  
  * @author Sergej Alekseev
- * @version $Revision: 1266 $
+ * @version $Revision$
  * $Id: CommentEditPart.java 1266 2009-07-27 19:32:33Z Sergej Alekseev $
  */
 public class BasicBlockEditPart extends VertexBaseEditPart {

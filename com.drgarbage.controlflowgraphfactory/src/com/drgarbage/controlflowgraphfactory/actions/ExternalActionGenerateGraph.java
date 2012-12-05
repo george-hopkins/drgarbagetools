@@ -42,7 +42,7 @@ import com.drgarbage.visualgraphic.model.ControlFlowGraphDiagramFactory;
  * Generate graph. This action is called from external plugin.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: ExternalActionGenerateGraph.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class ExternalActionGenerateGraph implements IExternalCommunication {

@@ -38,7 +38,7 @@ import com.drgarbage.visualgraphic.model.ControlFlowGraphDiagram;
  * Action for byte code layouting of the graph.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: ByteCodelLayoutAlgorithmAction.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class ByteCodelLayoutAlgorithmAction extends  RetargetAction {

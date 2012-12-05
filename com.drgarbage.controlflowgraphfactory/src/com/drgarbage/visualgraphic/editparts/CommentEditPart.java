@@ -33,7 +33,7 @@ import com.drgarbage.visualgraphic.policy.VertexBaseComponentEditPolicy;
  * Edit Part for the Comment element.
  *  
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: CommentEditPart.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class CommentEditPart extends VertexBaseEditPart {

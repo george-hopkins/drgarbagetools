@@ -87,7 +87,7 @@ import com.drgarbage.utils.Messages;
  * Control flow Graph diagram factory.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $ $Id: ControlFlowGraphDiagramFactory.java 1390
+ * @version $Revision$ $Id: ControlFlowGraphDiagramFactory.java 1390
  *          2009-10-25 15:41:10Z Peter Palaga $
  */
 public class ControlFlowGraphDiagramFactory {

@@ -67,7 +67,7 @@ import com.drgarbage.visualgraphic.model.ControlFlowGraphDiagramFactory.Result;
  * Action for generation control flow graphs for selected class.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: GenerateGraphsAction.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public abstract class GenerateGraphsAction implements IObjectActionDelegate {

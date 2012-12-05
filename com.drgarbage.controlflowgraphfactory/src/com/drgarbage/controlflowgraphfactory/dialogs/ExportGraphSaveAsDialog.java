@@ -41,7 +41,7 @@ import com.drgarbage.io.IoUtils;
  * Export Dialog for graphs from methods.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: ExportGraphSaveAsDialog.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class ExportGraphSaveAsDialog extends SaveAsDialog {

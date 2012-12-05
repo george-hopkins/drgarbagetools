@@ -22,7 +22,7 @@ import org.eclipse.ui.editors.text.TextEditor;
  * Simple DOT text editor with highlighting.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: DOTEditor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class DOTEditor extends TextEditor {

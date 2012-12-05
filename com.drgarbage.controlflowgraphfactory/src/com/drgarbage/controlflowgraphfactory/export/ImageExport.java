@@ -42,7 +42,7 @@ import com.drgarbage.utils.Messages;
  * Utility for export of images.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1526 $
+ * @version $Revision$
  * $Id: ImageExport.java 1526 2012-04-13 15:11:59Z Sergej Alekseev $
  */
 public class ImageExport {

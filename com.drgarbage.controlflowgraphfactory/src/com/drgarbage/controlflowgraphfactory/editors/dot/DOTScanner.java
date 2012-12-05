@@ -37,7 +37,7 @@ import com.drgarbage.dot.DotValues;
  * DOT Keywords scanner.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $ $Id: DOTScanner.java 1388 2009-10-23 15:13:24Z
+ * @version $Revision$ $Id: DOTScanner.java 1388 2009-10-23 15:13:24Z
  *          Peter Palaga $
  */
 public class DOTScanner extends RuleBasedScanner {

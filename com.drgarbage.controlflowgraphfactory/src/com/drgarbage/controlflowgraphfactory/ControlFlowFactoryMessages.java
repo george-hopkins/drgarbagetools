@@ -22,7 +22,7 @@ import org.eclipse.osgi.util.NLS;
  * Text messages for dialogs and buttons.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: ControlFlowFactoryMessages.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  *
  */

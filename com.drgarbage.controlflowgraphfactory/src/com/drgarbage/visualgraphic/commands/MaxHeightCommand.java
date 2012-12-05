@@ -28,7 +28,7 @@ import com.drgarbage.visualgraphic.model.VertexBase;
 /**
  * A command to execute size action.
  *
- *  @version $Revision: 1523 $
+ *  @version $Revision$
  *  $Id: MaxHeightCommand.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class MaxHeightCommand extends Command {

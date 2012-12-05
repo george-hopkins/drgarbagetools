@@ -47,7 +47,7 @@ import com.drgarbage.io.FileExtensions;
 /**
  * Export Operation. 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: ControlFlowGraphExportOperation.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class ControlFlowGraphExportOperation implements IRunnableWithProgress {

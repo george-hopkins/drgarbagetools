@@ -33,7 +33,7 @@ import com.drgarbage.visualgraphic.model.ControlFlowGraphDiagramFactory;
  *  Action for generation of the source code flow graph from the byte code.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: GenerateSourcecodeGraphAction.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class GenerateSourcecodeGraphAction extends GenerateGraphAction {

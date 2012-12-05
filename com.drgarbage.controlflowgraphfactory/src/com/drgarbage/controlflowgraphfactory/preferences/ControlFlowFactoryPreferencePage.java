@@ -30,7 +30,7 @@ import com.drgarbage.core.preferences.PreferencePageLinkField;
  * Main Page of the Control Flow Factory Preferences.
  *
  * @author sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: ControlFlowFactoryPreferencePage.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class ControlFlowFactoryPreferencePage extends AbstractFieldPreferencePage {
