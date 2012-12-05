@@ -67,7 +67,7 @@ import com.sun.jdi.StackFrame;
  * debugging and to show breakpoint marker.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $ $Id: BytecodeMarkerAnnotationModel.java 1265
+ * @version $Revision$ $Id: BytecodeMarkerAnnotationModel.java 1265
  *          2009-07-27 19:17:51Z Peter Palaga $
  */
 @SuppressWarnings("restriction")

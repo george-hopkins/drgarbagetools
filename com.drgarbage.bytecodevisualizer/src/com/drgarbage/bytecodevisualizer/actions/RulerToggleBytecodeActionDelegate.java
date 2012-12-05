@@ -69,7 +69,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * @noextend This class is not intended to be subclassed by clients.
  * @noinstantiate This class is not intended to be instantiated by clients.
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: RulerToggleBytecodeActionDelegate.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class RulerToggleBytecodeActionDelegate extends

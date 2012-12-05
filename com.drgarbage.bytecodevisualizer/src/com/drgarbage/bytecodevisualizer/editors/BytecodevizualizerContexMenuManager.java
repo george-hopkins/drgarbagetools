@@ -34,7 +34,7 @@ import com.drgarbage.bytecodevisualizer.actions.ExportGraphAndOpenWithControlflo
  * Context Menu Manager.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: BytecodevizualizerContexMenuManager.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class BytecodevizualizerContexMenuManager extends MenuManager {

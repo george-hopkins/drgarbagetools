@@ -48,7 +48,7 @@ import com.drgarbage.bytecode.BytecodeUtils;
  * Outline structure for class, interface or enum elements.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: OutlineElementType.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class OutlineElementType extends OutlineElement implements IType {

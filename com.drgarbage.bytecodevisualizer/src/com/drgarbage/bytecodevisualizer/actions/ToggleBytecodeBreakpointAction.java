@@ -47,7 +47,7 @@ import com.drgarbage.core.img.CoreImg;
  * @see org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate
  * @noextend This class is not intended to be subclassed by clients.
  * @author Sergej Alekseev
- * @version $Revision: 1523 $ $Id: ToggleBytecodeBreakpointAction.java 1329
+ * @version $Revision$ $Id: ToggleBytecodeBreakpointAction.java 1329
  *          2009-08-15 20:54:28Z Peter Palaga $
  */
 public class ToggleBytecodeBreakpointAction extends Action implements IUpdate {

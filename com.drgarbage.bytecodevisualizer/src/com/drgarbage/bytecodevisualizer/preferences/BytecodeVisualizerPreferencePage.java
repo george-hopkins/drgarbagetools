@@ -31,7 +31,7 @@ import com.drgarbage.core.preferences.AbstractPreferencePage;
  * Main Page of the Bytecode Visualizer Preferences. 
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: BytecodeVisualizerPreferencePage.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class BytecodeVisualizerPreferencePage extends AbstractPreferencePage {

@@ -40,7 +40,7 @@ import com.drgarbage.bytecode.ByteCodeConstants;
  * The basis class for an outline element.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: OutlineElement.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class OutlineElement extends ClassVisitor implements IJavaElement, IParent, IOutlineElement {

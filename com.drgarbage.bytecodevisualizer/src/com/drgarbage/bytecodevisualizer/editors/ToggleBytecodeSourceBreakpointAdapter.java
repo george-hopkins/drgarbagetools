@@ -24,7 +24,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * Toggles a breakpoint in a source code viewer of the bytecode editor.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: ToggleBytecodeSourceBreakpointAdapter.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 @SuppressWarnings("restriction")

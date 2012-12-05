@@ -43,7 +43,7 @@ import com.drgarbage.utils.ClassFileDocumentsUtils;
  * Toggles a breakpoint in a bytecode editor.
  * 
  * @author Sergej Alekseev
- * @version $Revision: 1523 $ $Id: ToggleBytecodeBreakpointAdapter.java 1310
+ * @version $Revision$ $Id: ToggleBytecodeBreakpointAdapter.java 1310
  *          2009-08-07 22:26:42Z Peter Palaga $
  */
 @SuppressWarnings("restriction")
