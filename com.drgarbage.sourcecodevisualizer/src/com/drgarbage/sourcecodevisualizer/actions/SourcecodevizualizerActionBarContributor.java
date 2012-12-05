@@ -31,7 +31,7 @@ import com.drgarbage.sourcecodevisualizer.editors.JavaCodeEditor;
 /**
  * ActionBar Contributor.
  *
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: SourcecodevizualizerActionBarContributor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class SourcecodevizualizerActionBarContributor extends

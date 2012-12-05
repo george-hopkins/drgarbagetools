@@ -41,7 +41,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  * from a text editor. The nodes of the control flow graphs are synchronized with method lines 
  * in the text editor.
  *
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: SourceCodeGraphFigure.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class SourceCodeGraphFigure extends com.drgarbage.draw2d.ControlFlowGraphFigure {

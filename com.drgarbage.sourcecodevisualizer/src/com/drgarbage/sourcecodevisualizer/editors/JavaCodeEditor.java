@@ -102,7 +102,7 @@ import com.drgarbage.sourcecodevisualizer.actions.RefreshAction;
  * Java Editor with an embeded sourcecode visualizer.
  *
  * @author Sergej Alekseev
- * @version $Revision: 1523 $
+ * @version $Revision$
  * $Id: JavaCodeEditor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class JavaCodeEditor extends CompilationUnitEditor implements IControlFlowGraphView{
