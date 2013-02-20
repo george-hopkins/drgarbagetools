@@ -20,6 +20,7 @@ import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.debug.ui.IDebugView;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Display;
@@ -54,6 +55,12 @@ public class DynamicPartsManager {
 	
 	private static void addActions(IDebugView viewPart) {		
 		IToolBarManager tbm = viewPart.getViewSite().getActionBars().getToolBarManager();
+		
+		/* FIX: bug, adding of actions */
+		IContributionItem ci = tbm.find(BytecodeVisualizerConstants.BYTECODE_VISUALIZER_GROUP);
+		if(ci != null){
+			return;
+		}
 		
 		tbm.add(new Separator(BytecodeVisualizerConstants.BYTECODE_VISUALIZER_GROUP));
         tbm.appendToGroup(
