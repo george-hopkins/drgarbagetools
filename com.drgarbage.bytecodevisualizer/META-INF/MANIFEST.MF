@@ -21,7 +21,7 @@ Require-Bundle: com.drgarbage.asm;bundle-version="[4.2.0,4.2.1)",com.d
  h.texteditor;bundle-version="[3.8.0,3.10.0)"
 Bundle-Vendor: %providerName
 Ant-Version: Apache Ant 1.7.0
-Bundle-Version: 4.2.0.qualifier
+Bundle-Version: 4.2.1.qualifier
 Bundle-Activator: com.drgarbage.bytecodevisualizer.BytecodeVisualizerP
  lugin
 Bundle-ManifestVersion: 2
