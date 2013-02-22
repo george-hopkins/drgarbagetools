@@ -16,25 +16,31 @@
 
 package com.drgarbage.bytecodevisualizer;
 
-import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Hashtable;
+import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.ui.DebugUITools;
-import org.eclipse.jdi.internal.VirtualMachineImpl;
-import org.eclipse.jdi.internal.request.EventRequestManagerImpl;
+import org.eclipse.jdt.internal.debug.core.IJDIEventListener;
+import org.eclipse.jdt.internal.debug.core.model.JDIDebugModelMessages;
+import org.eclipse.jdt.internal.debug.core.model.JDIDebugTarget;
+import org.eclipse.jdt.internal.debug.core.model.JDIMethod;
 import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 import org.eclipse.jdt.internal.debug.core.model.JDIThread;
 
 import com.drgarbage.core.CoreConstants;
 import com.drgarbage.core.CorePlugin;
-import com.sun.jdi.ObjectCollectedException;
-import com.sun.jdi.ThreadReference;
-import com.sun.jdi.VirtualMachine;
-import com.sun.jdi.request.DuplicateRequestException;
+import com.sun.jdi.IncompatibleThreadStateException;
+import com.sun.jdi.Location;
+import com.sun.jdi.Method;
+import com.sun.jdi.event.Event;
+import com.sun.jdi.event.EventSet;
+import com.sun.jdi.event.StepEvent;
+import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
 
@@ -43,245 +49,37 @@ import com.sun.jdi.request.StepRequest;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: DebugSupport.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id: DebugSupport.java 62 2013-02-22 11:54:36Z salekseev $
  */
 @SuppressWarnings("restriction")
 public class DebugSupport {
 
 	/**
-	 * Own implementation of the Request event manager. 
+	 * Currently pending step handler, <code>null</code> when not performing a
+	 * step.
 	 */
-	private final class PrivateEventRequestManagerImpl extends EventRequestManagerImpl {
-
-		/* Request counter for step-into action.        */
-		/* Step into action invokes always two requests */
-		private int requestCounter = 0;
-		
-		/**
-		 * Constructor.
-		 * @param vmImpl
-		 */
-		public PrivateEventRequestManagerImpl(VirtualMachineImpl vmImpl) {
-			super(vmImpl);
-		}
-
-		/**
-		 * Creates StepRequest.
-		 */ 
-		public StepRequest createStepRequest(ThreadReference thread, int size, int depth) throws DuplicateRequestException, ObjectCollectedException {
-
-			if(isStepOver()){
-				return super.createStepRequest(thread, StepRequest.STEP_MIN, depth);
-			}
-			else if(isStepInto()){
-				/* disable min step after second request */
-				requestCounter++;
-				if(requestCounter >= 2){
-					requestCounter = 0;
-					setStepInto(false);
-				}
-				return super.createStepRequest(thread, StepRequest.STEP_MIN, depth);
-			}
-			else { 
-				return super.createStepRequest(thread, size, depth);
-			}
-		} 
-	}	
-
-	private VirtualMachineImpl currentVM;
-	private boolean stepOver = false;
+	private StepBytecodeHandler fStepHandler = null;
 	
-	private boolean stepInto = false;
-
 	/**
-	 * Creates new Event manager and assigned it to the current VM. 
+	 * Sets the step handler currently handling a step request.
 	 * 
-	 * @throws SecurityException
-	 * @throws IllegalArgumentException
-	 * @throws NoSuchFieldException
-	 * @throws IllegalAccessException
+	 * @param handler
+	 *            the current step handler, or <code>null</code> if none
 	 */
-	private void createEventManager() throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
+	protected void setPendingStepHandler(StepBytecodeHandler handler) {
+		fStepHandler = handler;
+	}
 
-		/* create new Event Manager*/
-		PrivateEventRequestManagerImpl mgr2 = new PrivateEventRequestManagerImpl(currentVM);
-
-		/* set new Manager */
-		replaceEventManager(currentVM, mgr2);
+	/**
+	 * Returns the step handler currently handling a step request, or
+	 * <code>null</code> if none.
+	 * 
+	 * @return step handler, or <code>null</code> if none
+	 */
+	protected StepBytecodeHandler getPendingStepHandler() {
+		return fStepHandler;
 	}
 	
-	/**
-	 * This is a hack to replace the eclipse Event Manager by own one.
-	 *      
-	 * @param vmImpl
-	 * @param newEventManager
-	 * @throws SecurityException
-	 * @throws NoSuchFieldException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 */
-	private synchronized void replaceEventManager( VirtualMachineImpl vmImpl, EventRequestManagerImpl newEventManager) 
-	throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException{
-		
-		EventRequestManagerImpl oldEventManager = vmImpl.eventRequestManagerImpl();		
-		copyRequests(oldEventManager, newEventManager);
-
-		/* replace manager */
-		Class<? extends VirtualMachineImpl> cl = vmImpl.getClass();
-
-		Field fld = cl.getDeclaredField("fEventReqMgr");
-		fld.setAccessible(true);
-		fld.set(vmImpl, newEventManager);
-		fld.setAccessible(false);
-	}
-	
-	private void copyRequests(EventRequestManager oldEventManager, EventRequestManagerImpl newEventManager) 
-	throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException{
-	
-		/* alternative initialization of request list */
-//		/* Initialize list of requests.*/
-//		HashSet[] fRequests = new HashSet[MONITOR_WAIT_INDEX + 1];
-//		for (int i = 0; i < fRequests.length; i++)
-//			fRequests[i] = new HashSet();
-//
-//		/** Set of all existing requests per request type. */
-//		List<EventRequest> requestList = oldEventManager.accessWatchpointRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[ACCESS_WATCHPOINT_INDEX].add(req);
-//		}
-//		
-//		requestList = oldEventManager.breakpointRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[BREAKPOINT_INDEX].add(req);
-//		}
-//		
-//		requestList = oldEventManager.classPrepareRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[CLASS_PREPARE_INDEX].add(req);
-//		}	
-//
-//		requestList = oldEventManager.classUnloadRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[CLASS_UNLOAD_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.exceptionRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[EXCEPTION_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.methodEntryRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[METHOD_ENTRY_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.methodExitRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[METHOD_EXIT_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.modificationWatchpointRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[MODIFICATION_WATCHPOINT_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.stepRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[STEP_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.threadDeathRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[THREAD_DEATH_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.threadStartRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[THREAD_START_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.vmDeathRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[VM_DEATH_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.monitorContendedEnteredRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[MONITOR_CONTENDED_ENTERED_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.monitorContendedEnterRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[MONITOR_CONTENDED_ENTER_INDEX].add(req);
-//		}
-//
-//		requestList = oldEventManager.monitorWaitedRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[MONITOR_WAITED_INDEX].add(req);
-//		}
-//		
-//		requestList = oldEventManager.monitorWaitRequests();
-//		for(EventRequest req: requestList){
-//			fRequests[MONITOR_WAIT_INDEX].add(req);
-//		}
-		
-		/* copy requests array */
-		Class<?> classOldEventMgr = oldEventManager.getClass();
-		Field req = classOldEventMgr.getDeclaredField("fRequests");
-		req.setAccessible(true);
-		Object o = req.get(oldEventManager);
-		if(o != null){
-			HashSet<?>[] fRequests = (HashSet[])o;
-			req.set(newEventManager, fRequests);
-		}
-		req.setAccessible(false);
-		
-		/* copy fEnabledRequests map*/
-		Field reqEnabled = classOldEventMgr.getDeclaredField("fEnabledRequests");
-		reqEnabled.setAccessible(true);
-		o = reqEnabled.get(oldEventManager);
-		if(o != null){
-			Hashtable<?,?>[] fEnabledRequests =(Hashtable[]) o;
-			reqEnabled.set(newEventManager, fEnabledRequests);
-		}
-		reqEnabled.setAccessible(false);
-
-	}
-
-	/**
-	 * Indicates that the stepOver is running.
-	 * @return the minStep
-	 */
-	private final synchronized boolean isStepOver() {
-		return stepOver;
-	}
-
-	/**
-	 * Sets the stepInto flag to indicate that the StepOver is running.
-	 * Used for synchronization wit the debugging thread. 
-	 * @param minStep the minStep to set
-	 */
-	private final synchronized void setStepOver(boolean stepOver) {
-		this.stepOver = stepOver;
-	}    
-
-	/**
-	 * Indicates that the stepInto is running. 
-	 * Used for synchronization wit the debugging thread. 
-	 * @return the stepInto
-	 */
-	private final synchronized boolean isStepInto() {
-		return stepInto;
-	}
-
-	/**
-	 * Sets the stepInto flag to indicate that the StepInto is running.
-	 * Used for synchronization with the debugging thread.
-	 * @param stepInto the stepInto to set
-	 */
-	private final synchronized void setStepInto(boolean stepInto) {
-		this.stepInto = stepInto;
-	}	
 	
 	/**
 	 * Own step over action.
@@ -293,36 +91,19 @@ public class DebugSupport {
 		/* the object is null if the debugger is not active */
 		if(o instanceof JDIStackFrame){
 			JDIStackFrame stackFrame = (JDIStackFrame)o; 
-
 			try {
+				final JDIThread jdiThread = (JDIThread) stackFrame.getThread();
 
-				final JDIThread jdiThread = (JDIThread) stackFrame.getThread(); 
-				final VirtualMachine myVM = jdiThread.getUnderlyingThread().virtualMachine();
-				VirtualMachineImpl vmImpl = (VirtualMachineImpl)myVM;  
-
-				if(currentVM == null || !currentVM.equals(vmImpl)){
-					currentVM = vmImpl;
-					createEventManager();
-				}
-
-				/* Synchronized the second call with other debugging thread */
-				setStepOver(true);
-				
-				stackFrame.stepOver();
-				
-				/* free flag s*/
-				setStepOver(false);
-
+				StepBytecodeHandler handler = new StepBytecodeHandler(jdiThread);
+				handler.step();
 
 			} catch (DebugException e) {
 				exceptionHandler(e);
 			} catch (SecurityException e) {
 				exceptionHandler(e);
-			} catch (NoSuchFieldException e) {
-				exceptionHandler(e);
 			} catch (IllegalArgumentException e) {
 				exceptionHandler(e);
-			} catch (IllegalAccessException e) {
+			} catch (IncompatibleThreadStateException e) {
 				exceptionHandler(e);
 			}
 		}
@@ -337,40 +118,19 @@ public class DebugSupport {
 
 		/* the object is null if the debugger is not active */
 		if(o instanceof JDIStackFrame){
-			JDIStackFrame stackFrame = (JDIStackFrame)o;
-
+			JDIStackFrame stackFrame = (JDIStackFrame)o; 
 			try {
-
-				final JDIThread jdiThread = (JDIThread) stackFrame.getThread(); 
-				final VirtualMachine myVM = jdiThread.getUnderlyingThread().virtualMachine();
-				VirtualMachineImpl vmImpl = (VirtualMachineImpl)myVM;  
-
-				if(currentVM == null || !currentVM.equals(vmImpl)){
-					currentVM = vmImpl;
-					createEventManager();
-				}
-
-				/* Synchronized the second call with other debugging thread */
-				setStepInto(true);
-				
 				stackFrame.stepInto();
-
-				/* free of the flag is done by event manager */
 
 			} catch (DebugException e) {
 				exceptionHandler(e);
 			} catch (SecurityException e) {
 				exceptionHandler(e);
-			} catch (NoSuchFieldException e) {
-				exceptionHandler(e);
 			} catch (IllegalArgumentException e) {
-				exceptionHandler(e);
-			} catch (IllegalAccessException e) {
 				exceptionHandler(e);
 			}
 		}
 	}
-
 
 	/**
 	 * Exception handler.
@@ -380,6 +140,454 @@ public class DebugSupport {
 		CorePlugin.getDefault().getLog().log(
 				new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e)
 				);
+	}
+	
+	/**
+	 * Handler class to perform single bytecode stepping.
+	 */
+	class StepBytecodeHandler implements IJDIEventListener {
+		
+		private JDIThread jdiThread;
+		
+		/**
+		 * The JDI Location from which an original user-requested step began.
+		 */
+		private Location fOriginalStepLocation;
+		
+		protected void setOriginalStepLocation(Location location) {
+			fOriginalStepLocation = location;
+		}
+
+		protected Location getOriginalStepLocation() {
+			return fOriginalStepLocation;
+		}
+		
+		public StepBytecodeHandler(JDIThread jdiThread) {
+			super();
+			this.jdiThread = jdiThread;
+		}
+
+		/**
+		 * Request for stepping in the underlying VM
+		 */
+		private StepRequest fStepRequest;
+
+		/**
+		 * Initiates a step in the underlying VM by creating a step request of
+		 * the appropriate kind (over, into, return), and resuming this thread.
+		 * When a step is initiated it is registered with its thread as a
+		 * pending step. A pending step could be cancelled if a breakpoint
+		 * suspends execution during the step.
+		 * <p>
+		 * This thread's state is set to running and stepping, and stack frames
+		 * are invalidated (but preserved to be re-used when the step
+		 * completes). A resume event with a step detail is fired for this
+		 * thread.
+		 * </p>
+		 * Note this method does nothing if this thread has no stack frames.
+		 * 
+		 * @exception DebugException
+		 *                if this method fails. Reasons include:
+		 *                <ul>
+		 *                <li>Failure communicating with the VM. The
+		 *                DebugException's status code contains the underlying
+		 *                exception responsible for the failure.</li>
+		 *                </ul>
+		 * @throws IncompatibleThreadStateException 
+		 */
+		protected void step() throws DebugException, IncompatibleThreadStateException {
+			ISchedulingRule rule = jdiThread.getThreadRule();
+			try {
+				Job.getJobManager().beginRule(rule, null);
+				JDIStackFrame top = (JDIStackFrame) jdiThread.getTopStackFrame();
+				if (top == null) {
+					return;
+				}
+				
+				int i = jdiThread.getUnderlyingThread().frameCount();
+				if(i == 0){
+					return;
+				}
+				Location location = jdiThread.getUnderlyingThread().frames().get(i - 1).location();
+				setOriginalStepLocation(location);
+				setStepRequest(createStepRequest());
+				setPendingStepHandler(this);
+				jdiThread.addJDIEventListener(this, getStepRequest());
+				jdiThread.fireResumeEvent(DebugEvent.STEP_OVER);
+				invokeThread();
+			} finally {
+				Job.getJobManager().endRule(rule);
+			}
+		}
+
+		/**
+		 * Resumes the underlying thread to initiate the step. By default the
+		 * thread is resumed. Step handlers that require other actions can
+		 * override this method.
+		 * 
+		 * @exception DebugException
+		 *                if this method fails. Reasons include:
+		 *                <ul>
+		 *                <li>Failure communicating with the VM. The
+		 *                DebugException's status code contains the underlying
+		 *                exception responsible for the failure.</li>
+		 *                </ul>
+		 */
+		protected void invokeThread() throws DebugException {
+			try {
+				jdiThread.getUnderlyingThread().resume();
+			} catch (RuntimeException e) {
+				stepEnd(null);
+				jdiThread.fireSuspendEvent(DebugEvent.STEP_END);
+				jdiThread.targetRequestFailed(MessageFormat.format(
+						JDIDebugModelMessages.JDIThread_exception_stepping,
+						e.toString()), e);
+			}
+		}
+
+		/**
+		 * Creates and returns a step request specific to this step handler.
+		 * Subclasses must override <code>getStepKind()</code> to return the
+		 * kind of step it implements.
+		 * 
+		 * @return step request
+		 * @exception DebugException
+		 *                if this method fails. Reasons include:
+		 *                <ul>
+		 *                <li>Failure communicating with the VM. The
+		 *                DebugException's status code contains the underlying
+		 *                exception responsible for the failure.</li>
+		 *                </ul>
+		 */
+		protected StepRequest createStepRequest() throws DebugException {
+			return createStepRequest(StepRequest.STEP_OVER);
+		}
+
+		/**
+		 * Creates and returns a step request of the specified kind.
+		 * 
+		 * @param kind
+		 *            of <code>StepRequest.STEP_INTO</code>,
+		 *            <code>StepRequest.STEP_OVER</code>,
+		 *            <code>StepRequest.STEP_OUT</code>
+		 * @return step request
+		 * @exception DebugException
+		 *                if this method fails. Reasons include:
+		 *                <ul>
+		 *                <li>Failure communicating with the VM. The
+		 *                DebugException's status code contains the underlying
+		 *                exception responsible for the failure.</li>
+		 *                </ul>
+		 */
+		protected StepRequest createStepRequest(int kind) throws DebugException {
+			EventRequestManager manager = jdiThread.getEventRequestManager();
+			if (manager == null) {
+				jdiThread.requestFailed(
+						JDIDebugModelMessages.JDIThread_Unable_to_create_step_request___VM_disconnected__1,
+						null);
+			}
+			try {
+				StepRequest request = manager.createStepRequest(jdiThread.getUnderlyingThread(),
+						StepRequest.STEP_MIN, kind);
+				request.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+				request.addCountFilter(1);
+				attachFiltersToStepRequest(request);
+				request.enable();
+				return request;
+			} catch (RuntimeException e) {
+				jdiThread.targetRequestFailed(
+						MessageFormat.format(
+								JDIDebugModelMessages.JDIThread_exception_creating_step_request,
+								e.toString()), e);
+			}
+			// this line will never be executed, as the try block
+			// will either return, or the catch block will throw
+			// an exception
+			return null;
+
+		}
+
+		/**
+		 * Sets the step request created by this handler in the underlying VM.
+		 * Set to <code>null<code> when
+		 * this handler deletes its request.
+		 * 
+		 * @param request
+		 *            step request
+		 */
+		protected void setStepRequest(StepRequest request) {
+			fStepRequest = request;
+		}
+
+		/**
+		 * Returns the step request created by this handler in the underlying
+		 * VM.
+		 * 
+		 * @return step request
+		 */
+		protected StepRequest getStepRequest() {
+			return fStepRequest;
+		}
+
+		/**
+		 * Deletes this handler's step request from the underlying VM and
+		 * removes this handler as an event listener.
+		 */
+		protected void deleteStepRequest() {
+			try {
+				StepRequest req = getStepRequest();
+				if (req != null) {
+					jdiThread.removeJDIEventListener(this, req);
+					EventRequestManager manager = jdiThread.getEventRequestManager();
+					if (manager != null) {
+						manager.deleteEventRequest(req);
+					}
+				}
+			} catch (RuntimeException e) {
+				exceptionHandler(e);
+			} finally {
+				setStepRequest(null);
+			}
+		}
+
+		/**
+		 * Constant for the name of the default Java stratum
+		 */
+		private static final String JAVA_STRATUM_CONSTANT = "Java"; //$NON-NLS-1$
+		
+		/**
+		 * If step filters are currently switched on and the current location is
+		 * not a filtered location, set all active filters on the step request.
+		 * 
+		 * @param request
+		 *            the request to augment
+		 */
+		protected void attachFiltersToStepRequest(StepRequest request) {
+
+			if (applyStepFilters() && jdiThread.isStepFiltersEnabled()) {
+				Location currentLocation = getOriginalStepLocation();
+				if (currentLocation == null
+						|| !JAVA_STRATUM_CONSTANT.equals(currentLocation
+								.declaringType().defaultStratum())) {
+					return;
+				}
+				// Removed the fix for bug 5587, to address bug 41510
+				// //check if the user has already stopped in a filtered
+				// location
+				// //is so do not filter @see bug 5587
+				// ReferenceType type= currentLocation.declaringType();
+				// String typeName= type.name();
+				String[] activeFilters = jdiThread.getJavaDebugTarget().getStepFilters();
+				if (activeFilters != null) {
+					for (String activeFilter : activeFilters) {
+						request.addClassExclusionFilter(activeFilter);
+					}
+				}
+			}
+		}
+
+		/**
+		 * Returns whether this step handler should use step filters when
+		 * creating its step request. By default, step filters can be used by
+		 * any step request. Subclasses must override if/when required.
+		 * 
+		 * @return whether this step handler should use step filters when
+		 *         creating its step request
+		 */
+		protected boolean applyStepFilters() {
+			return true;
+		}
+
+		/**
+		 * Notification the step request has completed. If the current location
+		 * matches one of the user-specified step filter criteria (e.g.,
+		 * synthetic methods, static initializers), then continue stepping.
+		 * 
+		 * @see IJDIEventListener#handleEvent(Event, JDIDebugTarget, boolean,
+		 *      EventSet)
+		 */
+		public boolean handleEvent(Event event, JDIDebugTarget target,
+				boolean suspendVote, EventSet eventSet) {
+			try {
+				StepEvent stepEvent = (StepEvent) event;
+				Location currentLocation = stepEvent.location();
+
+
+				// if the ending step location is filtered and we did not start
+				// from
+				// a filtered location, or if we're back where
+				// we started on a step into, do another step of the same kind
+				if (locationShouldBeFiltered(currentLocation)) {
+					deleteStepRequest();
+					createSecondaryStepRequest();
+					return true;
+					// otherwise, we're done stepping
+				}
+				stepEnd(eventSet);
+				
+				/* refresh the stack frame view */
+				jdiThread.computeNewStackFrames();
+				
+				return false;
+			} catch (DebugException e) {
+				exceptionHandler(e);
+				stepEnd(eventSet);
+				return false;
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.eclipse.jdt.internal.debug.core.IJDIEventListener#eventSetComplete
+		 * (com.sun.jdi.event.Event,
+		 * org.eclipse.jdt.internal.debug.core.model.JDIDebugTarget, boolean)
+		 */
+		public void eventSetComplete(Event event, JDIDebugTarget target,
+				boolean suspend, EventSet eventSet) {
+			// do nothing
+		}
+
+		/**
+		 * Returns <code>true</code> if the StepEvent's Location is a Method
+		 * that the user has indicated (via the step filter preferences) should
+		 * be filtered and the step was not initiated from a filtered location.
+		 * Returns <code>false</code> otherwise.
+		 * 
+		 * @param location
+		 *            the location to check
+		 * @return if the given {@link Location} should be filtered
+		 * @throws DebugException
+		 *             if an exception occurs
+		 */
+		protected boolean locationShouldBeFiltered(Location location)
+				throws DebugException {
+			if (applyStepFilters()) {
+				Location origLocation = getOriginalStepLocation();
+				if (origLocation != null) {
+					return !locationIsFiltered(origLocation.method())
+							&& locationIsFiltered(location.method());
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * Returns <code>true</code> if the StepEvent's Location is a Method
+		 * that the user has indicated (via the step filter preferences) should
+		 * be filtered. Returns <code>false</code> otherwise.
+		 * 
+		 * @param method
+		 *            the {@link Method} location to check
+		 * @return <code>true</code> if the {@link Method} {@link Location}
+		 *         should be filtered, <code>false</code> otherwise
+		 */
+		protected boolean locationIsFiltered(Method method) {
+			if (jdiThread.isStepFiltersEnabled()) {
+				boolean filterStatics = jdiThread.getJavaDebugTarget()
+						.isFilterStaticInitializers();
+				boolean filterSynthetics = jdiThread.getJavaDebugTarget()
+						.isFilterSynthetics();
+				boolean filterConstructors = jdiThread.getJavaDebugTarget()
+						.isFilterConstructors();
+				boolean filterSetters = jdiThread.getJavaDebugTarget().isFilterSetters();
+				boolean filterGetters = jdiThread.getJavaDebugTarget().isFilterGetters();
+				if (!(filterStatics || filterSynthetics || filterConstructors
+						|| filterGetters || filterSetters)) {
+					return false;
+				}
+
+				if ((filterStatics && method.isStaticInitializer())
+						|| (filterSynthetics && method.isSynthetic())
+						|| (filterConstructors && method.isConstructor())
+						|| (filterGetters && JDIMethod.isGetterMethod(method))
+						|| (filterSetters && JDIMethod.isSetterMethod(method))) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * Cleans up when a step completes.
+		 * <ul>
+		 * <li>Thread state is set to suspended.</li>
+		 * <li>Stepping state is set to false</li>
+		 * <li>Stack frames and variables are incrementally updated</li>
+		 * <li>The step request is deleted and removed as and event listener</li>
+		 * <li>A suspend event is fired</li>
+		 * </ul>
+		 * 
+		 * @param set
+		 *            the remaining {@link EventSet} to queue
+		 */
+		protected void stepEnd(EventSet set) {
+			deleteStepRequest();
+			setPendingStepHandler(null);
+			if (set != null) {
+				jdiThread.queueSuspendEvent(DebugEvent.STEP_END, set);
+			}
+		}
+
+		/**
+		 * Creates another step request in the underlying thread of the
+		 * appropriate kind (over, into, return). This thread will be resumed by
+		 * the event dispatcher as this event handler will vote to resume
+		 * suspended threads. When a step is initiated it is registered with its
+		 * thread as a pending step. A pending step could be cancelled if a
+		 * breakpoint suspends execution during the step.
+		 * 
+		 * @exception DebugException
+		 *                if this method fails. Reasons include:
+		 *                <ul>
+		 *                <li>Failure communicating with the VM. The
+		 *                DebugException's status code contains the underlying
+		 *                exception responsible for the failure.</li>
+		 *                </ul>
+		 */
+		protected void createSecondaryStepRequest() throws DebugException {
+			createSecondaryStepRequest(StepRequest.STEP_OVER);
+		}
+
+		/**
+		 * Creates another step request in the underlying thread of the
+		 * specified kind (over, into, return). This thread will be resumed by
+		 * the event dispatcher as this event handler will vote to resume
+		 * suspended threads. When a step is initiated it is registered with its
+		 * thread as a pending step. A pending step could be cancelled if a
+		 * breakpoint suspends execution during the step.
+		 * 
+		 * @param kind
+		 *            of <code>StepRequest.STEP_INTO</code>,
+		 *            <code>StepRequest.STEP_OVER</code>,
+		 *            <code>StepRequest.STEP_OUT</code>
+		 * @exception DebugException
+		 *                if this method fails. Reasons include:
+		 *                <ul>
+		 *                <li>Failure communicating with the VM. The
+		 *                DebugException's status code contains the underlying
+		 *                exception responsible for the failure.</li>
+		 *                </ul>
+		 */
+		protected void createSecondaryStepRequest(int kind)
+				throws DebugException {
+			setStepRequest(createStepRequest(kind));
+			setPendingStepHandler(this);
+			jdiThread.addJDIEventListener(this, getStepRequest());
+		}
+
+		/**
+		 * Aborts this step request if active. The step event request is deleted
+		 * from the underlying VM.
+		 */
+		protected void abort() {
+			if (getStepRequest() != null) {
+				deleteStepRequest();
+				setPendingStepHandler(null);
+			}
+		}
 	}
 
 }
