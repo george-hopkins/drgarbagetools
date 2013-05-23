@@ -20,9 +20,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.RetargetAction;
 
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
-import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.bytecodevisualizer.editors.BytecodeEditor;
-import com.drgarbage.bytecodevisualizer.preferences.BytecodeVisualizerPreferenceConstats;
 import com.drgarbage.core.img.CoreImg;
 
 
@@ -31,7 +29,7 @@ import com.drgarbage.core.img.CoreImg;
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id$
+ * $Id: ActivateBasicblockGraphViewAction.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class ActivateBasicblockGraphViewAction extends RetargetAction {
 
@@ -49,19 +47,6 @@ public class ActivateBasicblockGraphViewAction extends RetargetAction {
 		setEnabled(true);	
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.action.Action#setEnabled(boolean)
-	 */
-	public void setEnabled(boolean oldVal){
-		final boolean renderGraphs = BytecodeVisualizerPlugin.getDefault().getPreferenceStore().
-		getBoolean(BytecodeVisualizerPreferenceConstats.GRAPH_PANEL_ATTR_RENDER_GRAPHS);
-		if(renderGraphs){
-		  super.setEnabled(oldVal);
-		}
-		else{
-			super.setEnabled(false);
-		}
-	  }
 	
     /**
      * Invoked when an action occurs. 

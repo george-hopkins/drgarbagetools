@@ -35,7 +35,7 @@ import com.drgarbage.core.preferences.LabelField;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id$
+ * $Id: GeneralPreferencePage.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class GeneralPreferencePage
 		extends
@@ -54,19 +54,11 @@ public class GeneralPreferencePage
 	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
 	 */
 	protected void createFieldEditors() {
-		
-		LabelField fld = new LabelField("Lbl"+ fieldIndex++, BytecodeVisualizerMessages.GeneralPreferencePage_chk_Graph_Panel, getFieldEditorParent());
+
+		LabelField fld = new LabelField("Lbl"+ fieldIndex++, BytecodeVisualizerMessages.GeneralPreferencePage_lbl_Select_class_file_parts, getFieldEditorParent());
 		addField(fld);
 		
-		BooleanFieldEditor ed = new IndentBooleanFieldEditor(GRAPH_PANEL_ATTR_RENDER_GRAPHS, BytecodeVisualizerMessages.GeneralPreferencePage_chk_Render_Graphs, getFieldEditorParent());
-		addField(ed);
-		
-		addVerticalSpace();
-		
-		fld = new LabelField("Lbl"+ fieldIndex++, BytecodeVisualizerMessages.GeneralPreferencePage_lbl_Select_class_file_parts, getFieldEditorParent());
-		addField(fld);
-		
-		ed = new IndentBooleanFieldEditor(CLASS_FILE_ATTR_SHOW_CONSTANT_POOL, BytecodeVisualizerMessages.GeneralPreferencePage_chk_Show_Constant_Pool, getFieldEditorParent());
+		BooleanFieldEditor ed = new IndentBooleanFieldEditor(CLASS_FILE_ATTR_SHOW_CONSTANT_POOL, BytecodeVisualizerMessages.GeneralPreferencePage_chk_Show_Constant_Pool, getFieldEditorParent());
 		addField(ed);
 		
 		ed = new IndentBooleanFieldEditor(CLASS_FILE_ATTR_SHOW_SOURCE_LINE_NUMBERS, BytecodeVisualizerMessages.GeneralPreferencePage_chk_Show_source_line_numbers, getFieldEditorParent());
@@ -76,9 +68,6 @@ public class GeneralPreferencePage
 		addField(ed);
 		
 		ed= new IndentBooleanFieldEditor(CLASS_FILE_ATTR_SHOW_VARIABLE_TABLE, BytecodeVisualizerMessages.GeneralPreferencePage_chk_Show_Local_Variable_Table, getFieldEditorParent());
-		addField(ed);
-
-		ed= new IndentBooleanFieldEditor(CLASS_FILE_ATTR_SHOW_MAXS, BytecodeVisualizerMessages.GeneralPreferencePage_chk_Show_Maxs, getFieldEditorParent());
 		addField(ed);
 		
 		ed= new IndentBooleanFieldEditor(CLASS_FILE_ATTR_RENDER_TRYCATCH_BLOCKS, BytecodeVisualizerMessages.GeneralPreferencePage_chk_Render_try_catch_blocks, getFieldEditorParent());

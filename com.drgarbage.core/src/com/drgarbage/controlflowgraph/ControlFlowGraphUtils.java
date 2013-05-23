@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2013, Dr. Garbage Community
+ * Copyright (c) 2008-2012, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.drgarbage.controlflowgraph;
 import com.drgarbage.bytecode.instructions.Opcodes;
 import com.drgarbage.controlflowgraph.intf.INodeType;
 
- /**
+ /*
   * Utilities for handling of the byte code
   *
   * @author Sergej Alekseev

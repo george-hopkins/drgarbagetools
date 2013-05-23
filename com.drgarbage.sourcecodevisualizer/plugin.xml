@@ -59,7 +59,7 @@
          </action>
       </editorContribution>      
    </extension>
-   
+   <!--
    <extension
          point="org.eclipse.ui.views">
       <category
@@ -81,5 +81,5 @@
             moveable="true">
       </stickyView>
    </extension>
-   
+   -->
 </plugin>

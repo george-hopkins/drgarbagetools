@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -35,7 +34,7 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id$
+ * $Id: ISourceCodeViewer.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public interface ISourceCodeViewer extends ISynchronizable {
 
@@ -124,16 +123,6 @@ public interface ISourceCodeViewer extends ISynchronizable {
 	 */
 	public IVerticalRuler getVerticalRulerOfSourceViewer();
 	
-	/**
-	 * @throws JavaModelException
-	 */
 	public void verifyInput() throws JavaModelException;
-	
-	/**
-	 * Returns the action
-	 * @param id action id
-	 * @return action
-	 */
-	public IAction getAction(String text);
 	
 }

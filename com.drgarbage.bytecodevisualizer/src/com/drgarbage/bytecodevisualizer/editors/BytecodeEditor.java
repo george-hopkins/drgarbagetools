@@ -134,7 +134,6 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsole;
@@ -167,13 +166,9 @@ import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.bytecodevisualizer.actions.ActivateBasicblockGraphViewAction;
 import com.drgarbage.bytecodevisualizer.actions.ActivateBytecodeGraphViewAction;
-import com.drgarbage.bytecodevisualizer.actions.BytecodevizualizerActionBarContributor;
 import com.drgarbage.bytecodevisualizer.actions.ExportGraphAndOpenWithControlflowgraphFactoryAction;
 import com.drgarbage.bytecodevisualizer.actions.ToggleBytecodeBreakpointAction;
 import com.drgarbage.bytecodevisualizer.preferences.BytecodeVisualizerPreferenceConstats;
-import com.drgarbage.bytecodevisualizer.view.OperandStackView;
-import com.drgarbage.bytecodevisualizer.view.OperandStackViewPage;
-import com.drgarbage.bytecodevisualizer.view.OperandStackViewPageIml;
 import com.drgarbage.core.CoreConstants;
 import com.drgarbage.core.CoreMessages;
 import com.drgarbage.core.CorePlugin;
@@ -286,11 +281,6 @@ public class BytecodeEditor extends JavaEditor
 	 * Outline page of the class file editor.
 	 */
 	protected BytecodeOutlinePage fOutlinePage = null;
-	
-	/**
-	 * Operand Stack View reference
-	 */
-	private OperandStackViewPage operandStackViewPage = null;
 
 	/**
 	 * Used to generate annotations for stack frames
@@ -311,11 +301,7 @@ public class BytecodeEditor extends JavaEditor
 	 * is enabled or disabled.
 	 */
 	private boolean handleCursorPositionChanged = true;
-	
-	/**
-	 * Reference to the action contributor. 
-	 */
-	private BytecodevizualizerActionBarContributor actionContributor = null;
+
 	
 	/**
 	 * List of the line selection listeners.
@@ -397,6 +383,17 @@ public class BytecodeEditor extends JavaEditor
 	 * Preference property change listener.
 	 */
 	private IPropertyChangeListener preferenceListener = null;
+
+	private Button restrictionDetailsButton;
+	
+	private Label restrictionDetailsDummyPlaceHolder;
+	
+	private Composite restrictionDetailsPanel;
+	
+	private boolean restrictionDetailsVisible = false;
+	
+	/** BCV LT Panel */
+	private Composite restrictionInfoPanel;
 	
 	/**
 	 * Modify property: reuse editor during debugging.
@@ -451,14 +448,6 @@ public class BytecodeEditor extends JavaEditor
 
 		/* reuse editor during debugging */
 		BytecodeVisualizerPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(reuseDebugPropertyChangeListener);
-	}
-
-	/**
-	 * Set the reference to the action contributor. 
-	 * @param actionContributor
-	 */
-	public void setActionContributor( BytecodevizualizerActionBarContributor contributor) {
-		actionContributor = contributor;
 	}
 
 	/**
@@ -827,6 +816,7 @@ public class BytecodeEditor extends JavaEditor
 		this.parent = parent;
 
 		parent.setLayout(new FillLayout());
+		this.restrictionInfoPanel = null;
 		this.tabFolder = createTabFolder(parent);
 
 		createPages();
@@ -883,7 +873,7 @@ public class BytecodeEditor extends JavaEditor
 							}
 						}
 
-						int line = method.getSourceCodeLine(newLine -  1/* changed to 0-based */);
+						int line = method.getSourceCodeLine(newLine +  1/* changed to 0-based */);
 						if (line != ByteCodeConstants.INVALID_LINE){
 							sourceCodeViewer.selectSourceCodeLine(line - 1 /* changed to 0-based */, false);
 						}
@@ -1288,10 +1278,6 @@ public class BytecodeEditor extends JavaEditor
 		if(fOutlinePage != null){
 			fOutlinePage.setInput(byteCodeDocumentProvider.getClassFileOutlineElement());
 		}
-		
-		if(operandStackViewPage != null){
-			operandStackViewPage.setInput(null);
-		}
 	}
 
 
@@ -1308,10 +1294,6 @@ public class BytecodeEditor extends JavaEditor
 						fOutlinePage.setSelection(m);
 					}
 					
-					if(operandStackViewPage != null){
-						operandStackViewPage.setInput(m);
-					}
-					
 					updateLineSectionListener(line/* changed to 0-based */, m);
 					return;
 				}
@@ -1324,11 +1306,6 @@ public class BytecodeEditor extends JavaEditor
 						fOutlinePage.setSelection(f);
 					}
 					
-					/* set input null for operand stack if the line not in the method */
-					if(operandStackViewPage != null){
-						operandStackViewPage.setInput(null);
-					}
-					
 					updateLineSectionListener(line/* changed to 0-based */, f);
 					return;
 				}
@@ -1338,12 +1315,6 @@ public class BytecodeEditor extends JavaEditor
 			if(fOutlinePage!= null){
 				fOutlinePage.setSelection(doc);		
 			}
-			
-			/* set input null for operand stack if the line not in the method */
-			if(operandStackViewPage != null){
-				operandStackViewPage.setInput(null);
-			}
-			
 			updateLineSectionListener(line/* changed to 0-based */, doc);
 		}
 	
@@ -1353,11 +1324,9 @@ public class BytecodeEditor extends JavaEditor
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#doRestoreState(org.eclipse.ui.IMemento)
 	 */
 	protected void doRestoreState(IMemento memento) {
-		/* FIX: initialization after restoring the workspace */
-		activateBytecodeTab();  
-
-		setHandleCursorPositionChanged(true);
-		super.doRestoreState(memento);
+			setHandleCursorPositionChanged(true);
+			super.doRestoreState(memento);
+			setHandleCursorPositionChanged(false);
 	}
 
 	/* (non-Javadoc)
@@ -1421,6 +1390,7 @@ public class BytecodeEditor extends JavaEditor
 	 * @see com.drgarbage.bytecodevisualizer.core.editors.ClassFileEditor#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class required) {
+		
 		if (IContentOutlinePage.class.equals(required)) {
 			if (fOutlinePage == null){
 				fOutlinePage = createBytecodeVisualizerOutlinePage();
@@ -1441,13 +1411,6 @@ public class BytecodeEditor extends JavaEditor
 				return new ToggleBytecodeSourceBreakpointAdapter();
 			}
 		} 
-		else if (OperandStackViewPage.class.equals(required)) {
-			if (operandStackViewPage == null){
-				operandStackViewPage = new OperandStackViewPageIml();
-            	operandStackViewPage.setEditor(this);
-			}			
-			return operandStackViewPage;
-		}
 		
 		return super.getAdapter(required);
 	}
@@ -1926,16 +1889,12 @@ public class BytecodeEditor extends JavaEditor
 	 * @return true or false
 	 */
 	private boolean isControlFlowgraphViewVisible(){
-		IWorkbenchWindow workbench = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		if(workbench == null){
-			return false;
-		}
-		IWorkbenchPage page = workbench.getActivePage();
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		if(page != null){
 			IViewReference[] views = page.getViewReferences();
 			for(IViewReference ref: views){
 				if(ref.getId().equals(CoreConstants.CONTROL_FLOW_VIEW_ID)){
-					IViewPart viewPart = ref.getView(false);
+					IViewPart viewPart = ref.getView(true);
 					if(viewPart instanceof ControlFlowGraphView){
 						ControlFlowGraphView cfgView = (ControlFlowGraphView) viewPart;
 						return cfgView.getCurrentPage().getControl().isVisible();
@@ -2036,9 +1995,6 @@ public class BytecodeEditor extends JavaEditor
 			}
 
 		}
-		
-		if(actionContributor != null)
-			actionContributor.pageChanged(newPageIndex);
 
 	}
 
@@ -2131,7 +2087,7 @@ public class BytecodeEditor extends JavaEditor
 					/* resolve sourceCodeLine into the ByteCodeLine */
 					List<IMethodSection> methods = byteCodeDocumentProvider.getClassFileDocument().getMethodSections();
 		
-					int bytecodeLine = resolveLineNumberIntoBytecode(methods, sourceCodeLine + 1);
+					int bytecodeLine = resolveLineNumberIntoBytecode(methods, sourceCodeLine);
 					if (bytecodeLine != ByteCodeConstants.INVALID_OFFSET) {
 						selectLineAndReveal(bytecodeLine - 1); /* convert to 0-based lines */
 					}

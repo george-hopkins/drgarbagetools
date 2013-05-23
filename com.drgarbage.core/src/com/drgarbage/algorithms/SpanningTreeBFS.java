@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008- 2013, Dr. Garbage Community
+ * Copyright (c) 2008-2012, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,148 +16,91 @@
 
 package com.drgarbage.algorithms;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
-import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
 
 /**
- * 	Finds a spanning tree for the given graph.
- * 
- *  @author Andreas Karoly, Sergej Alekseev  
+ *  @author Sergej Alekseev  
  *  @version $Revision$
- *  $Id$
+ *  $Id: SpanningTreeBFS.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class SpanningTreeBFS extends BFSBase {
-	
-	/**
-	 * Spanning tree graph.
-	 */
-	private IDirectedGraphExt spanningTree;
-	
-	/**
-	 * Map of nodes <b>old graph</b> <-> <b>new graph</b>
-	 */
-	private Map<INodeExt, INodeExt> mapNodeList;
-	
-	/**
-	 * If the variable is true a new graph for the spanning tree is created.
-	 * Otherwise the original graph is modified to the spanning tree.
-	 */
-	private boolean createNewGraph = true;
-	
-	/**
-	 * Set true if a new graph for the spanning tree has to be created.
-	 * Otherwise the original graph is modified to the spanning tree. 
-	 * @param createNewGraph - true or false
-	 */
-	public void setCreateNewGraph(boolean createNewGraph) {
-		this.createNewGraph = createNewGraph;
-	}
+
+	List<IEdgeExt> spanningTreeEdges;
 
 	/**
-	 * Returns the spanning tree graph.
-	 * @return the spanning tree graph
+	 * Return spanning tree edges.
+	 * @return list of edges
 	 */
-	public IDirectedGraphExt getSpanningTree(){
-		return spanningTree;
+	public List<IEdgeExt> getSpanningTreeEdges() {
+		return spanningTreeEdges;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.drgarbage.algorithms.BFSBase#start(com.drgarbage.controlflowgraph.intf.IDirectedGraphExt)
-	 */
-	@Override
 	public void start(IDirectedGraphExt graph) throws ControlFlowGraphException{
-		if(createNewGraph){
-			spanningTree = GraphExtentionFactory.createDirectedGraphExtention();
-			mapNodeList = new HashMap<INodeExt, INodeExt>();
+		spanningTreeEdges = new ArrayList<IEdgeExt>();
+		
+		INodeListExt nodeList = graph.getNodeList();
+		
+		/* mark start node as visited */
+		for(int i = 0; i < nodeList.size(); i++ ){
+			INodeExt node= nodeList.getNodeExt(i);
+			List<INodeExt> list  = (List<INodeExt>)node.getData();
 
-			INodeListExt oldNodeList = graph.getNodeList();
-			INodeListExt newNodeList = spanningTree.getNodeList();
-
-			/* create a map of the old nodes to the new nodes */
-			for (int i = 0; i < oldNodeList.size(); i++){
-				INodeExt oldNode = oldNodeList.getNodeExt(i);
-				INodeExt newNode = GraphExtentionFactory.createNodeExtention(oldNode.getData());
-				mapNodeList.put(oldNode,  newNode);
-
-				/* copy node property */
-				copyNodeProperties(oldNode, newNode);
-
-				/* copy the list of the new nodes to the new graph */
-				newNodeList.add(newNode);
+			/* for all original equivalenceClassList from the equivalence class node */
+			for(INodeExt n: list){
+				if(n.getByteCodeOffset() == 0){
+					node.setVisited(true);
+					if(debug)log("Start node: " + node.toString() + " " + node.getData());				
+					bfs(node);
+					break;
+				}
 			}
-		}
-		else{
-			spanningTree = graph;
-			mapNodeList = null;
 		}
 		
-		/* start algorithm */
-		super.start(graph);
-	}
-
-	/**
-	 * Copies all properties of the old node to the new node
-	 * @param oldNode - the old node
-	 * @param newNode - the new node
-	 */
-	private void copyNodeProperties(INodeExt oldNode, INodeExt newNode){
-		newNode.setByteCodeOffset(oldNode.getByteCodeOffset());
-		newNode.setByteCodeString(oldNode.getByteCodeString());
-		//TODO: copy all properties
-	}
-
-	/* (non-Javadoc)
-	 * @see com.drgarbage.algorithms.BFSBase#visitedEdge(com.drgarbage.controlflowgraph.intf.IEdgeExt)
-	 */
-	@Override
-	protected void visitedEdge(IEdgeExt edge) {
-		if(!edge.getTarget().isVisited()){
-			if(createNewGraph){
-				/* find the source and target node, create new edge */
-				INodeExt source = mapNodeList.get(edge.getSource());
-				INodeExt target = mapNodeList.get(edge.getTarget());
-				IEdgeExt newedge = GraphExtentionFactory.createEdgeExtention(source, target);
-				spanningTree.getEdgeList().add(newedge);
-			}
-		}
-		else{
-			if(!createNewGraph){
-				edge.getSource().getOutgoingEdgeList().remove(edge);
-				edge.getTarget().getIncomingEdgeList().remove(edge);
-				spanningTree.getEdgeList().remove(edge);
+		for(int i = 0; i < nodeList.size(); i++ ){
+			INodeExt node= nodeList.getNodeExt(i);
+			if(node.getIncomingEdgeList().size()== 0 && !node.isVisited()){
+				if(debug)log("Start node: " + node.toString() + " " + node.getData());				
+				bfs(node);
 			}
 		}
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see com.drgarbage.algorithms.BFSBase#visitedNode(com.drgarbage.controlflowgraph.intf.INodeExt)
-	 */
-	@Override
-	protected void visitedNode(INodeExt node) {
-		/* nothing to do */
-	}
-
-	/* (non-Javadoc)
-	 * @see com.drgarbage.algorithms.BFSBase#enqueue(com.drgarbage.controlflowgraph.intf.INodeExt)
-	 */
-	@Override
-	protected void enqueue(INodeExt node) {
-		/* nothing to do */
-	}
-
-	/* (non-Javadoc)
-	 * @see com.drgarbage.algorithms.BFSBase#dequeue(com.drgarbage.controlflowgraph.intf.INodeExt)
+	 * @see com.drgarbage.visualgraphic.controlflowgraph.algorithms.BFSBase#dequeue(com.drgarbage.visualgraphic.controlflowgraph.intf.INodeExt)
 	 */
 	@Override
 	protected void dequeue(INodeExt node) {
-		/* nothing to do */
+	}
+
+	/* (non-Javadoc)
+	 * @see com.drgarbage.visualgraphic.controlflowgraph.algorithms.BFSBase#enqueue(com.drgarbage.visualgraphic.controlflowgraph.intf.INodeExt)
+	 */
+	@Override
+	protected void enqueue(INodeExt node) {
+	}
+
+	/* (non-Javadoc)
+	 * @see com.drgarbage.visualgraphic.controlflowgraph.algorithms.BFSBase#visitedEdge(com.drgarbage.visualgraphic.controlflowgraph.intf.IEdgeExt)
+	 */
+	@Override
+	protected void visitedEdge(IEdgeExt edge) {
+		if(edge.getTarget().isVisited()){
+			spanningTreeEdges.add(edge);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.drgarbage.visualgraphic.controlflowgraph.algorithms.BFSBase#visitedNode(com.drgarbage.visualgraphic.controlflowgraph.intf.INodeExt)
+	 */
+	@Override
+	protected void visitedNode(INodeExt node) {
 	}
 
 }

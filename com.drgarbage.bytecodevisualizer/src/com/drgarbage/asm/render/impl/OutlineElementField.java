@@ -37,7 +37,7 @@ import com.drgarbage.asm.render.intf.IOutlineElementField;
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id$
+ * $Id: OutlineElementField.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class OutlineElementField extends OutlineElement implements IField, IOutlineElementField {
 	/**

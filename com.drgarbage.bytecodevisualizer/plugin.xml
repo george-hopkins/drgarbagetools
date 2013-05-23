@@ -17,18 +17,7 @@
          </contentTypeBinding>
       </editor>
    </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            extensions="class"
-            icon="img/enabled16/classfile-editor-16x16.png"
-            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="com.drgarbage.classfile.editors.ClassFileEditor"
-            id="com.drgarbage.classfile.editor"
-            name="%ClassFileEditor">
-      </editor>
-   </extension>
-   <extension
+       <extension
          point="org.eclipse.ui.editorActions">
       <editorContribution
             targetID="com.drgarbage.bytecodevisualizer.editor"
@@ -101,119 +90,5 @@
             class="com.drgarbage.bytecodevisualizer.preferences.BytecodeVisualizerPreferenceInitializer">
       </initializer>
    </extension>
-   
-      <extension
-         point="org.eclipse.ui.views">
-      <category
-            name="%category.Dr_Garbage"
-            id="com.drgabage.bytecodevisualizer.category.controlflowgraph_view">
-      </category>
-      <view
-            allowMultiple="false"
-            category="com.drgabage.bytecodevisualizer.category.controlflowgraph_view"
-            class="com.drgarbage.bytecodevisualizer.view.OperandStackView"
-            icon="img/enabled16/operand-stack-16x16.png"
-            id="com.drgabage.bytecodevisualizer.view.operandstack_view"
-            name="%OperandStackView_title">
-      </view>
-      <stickyView
-            closeable="true"
-            id="com.drgabage.bytecodevisualizer.view.operandstack_view"
-            location="RIGHT"
-            moveable="true">
-      </stickyView>
-   </extension>
-   
-   <!-- Compare and Merge Elements -->
-   <extension point="org.eclipse.compare.contentMergeViewers">
-     <viewer
-           class="com.drgarbage.bytecodevisualizer.compare.ClassFileMergeViewerCreator"
-           extensions="class, class_drgarbage"
-           id="com.drgarbage.bytecodevisualizer.compare.ClassFileMergeViewer"
-           label="%ClassFileCompare_label">
-     </viewer>
-   </extension>
-   
-   
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            objectClass="org.eclipse.jdt.core.IOpenable"
-            id="com.drgarbage.compare.CompareClassFileActionContribution1">
-
-         <visibility>
-            <or>
-               <objectClass name="org.eclipse.jdt.core.IClassFile"/>
-               <objectClass name="org.eclipse.jdt.core.ICompilationUnit"/>
-            </or>
-         </visibility>
-         <menu
-               label="Compare With ..."
-               path="additions"
-               id="compareWithMenu">
-            <separator
-                  name="compareWithGroup">
-            </separator>
-         </menu>
-
-         <action
-               enablesFor="1"
-               label="%act_Compare_with_Other_Class_File"
-               icon="img/enabled16/compare-other-class-action-16x16.png"
-               class="com.drgarbage.bytecodevisualizer.compare.OpenClassFileAction"
-               menubarPath="compareWithMenu/compareWithGroup"
-               id="com.drgarbage.compare.OpenClassFileAction">
-         </action>
-         <action
-               enablesFor="2"
-               label="%act_Compare_with_Each_Other_Class_File"
-               icon="img/enabled16/compare-action-16x16.png"
-               class="com.drgarbage.bytecodevisualizer.compare.CompareClassFilesAction"
-               menubarPath="compareWithMenu/compareWithGroup"
-               id="com.drgarbage.compare.CompareClassFileAction">
-         </action>
-       </objectContribution>
-
-      <objectContribution
-            objectClass="org.eclipse.core.resources.IFile"
-            nameFilter="*.class"
-            id="com.drgarbage.compare.CompareBytecodeActionContribution2">
-
-         <visibility>
-            <not>
-             <or>
-                   <objectClass name="org.eclipse.jdt.core.IClassFile"/>
-                   <objectClass name="org.eclipse.jdt.core.ICompilationUnit"/>
-               </or>
-            </not>
-         </visibility>
-         <menu
-               label="Compare With ..."
-               path="additions"
-               id="compareWithMenu">
-            <separator
-                  name="compareWithGroup">
-            </separator>
-         </menu>
-
-         <action
-               enablesFor="1"
-               label="%act_Compare_with_Other_Class_File"
-               icon="img/enabled16/compare-other-class-action-16x16.png"
-               class="com.drgarbage.bytecodevisualizer.compare.OpenClassFileAction"
-               menubarPath="compareWithMenu/compareWithGroup"
-               id="com.drgarbage.compare.OpenClassFileAction">
-         </action>
-         <action
-               enablesFor="2"
-               label="%act_Compare_with_Each_Other_Class_File"
-               icon="img/enabled16/compare-action-16x16.png"
-               class="com.drgarbage.bytecodevisualizer.compare.CompareClassFilesAction"
-               menubarPath="compareWithMenu/compareWithGroup"
-               id="com.drgarbage.compare.CompareClassFileAction">
-         </action>
-       </objectContribution>
-   </extension>
-   
    
 </plugin>

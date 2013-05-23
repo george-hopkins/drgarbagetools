@@ -307,12 +307,12 @@ public class NodeExt extends Node implements INodeExt {
 	@Override
 	public String toString(){
 		StringBuffer buf= new StringBuffer("NODE-EXT: ");
+		buf.append(", Visited=");
+		buf.append(isVisited());
 		buf.append(" ");
 		buf.append(byteCodeOffset);
 		buf.append(" ");
 		buf.append(byteCodeString);
-		buf.append(" Visited=");
-		buf.append(isVisited());
 		return buf.toString();
 	}
 

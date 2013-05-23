@@ -25,7 +25,7 @@ import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id$
+ * $Id: SourceCodePreferencePage.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class SourceCodePreferencePage extends
 		AbstractBytecodeVisualizerPreferencePage

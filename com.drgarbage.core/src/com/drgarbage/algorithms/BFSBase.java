@@ -76,7 +76,7 @@ public abstract class BFSBase {
 			throw new ControlFlowGraphException("Can't start BFS. Start Vertex '" + start.toString()+ "' not found." );
 		}
 
-		if(debug)log("Start node: " + start.toString() + " " + start.getData() + " " + start.getOutgoingEdgeList().toString());
+		if(debug)log("Start node: " + start.toString() + " " + start.getData());
 		
 		bfs(start);
 	}
@@ -120,8 +120,8 @@ public abstract class BFSBase {
 	protected void visitEdge(IEdgeExt edge){
 		edge.setVisited(true);
 		visitedEdge(edge);
-		if(debug)log(edge.getSource().getByteCodeOffset() /*+ " (" +  edge.getSource().getData().toString() + ") "*/ + 
-				"->" + edge.getTarget().getByteCodeOffset() /*+ " (" +  edge.getTarget().getData().toString() + ") "*/);
+		if(debug)log(edge.getSource().getByteCodeOffset() + " (" +  edge.getSource().getData().toString() + ") " + 
+				"->" + edge.getTarget().getByteCodeOffset() + " (" +  edge.getTarget().getData().toString() + ") ");
 	}
 	
 	protected void enqueue(Queue<INodeExt> queue, INodeExt node){

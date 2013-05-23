@@ -44,18 +44,4 @@ public interface IEdgeListExt {
 	 * @return the list size
 	 */
 	public int size();
-	
-	/**
-	 * Removes the object from the list
-	 * @param obj - the object to be removed
-	 * @return true if the object has been removed
-	 */
-	public boolean remove(Object obj);
-	
-	/**
-	 * Removes the list element for the given index.
-	 * @param i - index of the element to be removed
-	 * @return the removed object 
-	 */
-	public Object remove(int i);
 }

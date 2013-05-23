@@ -55,7 +55,7 @@ import com.drgarbage.core.CoreMessages;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id$
+ * $Id: ClassFileSourcecodeViewer.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class ClassFileSourcecodeViewer extends ClassFileEditor implements
 		ISourceCodeViewer {

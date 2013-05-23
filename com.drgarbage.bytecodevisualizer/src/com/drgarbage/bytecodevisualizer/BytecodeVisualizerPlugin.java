@@ -64,15 +64,6 @@ public class BytecodeVisualizerPlugin extends AbstractUIPlugin implements Byteco
 	public static IStatus createErrorStatus(String message, Throwable exception) {
 		return new Status(IStatus.ERROR, PLUGIN_ID, CoreConstants.INTERNAL_ERROR, message, exception);
 	}
-	
-	/**
-	 * Returns a new warning status for this plug-in with the given message
-	 * @param message the message to be included in the status
-	 * @return a new warning status
-	 */
-	public static IStatus createWarningStatus(String message) {
-		return new Status(IStatus.WARNING, PLUGIN_ID, CoreConstants.WARNING, message, null);
-	}
 
 	public static BytecodeVisualizerPlugin getDefault() {
 		return plugin;
@@ -165,7 +156,6 @@ public class BytecodeVisualizerPlugin extends AbstractUIPlugin implements Byteco
     	registerImage(BytecodeVisualizerConstants.IMG16E_STEP_OVER_SINGLE_INSTRUCTION, registry);
     	registerImage(BytecodeVisualizerConstants.IMG16E_STEP_INTO_BYTECODE, registry);
     	registerImage(BytecodeVisualizerConstants.IMG16E_TOGGLE_BREAKPOINT, registry);
-    	registerImage(BytecodeVisualizerConstants.IMG16E_COMPARE_ACTION, registry);
     }
 	
 	private void registerImage(String path, ImageRegistry registry) {

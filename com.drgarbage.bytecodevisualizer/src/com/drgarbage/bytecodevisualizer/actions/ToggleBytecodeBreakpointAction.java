@@ -34,7 +34,6 @@ import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.bytecodevisualizer.editors.BytecodeDocumentProvider;
 import com.drgarbage.bytecodevisualizer.editors.BytecodeEditor;
-import com.drgarbage.bytecodevisualizer.editors.ISourceCodeViewer;
 import com.drgarbage.core.CoreMessages;
 import com.drgarbage.core.img.CoreImg;
 
@@ -48,8 +47,8 @@ import com.drgarbage.core.img.CoreImg;
  * @see org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate
  * @noextend This class is not intended to be subclassed by clients.
  * @author Sergej Alekseev
- * @version $Revision$ 
- * $Id$
+ * @version $Revision$ $Id: ToggleBytecodeBreakpointAction.java 1329
+ *          2009-08-15 20:54:28Z Peter Palaga $
  */
 public class ToggleBytecodeBreakpointAction extends Action implements IUpdate {
 
@@ -203,67 +202,23 @@ public class ToggleBytecodeBreakpointAction extends Action implements IUpdate {
 	 * @see org.eclipse.jface.action.IAction#run()
 	 */
 	public void run() {
-
-		if (fPart instanceof BytecodeEditor) {
-			BytecodeEditor bytecodeEditor = (BytecodeEditor) fPart;
-
-			if(bytecodeEditor.getActiveTabIndex() == BytecodeEditor.TAB_INDEX_SOURCE){
-				ISourceCodeViewer sourceCodeViewer = bytecodeEditor.getSourceCodeViewer();
-				
-				int line = sourceCodeViewer.getVerticalRulerOfSourceViewer().getLineOfLastMouseButtonActivity();//fRulerInfo.getLineOfLastMouseButtonActivity();
-				if (line >= 0) { /* valid line */
-
-					IDocument document = sourceCodeViewer.getDocumentProvider().getDocument(sourceCodeViewer.getEditorInput());
-					if (document == null) {
-						BytecodeVisualizerPlugin.log(new IllegalStateException(
-								"Could not get Document."));
-						return;
-					}
-
-					ITextSelection textSelection = null;
-					try {
-						IRegion region = document.getLineInformation(line);
-						textSelection = new TextSelection(document, region.getOffset(), 0);
-					} catch (BadLocationException e) {
-						BytecodeVisualizerPlugin.log(e);
-					}
-
-					IToggleBreakpointsTarget adapter = (IToggleBreakpointsTarget) fPart
-							.getAdapter(IToggleBreakpointsTarget.class);
-					if (!(adapter instanceof IToggleBreakpointsTargetExtension)) {
-						BytecodeVisualizerPlugin.log(new IllegalStateException(
-								"Could not get IToggleBreakpointsTarget out ouf BytecodeEditor."));
-						return;
-					}
-					IToggleBreakpointsTargetExtension adapterExtension = (IToggleBreakpointsTargetExtension) adapter;
-					if (adapterExtension.canToggleBreakpoints(fPart, textSelection)) {
-						try {
-							adapterExtension.toggleBreakpoints(fPart, textSelection);
-						} catch (CoreException e) {
-							BytecodeVisualizerPlugin.log(e);
-						}
-					}
-
-					return;
-				}
-			}
-		}
-		
-		
 		SelectionData selectionData = getTextSelection();
 		switch (selectionData.bytecodeDebugSupport) {
 		case AVAILABLE:
 			IToggleBreakpointsTarget adapter = (IToggleBreakpointsTarget) fPart
 					.getAdapter(IToggleBreakpointsTarget.class);
 			if (!(adapter instanceof IToggleBreakpointsTargetExtension)) {
-				BytecodeVisualizerPlugin.log(new IllegalStateException(
+				BytecodeVisualizerPlugin
+						.log(new IllegalStateException(
 								"Could not get IToggleBreakpointsTarget out ouf BytecodeEditor."));
 				return;
 			}
 			IToggleBreakpointsTargetExtension adapterExtension = (IToggleBreakpointsTargetExtension) adapter;
-			if (adapterExtension.canToggleBreakpoints(fPart, selectionData.selection)) {
+			if (adapterExtension.canToggleBreakpoints(fPart,
+					selectionData.selection)) {
 				try {
-					adapterExtension.toggleBreakpoints(fPart, selectionData.selection);
+					adapterExtension.toggleBreakpoints(fPart,
+							selectionData.selection);
 				} catch (CoreException e) {
 					BytecodeVisualizerPlugin.log(e);
 				}
@@ -333,12 +288,31 @@ public class ToggleBytecodeBreakpointAction extends Action implements IUpdate {
 			if (target != this) {
 				target.update();
 			}
-
-			if(bytecodeEditor.getActiveTabIndex() == BytecodeEditor.TAB_INDEX_BYTECODE){
-				SelectionData selectionData = getTextSelection();
-				setBytecodedebugSupport(selectionData.bytecodeDebugSupport);
-			}
 		}
+
+		SelectionData selectionData = getTextSelection();
+
+		setBytecodedebugSupport(selectionData.bytecodeDebugSupport);
+		//		
+		// if (selection == null) {
+		// setEnabled(false);
+		// return;
+		// }
+		// IToggleBreakpointsTarget adapter = (IToggleBreakpointsTarget) fPart
+		// .getAdapter(IToggleBreakpointsTarget.class);
+		// if (!(adapter instanceof IToggleBreakpointsTargetExtension)) {
+		// BytecodeVisualizerPlugin
+		// .log(new IllegalStateException(
+		// "Could not get IToggleBreakpointsTarget out ouf BytecodeEditor."));
+		// setEnabled(false);
+		// return;
+		// }
+		// IToggleBreakpointsTargetExtension adapterExtension =
+		// (IToggleBreakpointsTargetExtension) adapter;
+		// boolean enabled = adapterExtension.canToggleBreakpoints(fPart,
+		// selection);
+		// setEnabled(enabled);
+
 	}
 
 }

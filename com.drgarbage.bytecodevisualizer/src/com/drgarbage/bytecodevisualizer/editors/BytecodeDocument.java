@@ -34,7 +34,7 @@ import com.drgarbage.bytecode.ByteCodeConstants;
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id$
+ * $Id: BytecodeDocument.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class BytecodeDocument extends Document {
 	

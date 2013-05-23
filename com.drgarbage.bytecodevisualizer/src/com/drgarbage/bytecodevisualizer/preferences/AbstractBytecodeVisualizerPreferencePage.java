@@ -36,7 +36,7 @@ import com.drgarbage.core.preferences.AbstractFieldPreferencePage;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id$
+ * $Id: AbstractBytecodeVisualizerPreferencePage.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public abstract class AbstractBytecodeVisualizerPreferencePage extends AbstractFieldPreferencePage  implements IWorkbenchPreferencePage {
 

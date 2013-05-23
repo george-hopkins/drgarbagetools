@@ -70,7 +70,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * @noinstantiate This class is not intended to be instantiated by clients.
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id$
+ * $Id: RulerToggleBytecodeActionDelegate.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
  */
 public class RulerToggleBytecodeActionDelegate extends
 		AbstractRulerActionDelegate {

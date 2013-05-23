@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2013, Dr. Garbage Community
+ * Copyright (c) 2008-2012, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import com.drgarbage.controlflowgraph.intf.INodeType;
 import com.drgarbage.javalang.JavaLangUtils;
 
 /**
- * Collection of methods for generating control flow graphs from the byte code
+ * Colection of methods for generating control flow graphs from the byte code
  *
  * @author Sergej Alekseev
  * @version $Revision$
@@ -81,24 +81,11 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	}  
 
 	/** 
-	 * Generates a control flow graph whose nodes are synchronized 
-	 * with the line numbers in the bytecode view.
-	 * @param instructions - list of synchronized instructions
+	 * Generates a control flow graph from a synchronized instruction list.
+	 * @param List of synchronized instructions
 	 * @return the control flow graph 
 	 */    
 	public static IDirectedGraphExt generateSynchronizedControlFlowGraphFrom (List<IInstructionLine> instructions){
-		return generateSynchronizedControlFlowGraphFrom(instructions, false);
-	}
-
-	/** 
-	 * Generates a control flow graph whose nodes are synchronized 
-	 * with the line numbers in the bytecode view.
-	 * @param instructions - list of synchronized instructions
-	 * @param setReferenceToIntsrutionList - flag if a reference to the original instruction object has to be set
-	 * @return the control flow graph 
-	 */    
-	public static IDirectedGraphExt generateSynchronizedControlFlowGraphFrom (List<IInstructionLine> instructions,
-			boolean setReferenceToIntsrutionList){
 		AbstractInstruction currentInstruction = null;
 		HashMap<Integer, INodeExt> hashTable = new HashMap<Integer, INodeExt>();
 		List<AbstractInstruction> instructionList = new ArrayList<AbstractInstruction>();
@@ -124,9 +111,7 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 			instrVerbose = currentInstruction.getOpcodeMnemonic();
 
 			/* add vertex */
-			INodeExt  node= setReferenceToIntsrutionList ?
-					GraphExtentionFactory.createNodeExtention(instrLine) :
-						GraphExtentionFactory.createNodeExtention(null);
+			INodeExt  node= GraphExtentionFactory.createNodeExtention(null);
 			node.setY(instrLine.getLine() +1);
 			node.setByteCodeOffset(currentInstruction.getOffset());
 			node.setByteCodeString(instrVerbose);
@@ -144,77 +129,17 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 		return cfg;
 	}
 
+
 	/** 
 	 * Generates a control flow graph from an instruction list.
-	 * @param instructions - list of synchronized instructions
-	 * @return The control flow graph 
-	 * @throws ControlFlowGraphException
-	 * @throws IOException
-	 */
-	public static IDirectedGraphExt generateControlFlowGraph (List<AbstractInstruction> instructions)
-	throws ControlFlowGraphException, IOException
-	{
-		return generateControlFlowGraph(instructions, null, false, false, false, false);
-	}
-	
-	/** 
-	 * Generates a control flow graph from an instruction list.
-	 * @param instructions - list of synchronized instructions
-	 * @param setReferenceToIntsrutionList - flag if a reference to the original instruction object has to be set
-	 * @return The control flow graph 
-	 * @throws ControlFlowGraphException
-	 * @throws IOException
-	 */
-	public static IDirectedGraphExt generateControlFlowGraph (List<AbstractInstruction> instructions, boolean setReferenceToIntsrutionList)
-	throws ControlFlowGraphException, IOException
-	{
-		return generateControlFlowGraph(instructions, null, false, false, false, setReferenceToIntsrutionList);
-	}
-	
-	/**
-	 * Generates a control flow graph from an instruction list.
-	 * <br>
-	 * NOTE: This method is used for compatibility. 
-	 * Used the method 
-	 * {@link #generateControlFlowGraph(List,LineNumberTableEntry[],boolean,boolean,boolean,boolean) generateControlFlowGraph}
-	 * instead.
-	 * @param instructions - list of synchronized instructions
-	 * @param lineNumberTable - the line number table
-	 * @param createStartVertex - flag if a virtual start node has to be created
-	 * @param createExitvertex - flag if a virtual exit node has to be created
-	 * @param createBackEdge - flag if a virtual back edge has to be created
-	 * @return The control flow graph 
-	 * @throws ControlFlowGraphException
-	 * @throws IOException
-	 */
+	 * @param List of synchronized instructions
+	 * @return the control flow graph 
+	 */    
 	public static IDirectedGraphExt generateControlFlowGraph (List<AbstractInstruction> instructions,
 			LineNumberTableEntry[] lineNumberTable,
 			boolean createStartVertex,
 			boolean createExitvertex,
 			boolean createBackEdge)
-	throws ControlFlowGraphException, IOException
-	{
-		return generateControlFlowGraph(instructions, null, false, false, false, false);
-	}
-	
-	/**
-	 * Generates a control flow graph from an instruction list.
-	 * @param instructions - list of synchronized instructions
-	 * @param lineNumberTable - the line number table
-	 * @param createStartVertex - flag if a virtual start node has to be created
-	 * @param createExitvertex - flag if a virtual exit node has to be created
-	 * @param createBackEdge - flag if a virtual back edge has to be created
-	 * @param setReferenceToIntsrutionList - flag if a reference to the original instruction object has to be set
-	 * @return The control flow graph 
-	 * @throws ControlFlowGraphException
-	 * @throws IOException
-	 */
-	public static IDirectedGraphExt generateControlFlowGraph (List<AbstractInstruction> instructions,
-			LineNumberTableEntry[] lineNumberTable,
-			boolean createStartVertex,
-			boolean createExitvertex,
-			boolean createBackEdge,
-			boolean setReferenceToIntsrutionList)
 	throws ControlFlowGraphException, IOException
 	{
 		AbstractInstruction currentInstruction = null;
@@ -240,9 +165,7 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 			instrVerbose = currentInstruction.getOpcodeMnemonic();
 
 			/* add vertex */
-			INodeExt  node = setReferenceToIntsrutionList ? 
-					GraphExtentionFactory.createNodeExtention(currentInstruction):
-						GraphExtentionFactory.createNodeExtention(null);
+			INodeExt  node = GraphExtentionFactory.createNodeExtention(null);
 			node.setByteCodeOffset(currentInstruction.getOffset());
 			node.setByteCodeString(instrVerbose);
 			node.setToolTipText(" " + node.getByteCodeOffset() + " - " + node.getByteCodeString() + " ");
@@ -1108,7 +1031,7 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	}
 	
 	/**
-	 * Creates a tooltip string for a source code node.
+	 * Creates a tooltip string for a sourcode node.
 	 * @param node
 	 * @return tooltip String
 	 */
@@ -1137,7 +1060,7 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	}
 	
 	/**
-	 * TODO: fix representation
+	 * TODO: fix represenation
 	 * @param lineNumberTable
 	 * @return string
 	 */
