@@ -50,7 +50,7 @@ import com.sun.jdi.request.StepRequest;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: DebugSupport.java 76 2013-02-24 17:18:45Z salekseev $
+ * $Id$
  */
 @SuppressWarnings("restriction")
 public class DebugSupport {

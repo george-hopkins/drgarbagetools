@@ -19,6 +19,7 @@ package com.drgarbage.asm.render.intf;
 import java.util.List;
 
 import com.drgarbage.bytecode.ByteCodeConstants;
+import com.drgarbage.bytecode.constant_pool.AbstractConstantPoolEntry;
 
 /**
  * A visualized class file.
@@ -174,5 +175,11 @@ public interface IClassFileDocument extends Appendable {
 	 * @param indentationString
 	 */
 	public void setIndentationString(String indentationString);
+	
+	/**
+	 * Returns the constant pool object. 
+	 * @return constant pool reference
+	 */
+	public AbstractConstantPoolEntry[] getConstantPool();
 
 }

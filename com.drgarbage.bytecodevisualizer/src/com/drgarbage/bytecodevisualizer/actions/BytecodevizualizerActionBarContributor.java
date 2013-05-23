@@ -34,14 +34,15 @@ import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.editors.BytecodeEditor;
-import com.drgarbage.bytecodevisualizer.editors.IClassFileEditor;
+import com.drgarbage.bytecodevisualizer.editors.ISourceCodeViewer;
+import com.drgarbage.bytecodevisualizer.editors.JavaSourceCodeViewer;
 
 /**
  * ActionBar Contributor.
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: BytecodevizualizerActionBarContributor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class BytecodevizualizerActionBarContributor extends BasicTextEditorActionContributor{
 	
@@ -114,55 +115,29 @@ public class BytecodevizualizerActionBarContributor extends BasicTextEditorActio
 	 */
 	public void setActiveEditor(IEditorPart part) {
 		super.setActiveEditor(part);
-		doSetActiveEditor(part);
-	}
-	
-	/**
-	 * Internally sets the active editor to the actions provided by this contributor.
-	 * Cannot be overridden by subclasses.
-	 *
-	 * @param part the editor
-	 */
-	private void doSetActiveEditor(IEditorPart part) {
-		if (part instanceof IClassFileEditor)
-			textEditor = ((IClassFileEditor) part).getClassFileEditor();
 		
-		if(textEditor == null){
+		if(part == null || !(part instanceof BytecodeEditor) || part.equals(textEditor)){
 			return;
 		}
-
-		/* The global actions to be connected with editor actions */
-		IActionBars actionBars= getActionBars();
+		
+		/* initialize the editor varaiable and set reference */
+		textEditor = (BytecodeEditor)part;
+		textEditor.setActionContributor(this);
 		
 		/* setup own action */
-		setupOwnActions(textEditor);
+		setupGraphActions();
 		
-		/* edit actions */
-		actionBars.setGlobalActionHandler(ITextEditorActionConstants.COPY, getAction(textEditor, ITextEditorActionConstants.COPY));
-		
-		/* select actions */
-		actionBars.setGlobalActionHandler(ITextEditorActionConstants.SELECT_ALL, getAction(textEditor, ITextEditorActionConstants.SELECT_ALL));
-		
-		/* find actions */
-		actionBars.setGlobalActionHandler(ITextEditorActionConstants.FIND, getAction(textEditor, ITextEditorActionConstants.FIND));
-		fFindNext.setAction(getAction(textEditor, ITextEditorActionConstants.FIND_NEXT));
-		fFindPrevious.setAction(getAction(textEditor, ITextEditorActionConstants.FIND_PREVIOUS));
-		fGotoLine.setAction(getAction(textEditor, ITextEditorActionConstants.GOTO_LINE));
-		
-		/* bookmark and task actions */
-		//actionBars.setGlobalActionHandler(IDEActionFactory.ADD_TASK.getId(), getAction(textEditor, IDEActionFactory.ADD_TASK.getId()));
-		//actionBars.setGlobalActionHandler(IDEActionFactory.BOOKMARK.getId(), getAction(textEditor, IDEActionFactory.BOOKMARK.getId()));
+		/* activate action for the page */
+		pageChanged(textEditor.getActiveTabIndex());
 
-		/* print actions */
-		actionBars.setGlobalActionHandler(ITextEditorActionConstants.PRINT, getAction(textEditor, ITextEditorActionConstants.PRINT));
 	}
 	
-	private void setupOwnActions(BytecodeEditor editor){
+	private void setupGraphActions(){
 		/* contribute to the toplevel menu */
 		viewMenu.removeAll();
 		
 		/* open control flow factory action */
-		IAction graphFactoryAction = editor.getAction(ExportGraphAndOpenWithControlflowgraphFactoryAction.ID);
+		IAction graphFactoryAction = textEditor.getAction(ExportGraphAndOpenWithControlflowgraphFactoryAction.ID);
 		if(graphFactoryAction != null)
 			viewMenu.add(graphFactoryAction);
 		
@@ -171,8 +146,8 @@ public class BytecodevizualizerActionBarContributor extends BasicTextEditorActio
 		viewMenu.add(graphViewMenu);
 
 		/* radio action */
-		IAction a = editor.getAction(ActivateBytecodeGraphViewAction.ID);
-		IAction a2 = editor.getAction(ActivateBasicblockGraphViewAction.ID);
+		IAction a = textEditor.getAction(ActivateBytecodeGraphViewAction.ID);
+		IAction a2 = textEditor.getAction(ActivateBasicblockGraphViewAction.ID);
 
 		/* contribute to the menu */
 		graphViewMenu.removeAll();	
@@ -180,9 +155,6 @@ public class BytecodevizualizerActionBarContributor extends BasicTextEditorActio
 			graphViewMenu.add(a);
 		if(a2 != null)
 			graphViewMenu.add(a2);
-		
-		/* About action */
-		/* not desired anymore */
 		
 		/* contribute to the toolbar */
 		toolBarManager.removeAll();
@@ -197,5 +169,63 @@ public class BytecodevizualizerActionBarContributor extends BasicTextEditorActio
 			toolBarManager.add(graphFactoryAction);
 		
 		toolBarManager.update(true);
+	}
+	
+	/**
+	 * Call back method which is called if the page in the nested editor has been clicked.
+	 * @param index page index
+	 */
+	public void pageChanged(int newPageIndex){
+		
+		IActionBars actionBars = getActionBars();
+		
+		if(newPageIndex == BytecodeEditor.TAB_INDEX_BYTECODE){
+			textEditor.getAction(ExportGraphAndOpenWithControlflowgraphFactoryAction.ID).setEnabled(true);
+			textEditor.getAction(ActivateBytecodeGraphViewAction.ID).setEnabled(true);
+			textEditor.getAction(ActivateBasicblockGraphViewAction.ID).setEnabled(true);
+			
+			actionBars.setGlobalActionHandler(ITextEditorActionConstants.COPY, getAction(textEditor, ITextEditorActionConstants.COPY));
+			actionBars.setGlobalActionHandler(ITextEditorActionConstants.SELECT_ALL, getAction(textEditor, ITextEditorActionConstants.SELECT_ALL));
+			
+			actionBars.setGlobalActionHandler(ITextEditorActionConstants.FIND, getAction(textEditor, ITextEditorActionConstants.FIND));
+			fFindNext.setAction(getAction(textEditor, ITextEditorActionConstants.FIND_NEXT));
+			fFindPrevious.setAction(getAction(textEditor, ITextEditorActionConstants.FIND_PREVIOUS));
+			fGotoLine.setAction(getAction(textEditor, ITextEditorActionConstants.GOTO_LINE));
+			actionBars.setGlobalActionHandler(ITextEditorActionConstants.PRINT, getAction(textEditor, ITextEditorActionConstants.PRINT));
+		}
+		else if(newPageIndex == BytecodeEditor.TAB_INDEX_SOURCE){
+			textEditor.getAction(ExportGraphAndOpenWithControlflowgraphFactoryAction.ID).setEnabled(false);
+			textEditor.getAction(ActivateBytecodeGraphViewAction.ID).setEnabled(false);
+			textEditor.getAction(ActivateBasicblockGraphViewAction.ID).setEnabled(false);
+			
+			ISourceCodeViewer  sourceCodeViewer = textEditor.getSourceCodeViewer();
+			if(sourceCodeViewer instanceof ISourceCodeViewer){
+				IAction action = null;
+				
+				action = sourceCodeViewer.getAction(ITextEditorActionConstants.COPY);
+				actionBars.setGlobalActionHandler(ITextEditorActionConstants.COPY, action);
+				action = sourceCodeViewer.getAction(ITextEditorActionConstants.SELECT_ALL);
+				actionBars.setGlobalActionHandler(ITextEditorActionConstants.SELECT_ALL, action);
+				
+				action = sourceCodeViewer.getAction(ITextEditorActionConstants.FIND);
+				actionBars.setGlobalActionHandler(ITextEditorActionConstants.FIND, action);
+				action = sourceCodeViewer.getAction(ITextEditorActionConstants.FIND_NEXT);
+				fFindNext.setAction(action);	
+				action = sourceCodeViewer.getAction(ITextEditorActionConstants.FIND_PREVIOUS);
+				fFindPrevious.setAction(action);	
+				action = sourceCodeViewer.getAction(ITextEditorActionConstants.GOTO_LINE);
+				fGotoLine.setAction(action);
+				
+				action = sourceCodeViewer.getAction(ITextEditorActionConstants.PRINT);
+				actionBars.setGlobalActionHandler(ITextEditorActionConstants.PRINT, action);
+				
+				/* disable replace actions */
+				//TODO: disable replace actions
+
+			}
+
+			actionBars.updateActionBars();
+
+		}
 	}
 }

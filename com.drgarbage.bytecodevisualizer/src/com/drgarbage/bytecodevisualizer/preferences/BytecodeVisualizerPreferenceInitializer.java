@@ -31,15 +31,20 @@ public class BytecodeVisualizerPreferenceInitializer extends
 		IPreferenceStore store = BytecodeVisualizerPlugin.getDefault().getPreferenceStore();
 				
 		/* General */
+		store.setDefault(GRAPH_PANEL_ATTR_RENDER_GRAPHS, true);
+		
 		store.setDefault(CLASS_FILE_ATTR_SHOW_CONSTANT_POOL, false);
 		store.setDefault(CLASS_FILE_ATTR_SHOW_LINE_NUMBER_TABLE, false);
 		store.setDefault(CLASS_FILE_ATTR_SHOW_VARIABLE_TABLE, false);
+		store.setDefault(CLASS_FILE_ATTR_SHOW_MAXS, false);
 		
 		store.setDefault(RETRIEVE_CLASS_FROM, RETRIEVE_CLASS_FROM_FILE_SYSTEM);
 		store.setDefault(BRANCH_TARGET_ADDRESS_RENDERING, BRANCH_TARGET_ADDRESS_RELATIVE);
 		
 		store.setDefault(CLASS_FILE_ATTR_RENDER_TRYCATCH_BLOCKS, true);
 		store.setDefault(CLASS_FILE_ATTR_SHOW_SOURCE_LINE_NUMBERS, true);
+		
+		store.setDefault(CLASS_FILE_ATTR_SHOW_MAXS, false);
 		
 		/* Syntax Highlighting */
 		/* default is black */

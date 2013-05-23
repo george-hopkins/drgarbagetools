@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.draw2d.AbstractLocator;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
 
@@ -468,8 +469,9 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 			protected int lastLine = ByteCodeConstants.INVALID_LINE;
 	
 			private LineNumberTableEntry[] lineNumberTable;
+			private ExceptionTableEntry[] exceptionTable;
 			protected ILocalVariableTable localVariableTable;
-	
+
 			/**
 	         * The {@link MethodVisitor} to which this visitor delegates calls. May be
 	         * <tt>null</tt>.
@@ -480,6 +482,8 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 			private TryBlock openedTryBlock;
 			private List<TryBlock> rootTryBlocks;
 			protected String signature;
+			private int max_stack = ByteCodeConstants.INVALID_OFFSET;
+			private int max_locals = ByteCodeConstants.INVALID_OFFSET;
 			
 			private List<ITryBlock> tryBlocks;
 			
@@ -516,6 +520,55 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 				return null;
 			}
 	
+			/* (non-Javadoc)
+			 * @see com.drgarbage.asm.render.intf.IMethodSection#getLocalVariableTable()
+			 */
+			public ILocalVariableTable getLocalVariableTable() {
+				return localVariableTable;
+			}
+			
+			/* (non-Javadoc)
+			 * @see com.drgarbage.asm.render.intf.IMethodSection#isLocalVariableTableAvailable()
+			 */
+			public boolean isLocalVariableTableAvailable(){
+				if(localVariableTable == null)
+					return false;
+
+				return localVariableTable.isAvailable();
+			}
+			
+			/* (non-Javadoc)
+			 * @see com.drgarbage.asm.render.intf.IMethodSection#getExceptionTable()
+			 */
+			public ExceptionTableEntry[] getExceptionTable() {
+				return exceptionTable;
+			}
+
+			/* (non-Javadoc)
+			 * @see com.drgarbage.asm.render.intf.IMethodSection#isExceptionTableAvailable()
+			 */
+			public boolean isExceptionTableAvailable() {
+				if(exceptionTable == null || exceptionTable.length == 0){
+					return false;
+				}
+				
+				return true;
+			}
+			
+			/* (non-Javadoc)
+			 * @see com.drgarbage.asm.render.intf.IMethodSection#getMaxStack()
+			 */
+			public int getMaxStack(){
+				return max_stack;
+			}
+			
+			/* (non-Javadoc)
+			 * @see com.drgarbage.asm.render.intf.IMethodSection#getMaxLocals()
+			 */
+			public int getMaxLocals(){
+				return max_locals;
+			}
+
 	        /* (non-Javadoc)
 	         * @see com.drgarbage.asm.render.intf.IMethodSection#findOffsetLine(int)
 	         */
@@ -544,7 +597,7 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 					return ByteCodeConstants.INVALID_OFFSET;
 				}
 	
-				int offset = lookUpLineNumberTableForStartPC(sourceCodeLine +1);
+				int offset = lookUpLineNumberTableForStartPC(sourceCodeLine);
 	
 				int byteCodeDocLine = ByteCodeConstants.INVALID_OFFSET;
 				int n = instructionLines.size();
@@ -837,6 +890,24 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 				}
 			}
 	
+	        private void renderMaxs() {
+					appendNewline();
+					appendCommentBegin();
+					appendSpace();
+					sb.append(ByteCodeConstants.MAX_STACK);
+					appendColon();
+					appendSpace();
+					sb.append(max_stack);
+					appendSpace();
+					sb.append(ByteCodeConstants.MAX_LOCALS);
+					appendColon();
+					appendSpace();
+					sb.append(max_locals);
+					appendSpace();
+					appendCommentEnd();
+					appendNewline();
+			}
+	        
 	        private void renderSignature() {
 	
 		        appendNewline();
@@ -984,7 +1055,7 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 				
 	
 				/* load try blocks */
-				ExceptionTableEntry[] exceptionTable = parser.parseExceptionTable();
+				exceptionTable = parser.parseExceptionTable();
 				
 				HashSet<String> attributeNames = new HashSet<String>();
 				attributeNames.add(ByteCodeConstants.LINE_NUMBER_TABLE);
@@ -1092,7 +1163,7 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 				if (showLocalVariableTable) {
 					renderLocalVariableTable();
 				}
-	
+
 				return true;
 			}
 	
@@ -1227,6 +1298,12 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 	            if (mv != null) {
 	                mv.visitMaxs(maxStack, maxLocals);
 	            }
+                max_stack = maxStack;
+                max_locals = maxLocals;
+                
+				if(showMaxs){
+					renderMaxs();
+				}
 	        }
 			
 			public void visitMethodInsn(
@@ -1774,7 +1851,10 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 								//const_ = JavaKeywords.NEW + JavaLexicalConstants.SPACE + methodName;
 								ConstantClassInfo constantClassInfo = (ConstantClassInfo) cpInfo;
 								if (instruction.getOpcode() == Opcodes.ANEWARRAY) {
-									String className = ((ConstantUtf8Info)constantPool[constantClassInfo.getNameIndex()]).getString();
+									
+									String className = BytecodeUtils.resolveConstantPoolTypeName(constantClassInfo, constantPool);
+									
+//									String className = ((ConstantUtf8Info)constantPool[constantClassInfo.getNameIndex()]).getString();
 									className = className.replace(ByteCodeConstants.CLASS_NAME_SLASH, JavaLexicalConstants.DOT);
 									StringBuilder sb = new StringBuilder();
 									sb.append(JavaKeywords.NEW);
@@ -2529,6 +2609,7 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 	protected boolean showLocalVariableTable = false;
 	protected boolean showRelativeBranchTargetOffsets = true;
 	protected boolean showSourceLineNumbers = false;
+	protected boolean showMaxs = false;
 	
 	
 	public AbstractClassFileDocument() {
@@ -2542,6 +2623,7 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 			showLineNumberTable = store.getBoolean(CLASS_FILE_ATTR_SHOW_LINE_NUMBER_TABLE);
 			showSourceLineNumbers = store.getBoolean(CLASS_FILE_ATTR_SHOW_SOURCE_LINE_NUMBERS);
 			showLocalVariableTable = store.getBoolean(CLASS_FILE_ATTR_SHOW_VARIABLE_TABLE);
+			showMaxs= store.getBoolean(CLASS_FILE_ATTR_SHOW_MAXS);
 			renderTryCatchFinallyBlocks = store.getBoolean(CLASS_FILE_ATTR_RENDER_TRYCATCH_BLOCKS);
 			
 			if (BRANCH_TARGET_ADDRESS_ABSOLUTE.equals(
@@ -3180,6 +3262,10 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 
 	public int getCommentOffset() {
 		return commentOffset;
+	}
+	
+	public AbstractConstantPoolEntry[] getConstantPool(){
+		return constantPool;
 	}
 
 	/* (non-Javadoc)
