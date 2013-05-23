@@ -25,11 +25,15 @@ import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.util.ConstantPoolEntry;
 
 import com.drgarbage.asm.MethodVisitor;
 import com.drgarbage.asm.Opcodes;
+import com.drgarbage.asm.render.intf.IInstructionLine;
 import com.drgarbage.asm.render.intf.ILocalVariableTable;
 import com.drgarbage.bytecode.constant_pool.AbstractConstantPoolEntry;
+import com.drgarbage.bytecode.constant_pool.ConstantClassInfo;
+import com.drgarbage.bytecode.constant_pool.ConstantUtf8Info;
 import com.drgarbage.javasrc.JavaKeywords;
 import com.drgarbage.javasrc.JavaLexicalConstants;
 
@@ -379,6 +383,19 @@ public class BytecodeUtils {
 
 		}
 		return null;
+	}
+
+	/**
+	 * returns the type name of the given {@link ConstantClassInfo}
+	 * @param constantClassInfo the {@link ConstantClassInfo} to check
+	 * @param constantPool the associated ConstantPool
+	 * @return
+	 */
+	public static String resolveConstantPoolTypeName(
+			ConstantClassInfo constantClassInfo,
+			AbstractConstantPoolEntry[] constantPool) {
+		
+		return ((ConstantUtf8Info)constantPool[constantClassInfo.getNameIndex()]).getString();
 	}
 
 }

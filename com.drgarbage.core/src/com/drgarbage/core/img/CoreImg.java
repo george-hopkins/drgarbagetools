@@ -44,4 +44,20 @@ public class CoreImg {
 	
 	/* breakpoint */
 	public static final ImageDescriptor breakpoint_action_icon = ImageDescriptor.createFromFile(CoreImg.class, "brkp_obj.gif");
+	
+	/* operand stack icons */
+	public static final ImageDescriptor operandStackViewIcon_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "operand-stack-16x16.png");
+	public static final ImageDescriptor operandStackViewIcon_32x32 = ImageDescriptor.createFromFile(CoreImg.class, "operand-stack-32x32.png");
+	public static final ImageDescriptor get_instr_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "get-16x16.png");
+	public static final ImageDescriptor roundedrect_instr_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "roundedrect-16x16.png");
+	public static final ImageDescriptor decision_instr_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "decision-16x16.png");
+	public static final ImageDescriptor invoke_instr_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "invoke-16x16.png");
+	public static final ImageDescriptor goto_instr_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "goto-16x16.png");
+	public static final ImageDescriptor switch_instr_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "switch-16x16.png");
+	public static final ImageDescriptor return_instr_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "return-16x16.png");
+	public static final ImageDescriptor bytecode_listview_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "bytecode-listview-16x16.png");
+	
+	/* compare icons */
+	public static final ImageDescriptor classfile_compare_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "classfile-compare-16x16.png");
+	
 }

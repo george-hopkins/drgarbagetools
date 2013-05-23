@@ -19,7 +19,7 @@ package com.drgarbage.visualgraphic.model;
 import org.eclipse.swt.graphics.Image;
 
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryMessages;
-import com.drgarbage.controlflowgraphfactory.img.ControlFlowFactoryResource;
+import com.drgarbage.core.img.CoreImg;
 
 
 
@@ -40,6 +40,6 @@ public class DecisionVertex extends VertexBase {
 	}
 
 	public Image getIcon() {
-		return ControlFlowFactoryResource.decision_icon_16x16.createImage();
+		return CoreImg.decision_instr_16x16.createImage();
 	}
 }

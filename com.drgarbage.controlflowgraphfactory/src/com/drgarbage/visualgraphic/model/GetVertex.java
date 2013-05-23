@@ -19,7 +19,7 @@ package com.drgarbage.visualgraphic.model;
 import org.eclipse.swt.graphics.Image;
 
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryMessages;
-import com.drgarbage.controlflowgraphfactory.img.ControlFlowFactoryResource;
+import com.drgarbage.core.img.CoreImg;
 
 /**
  * A get vertex.
@@ -37,6 +37,6 @@ public class GetVertex extends VertexBase {
 	}
 
 	public Image getIcon() {
-		return ControlFlowFactoryResource.get_icon_16x16.createImage();
+		return CoreImg.get_instr_16x16.createImage();
 	}
 }

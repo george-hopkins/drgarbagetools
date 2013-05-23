@@ -15,6 +15,8 @@
  */
 package com.drgarbage.bytecodevisualizer;
 
+
+
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -38,13 +40,19 @@ public class BytecodeVisualizerMessages extends NLS {
 
 	public static String BytecodeVisualizerPreferencePage_link_File_Associations;
 	
-	/* ClassFile Attributes Preferences */
 	public static String GeneralPreferencePage_title;
+	
+	public static String GeneralPreferencePage_chk_Graph_Panel;
+	public static String GeneralPreferencePage_chk_Render_Graphs;
+	public static String GeneralPreferencePage_view_Graphrendering_deactivated;
+	
+	/* ClassFile Attributes Preferences */
 	public static String GeneralPreferencePage_lbl_Select_class_file_parts;
 	public static String GeneralPreferencePage_chk_Show_Line_Number_Table;
 	public static String GeneralPreferencePage_chk_Show_source_line_numbers;
 	public static String GeneralPreferencePage_chk_Show_Local_Variable_Table;
 	public static String GeneralPreferencePage_chk_Show_Constant_Pool;
+	public static String GeneralPreferencePage_chk_Show_Maxs;
 	public static String GeneralPreferencePage_chk_Render_try_catch_blocks;
 
 	public static String GeneralPreferencePage_radioGroup_Branch_Target_Address_Rendering;
@@ -116,5 +124,42 @@ public class BytecodeVisualizerMessages extends NLS {
 	public static String DebugFunctionalityInfoDialog_lbl_i_included_in_some_java_projects_build_path_and;
 	public static String DebugFunctionalityInfoDialog_lbl_ii_opened_using_0_1_or_similar_feature_of_2_;
 	public static String DebugFunctionalityInfoDialog_link_Please_read_0_this_tutorial_for_more_details_;
-
+	
+	/* OperandStackView ColumnNames */
+	public static String OperandStackView_Opcode_Mnemonic;
+	public static String OperandStackView_Opcode;
+	public static String OperandStackView_Offset;
+	public static String OperandStackView_Unknown;
+	
+	public static String TreeViewAction_Text;
+	public static String BasicViewAction_Text;
+	public static String InstructionListView_Text;
+	
+	public static String subMenuViewLayout_Text;
+	public static String subMenuShowColumn_Text;
+	public static String subMenuFormat_Text;
+	
+	public static String OpstackBeforeColumnName;
+	public static String OpstackAfterColumnName;
+	public static String OpstackDepthColumnName;
+	public static String OpstackDescriptionColumnName;
+	public static String OpstackOffsetColumnName;
+	public static String OpstackBytecodeInstrColumnName;
+	
+	public static String DisplayFormatALL;
+	public static String DisplayFormatSIMPLE;
+	public static String DisplayFormatTYPES;
+	
+	public static String OpenOpstackAnalyseAction_Text;
+	public static String OpenOpstackAnalyseAction_Tooltip;
+	public static String OpenOpstackAnalyseWindowLabel;
+	public static String OperandStackAnalysis_Error_StackOverflow;
+	public static String OperandStackAnalysis_Warning_StackUnderflow;
+	public static String OperandStackAnalysis_MaxStackSize_Info;
+	public static String OperandStackAnalysis_Error_Different_StackSizes;
+	public static String OperandStackAnalysis_Warning_StackNonEmpty;
+	public static String OperandStackAnalysis_CurrentStackSize_Info;
+	public static String OperandStackAnalysis_Possible_unused_bytecodes;
+	public static String OperandStackAnalysis_Error_Different_StackTypes;
+	
 }

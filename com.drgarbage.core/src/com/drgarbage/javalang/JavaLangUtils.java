@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2012, Dr. Garbage Community
+ * Copyright (c) 2008-2013, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,17 @@ import java.io.InputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.launching.JavaRuntime;
+
+/**
+ * The collection of java utility methods.
+ * 
+ * @author Sergej Alekseev
+ * @version $Revision$
+ * $Id$
+ */
 public class JavaLangUtils {
 	
 	public static InputStream findResource(String[] classPath, String packageName, String className) throws IOException {
@@ -56,6 +67,15 @@ public class JavaLangUtils {
 	        }
 	    }
 	    return null;
+	}
+	
+	public static String[] computeRuntimeClassPath(IJavaProject jp) throws CoreException{
+		if(jp == null){
+			return null;
+		}
+
+		String[] classpath = JavaRuntime.computeDefaultRuntimeClassPath(jp);
+		return classpath;
 	}
 
 }

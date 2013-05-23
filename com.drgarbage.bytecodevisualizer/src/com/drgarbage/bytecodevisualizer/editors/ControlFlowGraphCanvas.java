@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.LineBorder;
@@ -35,6 +36,9 @@ import org.eclipse.swt.widgets.Composite;
 import com.drgarbage.asm.render.intf.IClassFileDocument;
 import com.drgarbage.asm.render.intf.IDocumentUpdateListener;
 import com.drgarbage.asm.render.intf.IMethodSection;
+import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
+import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
+import com.drgarbage.bytecodevisualizer.preferences.BytecodeVisualizerPreferenceConstats;
 import com.drgarbage.core.CoreMessages;
 import com.drgarbage.core.img.CoreImg;
 import com.drgarbage.draw2d.ControlFlowGraphFigure;
@@ -46,7 +50,7 @@ import com.drgarbage.utils.Messages;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: ControlFlowGraphCanvas.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class ControlFlowGraphCanvas extends FigureCanvas implements IDocumentUpdateListener {
 
@@ -164,32 +168,57 @@ public class ControlFlowGraphCanvas extends FigureCanvas implements IDocumentUpd
 	 */
 	public void init(int lineHeght, IClassFileDocument classFileDocument){
 		this.lineHight = lineHeght;
-
+		
 		rootFigure.removeAll();
 		createLineSelector();
 		
-		if (classFileDocument != null) {
-			List<IMethodSection> methods = classFileDocument.getMethodSections();
-			for(IMethodSection m : methods){
-				if(m.hasCode()){
+		boolean renderGraphs = BytecodeVisualizerPlugin.getDefault().getPreferenceStore().
+				getBoolean(BytecodeVisualizerPreferenceConstats.GRAPH_PANEL_ATTR_RENDER_GRAPHS);
 
-					ControlFlowGraphFigure controlFlowGraphFigure = new ControlFlowGraphFigure(lineHeght, m);
-					controlFlowGraphFigure.setLocation(new Point(0, m.getFirstLine() * lineHeght));
-					rootFigure.add(controlFlowGraphFigure);
-					
-					if( w < controlFlowGraphFigure.getSize().width){
-						w = controlFlowGraphFigure.getSize().width;
+		if(renderGraphs){
+			if (classFileDocument != null) {
+				List<IMethodSection> methods = classFileDocument.getMethodSections();
+				for(IMethodSection m : methods){
+					if(m.hasCode()){
+
+						ControlFlowGraphFigure controlFlowGraphFigure = new ControlFlowGraphFigure(lineHeght, m);
+						controlFlowGraphFigure.setLocation(new Point(0, m.getFirstLine() * lineHeght));
+						rootFigure.add(controlFlowGraphFigure);
+
+						if( w < controlFlowGraphFigure.getSize().width){
+							w = controlFlowGraphFigure.getSize().width;
+						}
 					}
 				}
 			}
 		}
-
+		
 		addHeader();
 
-		LineBorder b = new LineBorder();
-		b.setColor(ColorConstants.white);
-		rootFigure.setBorder(b);
+		LineBorder b = new LineBorder();	
+		if(renderGraphs){
+			b.setColor(ColorConstants.white);
+		}
+		else{
+			/* deactivate graph rendering */
+			Color lightGray = new Color(null, 240, 240, 240);
+			rootFigure.setBackgroundColor(lightGray);
+			rootFigure.setOpaque(true);
+			rootFigure.setVisible(true);
+			
+			Label l = new Label();
+			l.setText(BytecodeVisualizerMessages.GeneralPreferencePage_view_Graphrendering_deactivated);
+			l.setVisible(true);
+			l.setLocation(new Point(5,15));
+			l.setSize(180, 100);
+			
+			rootFigure.add(l);
+
+			b.setColor(lightGray);
+		}
 		
+		
+		rootFigure.setBorder(b);
 		setContents(rootFigure);
 
 		if (classFileDocument == null) {
@@ -198,7 +227,7 @@ public class ControlFlowGraphCanvas extends FigureCanvas implements IDocumentUpd
 		else {
 			h = (classFileDocument.getLineCount() + 1) * lineHeght;
 		}
-		rootFigure.setSize(w, h);
+		rootFigure.setSize(w, h);		
 	}
 
 	/**

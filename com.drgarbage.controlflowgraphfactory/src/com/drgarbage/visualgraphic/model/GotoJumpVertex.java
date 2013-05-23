@@ -19,7 +19,7 @@ package com.drgarbage.visualgraphic.model;
 import org.eclipse.swt.graphics.Image;
 
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryMessages;
-import com.drgarbage.controlflowgraphfactory.img.ControlFlowFactoryResource;
+import com.drgarbage.core.img.CoreImg;
 
 /**
  * A goto vertex.
@@ -37,6 +37,6 @@ public class GotoJumpVertex extends VertexBase {
 	}
 
 	public Image getIcon() {
-		return ControlFlowFactoryResource.gotojump_icon_16x16.createImage();
+		return CoreImg.goto_instr_16x16.createImage();
 	}
 }

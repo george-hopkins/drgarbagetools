@@ -84,6 +84,8 @@ public class CoreMessages extends NLS {
 	public static String ERROR_ToggleBreakpointAction_1;
 	public static String ERROR_ToggleBreakpointAction_2;
 	public static String Error;
+	public static String Warning;
+	public static String Info;
 
 	/* Source code attachment form */
 	public static String SourceCodeUnavailable;

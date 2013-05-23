@@ -49,7 +49,7 @@ import com.drgarbage.bytecode.BytecodeUtils;
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: OutlineElementType.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class OutlineElementType extends OutlineElement implements IType {
 

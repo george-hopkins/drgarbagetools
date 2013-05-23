@@ -41,7 +41,7 @@ import com.drgarbage.bytecode.ByteCodeConstants;
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: OutlineElement.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class OutlineElement extends ClassVisitor implements IJavaElement, IParent, IOutlineElement {
 

@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.Image;
 
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryMessages;
 import com.drgarbage.controlflowgraphfactory.img.ControlFlowFactoryResource;
+import com.drgarbage.core.img.CoreImg;
 
 /**
  * A switch vertex.
@@ -37,6 +38,6 @@ public class SwitchVertex extends VertexBase {
 	}
 	
 	public Image getIcon() {
-		return ControlFlowFactoryResource.switch_icon_16x16.createImage();
+		return CoreImg.switch_instr_16x16.createImage();
 	}
 }

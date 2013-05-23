@@ -19,7 +19,7 @@ package com.drgarbage.visualgraphic.model;
 import org.eclipse.swt.graphics.Image;
 
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryMessages;
-import com.drgarbage.controlflowgraphfactory.img.ControlFlowFactoryResource;
+import com.drgarbage.core.img.CoreImg;
 
 /**
  * A rounded rectangular vertex.
@@ -37,7 +37,7 @@ public class RoundedRectangularVertex extends VertexBase {
 	}
 	
 	public Image getIcon() {
-		return ControlFlowFactoryResource.roundedrect_icon_16x16.createImage();
+		return CoreImg.roundedrect_instr_16x16.createImage();
 	}
 }
 
