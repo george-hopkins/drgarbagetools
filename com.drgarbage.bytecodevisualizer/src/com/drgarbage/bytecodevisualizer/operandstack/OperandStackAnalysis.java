@@ -247,9 +247,13 @@ public class OperandStackAnalysis {
 							 * stack after the rest of the stack is cleared 
 							 * by the athrow byte code instruction.
 							 */
-							Stack<OperandStackEntry> os = nsp.getStackAfter().get(0);
-							if(!(stackSize == 1 && os.size() != 0 && 
-									os.lastElement().isThrowRef()))
+							o = nodeMap.get(OperandStackPropertyConstants.NODE_INSTR_OBJECT);
+							int opCode = -1;
+							if(o != null){
+								AbstractInstruction instr = ((IInstructionLine) o).getInstruction();
+								opCode = instr.getOpcode();
+							}
+							if(!(stackSize == 1 && opCode == Opcodes.OPCODE_ATHROW))
 							{
 								errorOrWarning = true;
 								buf.append(JavaLexicalConstants.NEWLINE);

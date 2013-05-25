@@ -888,7 +888,6 @@ public class OperandStack implements Opcodes{
 			 * throwable object
 			 * */
 			OperandStackEntry throwbleRef = stack.lastElement();
-			throwbleRef.setThrowRef();
 			stack.clear();
 			stack.push(throwbleRef);
 			return;
@@ -1530,30 +1529,6 @@ public class OperandStack implements Opcodes{
 		private int length;
 		private String varType;
 		private String value;
-		private boolean throwRef = false;
-		
-		/**
-		 * Returns <code>true</code> if the object represent 
-		 * a reference to the <code>Throwable</code> leaving on the stack
-		 * after the rest of the stack is cleared by the <code>athrow</code>
-		 * byte code instruction.
-		 * @return <code>true</code> or <code>false</code>
-		 */
-		public boolean isThrowRef() {
-			return throwRef;
-		}
-
-		/**
-		 * Sets the flag to <code>true</code> if the object represent 
-		 * a reference to the <code>Throwable</code> leaving on the stack
-		 * after the rest of the stack is cleared by the <code>athrow</code>
-		 * byte code instruction.
-		 * 
-		 * @param throwRef <code>true</code> or <code>false</code>
-		 */
-		public void setThrowRef() {
-			this.throwRef = true;
-		}
 
 		public OperandStackEntry(AbstractInstruction i, int length, String varType, String value) {
 			super();
