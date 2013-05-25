@@ -29,6 +29,7 @@ import org.eclipse.osgi.util.NLS;
  */
 public class BytecodeVisualizerMessages extends NLS {
 	private static final String BUNDLE_NAME= BytecodeVisualizerMessages.class.getName();
+
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, BytecodeVisualizerMessages.class);
@@ -148,6 +149,7 @@ public class BytecodeVisualizerMessages extends NLS {
 	
 	public static String DisplayFormatALL;
 	public static String DisplayFormatSIMPLE;
+	public static String DisplayFormatVALUES;
 	public static String DisplayFormatTYPES;
 	
 	public static String OpenOpstackAnalyseAction_Text;

@@ -109,7 +109,7 @@ public abstract class OperandStackViewPage extends Page {
 	/* Menu actions */
 	private IAction showTreeViewAction, showBasicBlockViewAction, showInstructioneListViewAction, 
 	showOSBeforeColumnAction, showOSAfterColumnAction, showDescriptionColumnAction, showOSDepthColumnAction, 
-	displayAllAction, displaySimpleAction, displayTypesAction, showAnalyseReportAction;
+	displayAllAction, displaySimpleAction, displayTypesAction, displayValuesAction, showAnalyseReportAction;
 
 	static enum OperandStackView_ID{
 		TREE_VIEW,
@@ -124,9 +124,10 @@ public abstract class OperandStackViewPage extends Page {
 	OperandStackView_ID view_ID = OperandStackView_ID.TREE_VIEW;
 
 	static enum OperandStackDisplayFormat_ID{
-		DISPLAY_ALL,
 		DISPLAY_SIMPLE,
-		DISPLAY_TYPES;
+		DISPLAY_TYPES,
+		DISPLAY_VALUES,
+		DISPLAY_ALL
 	};
 
 	static enum ColumnIndex{
@@ -225,7 +226,12 @@ public abstract class OperandStackViewPage extends Page {
 	}
 
 	/**
-	 * Returns the current displayFormat id, one of the DISPLAY_ALL, DISPLAY_SIMPLE, DISPLAY_TYPES
+	 * Returns the current displayFormat id, one of the 
+	 * <code>DISPLAY_ALL</code>, 
+	 * <code>DISPLAY_SIMPLE</code>, 
+	 * <code>DISPLAY_TYPES</code> or
+	 * <code>DISPLAY_VALUES</code>
+	 * 
 	 * @return displayFormat_ID
 	 */
 	public OperandStackDisplayFormat_ID getDisplayFormat_ID(){
@@ -233,7 +239,12 @@ public abstract class OperandStackViewPage extends Page {
 	}
 
 	/**
-	 * Sets the display format id, one of the DISPLAY_ALL, DISPLAY_SIMPLE, DISPLAY_TYPES
+	 * Sets the display format id, one of the 
+	 * <code>DISPLAY_ALL</code>, 
+	 * <code>DISPLAY_SIMPLE</code>, 
+	 * <code>DISPLAY_TYPES</code> or
+	 * <code>DISPLAY_VALUES</code>
+	 * 
 	 * @param displayFormat_ID
 	 */
 	public void setDisplayFormat_ID(OperandStackDisplayFormat_ID displayFormat_ID){
@@ -488,6 +499,19 @@ public abstract class OperandStackViewPage extends Page {
 		};
 		displayAllAction.setChecked(false);
 
+		displayValuesAction = new Action() {
+			public void run() {
+				opstackRepresenationFormat = OpstackRepresenation.VALUES;
+				activateDisplayFormat(OperandStackDisplayFormat_ID.DISPLAY_VALUES);
+				subMenuFormat.update(true);
+			}
+
+			public String getText(){
+				return BytecodeVisualizerMessages.DisplayFormatVALUES;
+			}
+		};
+		displayValuesAction.setChecked(false);
+		
 		displayTypesAction = new Action() {
 			public void run() {
 				opstackRepresenationFormat = OpstackRepresenation.TYPES;
@@ -503,6 +527,7 @@ public abstract class OperandStackViewPage extends Page {
 
 		subMenuFormat.add(displaySimpleAction);
 		subMenuFormat.add(displayTypesAction);
+		subMenuFormat.add(displayValuesAction);
 		subMenuFormat.add(displayAllAction);
 
 	}
@@ -555,16 +580,25 @@ public abstract class OperandStackViewPage extends Page {
 		if(id == OperandStackDisplayFormat_ID.DISPLAY_ALL){
 			displayAllAction.setChecked(true);
 			displaySimpleAction.setChecked(false);
+			displayValuesAction.setChecked(false);
 			displayTypesAction.setChecked(false);
 		}
 		else if(id == OperandStackDisplayFormat_ID.DISPLAY_SIMPLE){
 			displayAllAction.setChecked(false);
 			displaySimpleAction.setChecked(true);
+			displayValuesAction.setChecked(false);
+			displayTypesAction.setChecked(false);
+		}
+		else if(id == OperandStackDisplayFormat_ID.DISPLAY_VALUES){
+			displayAllAction.setChecked(false);
+			displaySimpleAction.setChecked(false);
+			displayValuesAction.setChecked(true);
 			displayTypesAction.setChecked(false);
 		}
 		else if(id == OperandStackDisplayFormat_ID.DISPLAY_TYPES){
 			displayAllAction.setChecked(false);
 			displaySimpleAction.setChecked(false);
+			displayValuesAction.setChecked(false);
 			displayTypesAction.setChecked(true);
 		}
 
@@ -1112,9 +1146,17 @@ public abstract class OperandStackViewPage extends Page {
 								node.setOperandStackBefore(OperandStack.stackListToString(operandStack.getStackBefore(n)));
 								node.setOperandStackAfter(OperandStack.stackListToString(nsp.getStackAfter()));							
 							}
-							else{
+							else if(opstackRepresenationFormat == OpstackRepresenation.TYPES){
 								node.setOperandStackBefore(OperandStack.stackToString(operandStack.getStackBefore(n).get(0), OpstackRepresenation.TYPES));
 								node.setOperandStackAfter(OperandStack.stackToString(nsp.getStackAfter().get(0), OpstackRepresenation.TYPES));
+							}
+							else if(opstackRepresenationFormat == OpstackRepresenation.VALUES){
+								node.setOperandStackBefore(OperandStack.stackToString(operandStack.getStackBefore(n).get(0), OpstackRepresenation.VALUES));
+								node.setOperandStackAfter(OperandStack.stackToString(nsp.getStackAfter().get(0), OpstackRepresenation.VALUES));
+							}
+							else{
+								node.setOperandStackBefore(OperandStack.stackToString(operandStack.getStackBefore(n).get(0)));
+								node.setOperandStackAfter(OperandStack.stackToString(nsp.getStackAfter().get(0)));
 							}
 							
 							node.setDepth(nsp.getStackSize());
