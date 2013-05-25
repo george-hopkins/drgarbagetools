@@ -110,6 +110,8 @@ public class OperandStack implements Opcodes{
 	}
 
 
+	public static String ANY_EXCEPTION = "<any exception>";
+	
 	/**
 	 * Converts the stack object into the string representation
 	 * in the <code>SIMPLE</code> format (see {@link OpstackRepresenation}).
@@ -621,12 +623,12 @@ public class OperandStack implements Opcodes{
 					if(node.getByteCodeOffset() == ete.getHandlerPc()){
 						if(ete.getCatchType() != 0){ /* index = 0 has no references in the constant pool */
 							String className = getConstantPoolClassName(ete.getCatchType(), classConstantPool);
-							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE, className));
+							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE,
+									JavaLexicalConstants.LT + className + JavaLexicalConstants.GT));
 						}
 						else{
-							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE, Throwable.class.getName()));
+							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE, ANY_EXCEPTION));
 						}
-
 					}
 				}
 			}
@@ -886,6 +888,7 @@ public class OperandStack implements Opcodes{
 			 * throwable object
 			 * */
 			OperandStackEntry throwbleRef = stack.lastElement();
+			throwbleRef.setThrowRef();
 			stack.clear();
 			stack.push(throwbleRef);
 			return;
@@ -1527,6 +1530,30 @@ public class OperandStack implements Opcodes{
 		private int length;
 		private String varType;
 		private String value;
+		private boolean throwRef = false;
+		
+		/**
+		 * Returns <code>true</code> if the object represent 
+		 * a reference to the <code>Throwable</code> leaving on the stack
+		 * after the rest of the stack is cleared by the <code>athrow</code>
+		 * byte code instruction.
+		 * @return <code>true</code> or <code>false</code>
+		 */
+		public boolean isThrowRef() {
+			return throwRef;
+		}
+
+		/**
+		 * Sets the flag to <code>true</code> if the object represent 
+		 * a reference to the <code>Throwable</code> leaving on the stack
+		 * after the rest of the stack is cleared by the <code>athrow</code>
+		 * byte code instruction.
+		 * 
+		 * @param throwRef <code>true</code> or <code>false</code>
+		 */
+		public void setThrowRef() {
+			this.throwRef = true;
+		}
 
 		public OperandStackEntry(AbstractInstruction i, int length, String varType, String value) {
 			super();

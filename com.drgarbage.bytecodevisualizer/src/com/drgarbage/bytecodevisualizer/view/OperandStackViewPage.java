@@ -55,6 +55,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 
+import com.drgarbage.asm.Opcodes;
 import com.drgarbage.asm.render.intf.IClassFileDocument;
 import com.drgarbage.asm.render.intf.IInstructionLine;
 import com.drgarbage.asm.render.intf.IMethodSection;
@@ -974,28 +975,40 @@ public abstract class OperandStackViewPage extends Page {
 									getInstructionNodeType(i.getInstruction().getOpcode()) 
 									== INodeType.NODE_TYPE_RETURN){
 								if(stackSize != 0){
-									Widget w = treeViewer.testFindItem(node);
-									if(w != null){
-										TreeItem t = (TreeItem)w;
-										t.setForeground(ORANGE);
+									/*
+									 * check if the if the object on stack represents 
+									 * a reference to the Throwable leaving on the 
+									 * stack after the rest of the stack is cleared 
+									 * by the athrow byte code instruction.
+									 */
+									if(!(stackSize == 1 && 
+											i.getInstruction().getOpcode() == Opcodes.ATHROW))
+									{									
+
+
+										Widget w = treeViewer.testFindItem(node);
+										if(w != null){
+											TreeItem t = (TreeItem)w;
+											t.setForeground(ORANGE);
+										}
+
+										StringBuffer buf = new StringBuffer(); 
+										buf.append(CoreMessages.Warning);
+										buf.append(JavaLexicalConstants.COLON);
+										buf.append(JavaLexicalConstants.SPACE);
+										buf.append(BytecodeVisualizerMessages.OperandStackAnalysis_Warning_StackNonEmpty);
+										buf.append(JavaLexicalConstants.COMMA);
+										buf.append(JavaLexicalConstants.SPACE);
+										String msg = MessageFormat.format(
+												BytecodeVisualizerMessages.OperandStackAnalysis_CurrentStackSize_Info, 
+												new Object[]{
+														String.valueOf(stackSize)
+												});
+										buf.append(msg);
+										buf.append(JavaLexicalConstants.DOT);
+
+										return buf.toString();
 									}
-
-									StringBuffer buf = new StringBuffer(); 
-									buf.append(CoreMessages.Warning);
-									buf.append(JavaLexicalConstants.COLON);
-									buf.append(JavaLexicalConstants.SPACE);
-									buf.append(BytecodeVisualizerMessages.OperandStackAnalysis_Warning_StackNonEmpty);
-									buf.append(JavaLexicalConstants.COMMA);
-									buf.append(JavaLexicalConstants.SPACE);
-									String msg = MessageFormat.format(
-											BytecodeVisualizerMessages.OperandStackAnalysis_CurrentStackSize_Info, 
-											new Object[]{
-													String.valueOf(stackSize)
-											});
-									buf.append(msg);
-									buf.append(JavaLexicalConstants.DOT);
-
-									return buf.toString();
 								}
 							}
 

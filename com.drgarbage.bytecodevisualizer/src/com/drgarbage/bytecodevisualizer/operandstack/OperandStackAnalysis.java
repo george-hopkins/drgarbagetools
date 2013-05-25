@@ -240,53 +240,65 @@ public class OperandStackAnalysis {
 
 					if(n.getVertexType() == INodeType.NODE_TYPE_RETURN){
 						if(stackSize != 0){
-							errorOrWarning = true;
-							buf.append(JavaLexicalConstants.NEWLINE);
-							buf.append(spacesErr(OFFSET_COLWIDTH + BYTECODESTRING_COLWIDTH + OPSTACK_SIZE_COLWIDTH/2));
-							buf.append(CoreMessages.Warning);
-							buf.append(JavaLexicalConstants.COLON);
-							buf.append(JavaLexicalConstants.SPACE);
-							String msg = MessageFormat.format(
-									BytecodeVisualizerMessages.OperandStackAnalysis_Warning_StackNonEmpty, 
-									new Object[]{
-											String.valueOf(stackSize)
-									});
-							buf.append(msg);
+							
+							/*
+							 * check if the if the object on stack represents 
+							 * a reference to the Throwable leaving on the 
+							 * stack after the rest of the stack is cleared 
+							 * by the athrow byte code instruction.
+							 */
+							Stack<OperandStackEntry> os = nsp.getStackAfter().get(0);
+							if(!(stackSize == 1 && os.size() != 0 && 
+									os.lastElement().isThrowRef()))
+							{
+								errorOrWarning = true;
+								buf.append(JavaLexicalConstants.NEWLINE);
+								buf.append(spacesErr(OFFSET_COLWIDTH + BYTECODESTRING_COLWIDTH + OPSTACK_SIZE_COLWIDTH/2));
+								buf.append(CoreMessages.Warning);
+								buf.append(JavaLexicalConstants.COLON);
+								buf.append(JavaLexicalConstants.SPACE);
+								String msg = MessageFormat.format(
+										BytecodeVisualizerMessages.OperandStackAnalysis_Warning_StackNonEmpty, 
+										new Object[]{
+												String.valueOf(stackSize)
+										});
+								buf.append(msg);
 
-							buf.append(JavaLexicalConstants.NEWLINE);
-							buf.append(spacesErr(OFFSET_COLWIDTH + BYTECODESTRING_COLWIDTH + OPSTACK_SIZE_COLWIDTH/2));
+								buf.append(JavaLexicalConstants.NEWLINE);
+								buf.append(spacesErr(OFFSET_COLWIDTH + BYTECODESTRING_COLWIDTH + OPSTACK_SIZE_COLWIDTH/2));
 
-							/* get reference to the corresponding byte code instruction */
-							buf.append(BytecodeVisualizerMessages.OperandStackAnalysis_Possible_unused_bytecodes);
-							buf.append(JavaLexicalConstants.COLON);
-							buf.append(JavaLexicalConstants.SPACE);
-							Iterator<Stack<OperandStackEntry>> it = nsp.getStackAfter().iterator();
-							while(it.hasNext()){
-								Iterator<OperandStackEntry> opS =  it.next().iterator();
-								if(opS.hasNext()){
-									OperandStackEntry ose = opS.next();
-									AbstractInstruction bi = ose.getBytecodeInstruction();
-									if(bi != null){
-										buf.append(bi.getOffset());
+								/* get reference to the corresponding byte code instruction */
+								buf.append(BytecodeVisualizerMessages.OperandStackAnalysis_Possible_unused_bytecodes);
+								buf.append(JavaLexicalConstants.COLON);
+								buf.append(JavaLexicalConstants.SPACE);
+								Iterator<Stack<OperandStackEntry>> it = nsp.getStackAfter().iterator();
+								while(it.hasNext()){
+									Iterator<OperandStackEntry> opS =  it.next().iterator();
+									if(opS.hasNext()){
+										OperandStackEntry ose = opS.next();
+										AbstractInstruction bi = ose.getBytecodeInstruction();
+										if(bi != null){
+											buf.append(bi.getOffset());
+										}
+										else{
+											buf.append(BytecodeVisualizerMessages.OperandStackView_Unknown);
+										}
 									}
-									else{
-										buf.append(BytecodeVisualizerMessages.OperandStackView_Unknown);
+									while(opS.hasNext()){
+										buf.append(JavaLexicalConstants.COMMA);
+										buf.append(JavaLexicalConstants.SPACE);
+										OperandStackEntry ose = opS.next();
+										AbstractInstruction bi = ose.getBytecodeInstruction();
+										if(bi != null){
+											buf.append(bi.getOffset());
+										}
+										else{
+											buf.append(ose.getValue());
+										}
 									}
 								}
-								while(opS.hasNext()){
-									buf.append(JavaLexicalConstants.COMMA);
-									buf.append(JavaLexicalConstants.SPACE);
-									OperandStackEntry ose = opS.next();
-									AbstractInstruction bi = ose.getBytecodeInstruction();
-									if(bi != null){
-										buf.append(bi.getOffset());
-									}
-									else{
-										buf.append(ose.getValue());
-									}
-								}
+								buf.append(JavaLexicalConstants.NEWLINE);
 							}
-							buf.append(JavaLexicalConstants.NEWLINE);
 						}
 					}
 				}
