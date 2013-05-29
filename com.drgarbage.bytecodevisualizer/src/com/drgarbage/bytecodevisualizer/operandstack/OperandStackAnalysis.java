@@ -399,7 +399,7 @@ public class OperandStackAnalysis {
 							String typeList = getStackTypes(it.next());
 							if(!tmpTypeList.equals(typeList)){
 								if(typeList.equals("")){
-									tmpTypeList = "<empty>";
+									tmpTypeList = OperandStack.EMPTY_STACK;
 								}
 								else{
 									tmpTypeList = typeList;

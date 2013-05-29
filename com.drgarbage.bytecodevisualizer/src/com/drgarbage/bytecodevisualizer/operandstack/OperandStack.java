@@ -102,16 +102,21 @@ public class OperandStack implements Opcodes{
 	public static int UNKNOWN_SIZE = -1;
 
 	/**
-	 * TODO: description
+	 * Operand Stack property constants to
+	 * address the node stack property 
+	 * objects assigned to a node. 
 	 */
 	public static enum OperandStackPropertyConstants{
 		NODE_INSTR_OBJECT,
 		NODE_STACK,
 		ERROR_EXCEPTION
 	}
-
-
+	
+	/* Operand Stack specific constants */
 	public static String ANY_EXCEPTION = "<any exception>";
+	public static String RETURN_VALUE = "<RET>";
+	public static String ADDRESS_VALUE = "<ADDR>";
+	public static String EMPTY_STACK = "<empty>";
 	
 	/* Java class file constants */
 	public static String B_BYTE = String.valueOf(ByteCodeConstants.B_BYTE);
@@ -123,6 +128,7 @@ public class OperandStack implements Opcodes{
 	public static String S_SHORT = String.valueOf(ByteCodeConstants.S_SHORT);
 	public static String Z_BOOLEAN = String.valueOf(ByteCodeConstants.Z_BOOLEAN);
 	public static String L_REFERENCE = String.valueOf(ByteCodeConstants.L_REFERENCE);
+	public static String VOID = "V";
 	
 	/**
 	 * Converts the stack object into the string representation
@@ -154,7 +160,7 @@ public class OperandStack implements Opcodes{
 
 		/* convert stack to string */
 		if(stack.size() == 0){
-			return "<empty>";
+			return EMPTY_STACK;
 		}
 
 		for (Enumeration<OperandStackEntry> en = stack.elements(); en.hasMoreElements();){
@@ -1031,7 +1037,7 @@ public class OperandStack implements Opcodes{
 		case OPCODE_FCMPL:
 			stack.pop();
 			stack.pop();
-			stack.push(new OperandStackEntry(i, 4, I_INT, "<RET>"));
+			stack.push(new OperandStackEntry(i, 4, I_INT, RETURN_VALUE));
 			return;
 
 
@@ -1182,7 +1188,7 @@ public class OperandStack implements Opcodes{
 			/* objectref -> result */
 		case OPCODE_INSTANCEOF:
 			stack.pop();
-			stack.push(new OperandStackEntry(i, 4, I_INT, "<RET>"));
+			stack.push(new OperandStackEntry(i, 4, I_INT, RETURN_VALUE));
 			return;
 
 			/* objectref, [arg1, arg2, ...] -> */
@@ -1215,7 +1221,7 @@ public class OperandStack implements Opcodes{
 
 				/*	get argument list from the descriptor */
 				StringBuilder sb = new StringBuilder();
-				int offset = 1;;
+				int offset = 1;
 				try {
 
 					while ((descriptor.charAt(offset)) != ByteCodeConstants.METHOD_DESCRIPTOR_RIGHT_PARENTHESIS) {
@@ -1240,11 +1246,11 @@ public class OperandStack implements Opcodes{
 			}
 
 			/* push return value onto the stack */
-			if(!retVal.equals("V")){ /* ignore void *///TODO: define constant
+			if(!retVal.equals(VOID)){ /* ignore void */
 				/* double and long have the double length */
 				stack.push(new OperandStackEntry(i, 
 						(retVal.equals(J_LONG) || retVal.equals(D_DOUBLE)) ? 8 : 4, 
-						retVal, "<RET>"));
+						retVal, RETURN_VALUE));
 				
 			}
 			return;
@@ -1257,13 +1263,13 @@ public class OperandStack implements Opcodes{
 			 * jsr
 			 * jump to subroutine at branchoffset 
 			 * (signed short constructed from unsigned bytes branchbyte1 << 8 + branchbyte2) 
-			 * and place the return address on the stack
+			 * and place the return address (offset) on the stack
 			 * 
 			 * jsr_w
 			 * jump to subroutine at branchoffset 
 			 * (signed int constructed from unsigned bytes 
 			 * branchbyte1 << 24 + branchbyte2 << 16 + branchbyte3 << 8 + branchbyte4) 
-			 * and place the return address on the stack
+			 * and place the return address (wide offset) on the stack
 			 * 
 			 * Example:
 			 * 
@@ -1300,8 +1306,9 @@ public class OperandStack implements Opcodes{
 			 *  33 ret 2 // Return to return address stored in local variable 2
 			 * 
 			 */
-			
-			stack.push(new OperandStackEntry(i, i.getOpcode() == OPCODE_JSR_W ? 8 : 4, "<ADDR>", "?"));
+			stack.push(new OperandStackEntry(i, i.getOpcode() == OPCODE_JSR_W ? 8 : 4, 
+					i.getOpcode() == OPCODE_JSR_W ? I_INT : S_SHORT, //TODO: check type integer or double 
+							ADDRESS_VALUE));
 			return;
 
 			/* key -> */
