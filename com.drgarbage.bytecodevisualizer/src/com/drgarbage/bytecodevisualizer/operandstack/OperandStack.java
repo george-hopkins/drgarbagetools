@@ -78,7 +78,8 @@ public class OperandStack implements Opcodes{
 	private IEdgeListExt backEdges;
 	private int maxStackSize;
 	private boolean stackError = false;
-
+	private Map<Integer, String> tmpLocalVariableTable;
+	
 	/* statistic counters for time and memory complexity */
 	private long elapsedTime = -1, memoryConsumption = -1;
 
@@ -111,6 +112,17 @@ public class OperandStack implements Opcodes{
 
 
 	public static String ANY_EXCEPTION = "<any exception>";
+	
+	/* Java class file constants */
+	public static String B_BYTE = String.valueOf(ByteCodeConstants.B_BYTE);
+	public static String C_CHAR = String.valueOf(ByteCodeConstants.C_CHAR);
+	public static String D_DOUBLE = String.valueOf(ByteCodeConstants.D_DOUBLE);
+	public static String F_FLOAT = String.valueOf(ByteCodeConstants.F_FLOAT);
+	public static String I_INT = String.valueOf(ByteCodeConstants.I_INT);
+	public static String J_LONG = String.valueOf(ByteCodeConstants.J_LONG);
+	public static String S_SHORT = String.valueOf(ByteCodeConstants.S_SHORT);
+	public static String Z_BOOLEAN = String.valueOf(ByteCodeConstants.Z_BOOLEAN);
+	public static String L_REFERENCE = String.valueOf(ByteCodeConstants.L_REFERENCE);
 	
 	/**
 	 * Converts the stack object into the string representation
@@ -219,6 +231,9 @@ public class OperandStack implements Opcodes{
 		localVariableTable = locVarTable;
 		exceptionTable = excepTable;
 		maxStackSize = 0;
+		
+		/* local variable table */
+		tmpLocalVariableTable = new TreeMap<Integer, String>();
 
 		/* initialize time and memory counters */
 		long start = System.currentTimeMillis();
@@ -557,7 +572,7 @@ public class OperandStack implements Opcodes{
 	 */
 	private void calculateOperandStack(INodeExt node, AbstractInstruction i){
 
-		List<Stack<OperandStackEntry>> listOfStacks = getStackBefore(node); 
+		List<Stack<OperandStackEntry>> listOfStacks = getStackBefore(node, i); 
 
 		for(Stack<OperandStackEntry> s: listOfStacks){
 			processInstruction(i, s);
@@ -600,6 +615,7 @@ public class OperandStack implements Opcodes{
 
 	}
 
+	
 	/**
 	 * Calculates all possible stack states for the given node before the corresponding 
 	 * byte code instruction has been executed.
@@ -607,6 +623,17 @@ public class OperandStack implements Opcodes{
 	 * @return list of stacks
 	 */
 	public List<Stack<OperandStackEntry>> getStackBefore(INodeExt node){
+		return getStackBefore(node, null);
+	}
+	
+	/**
+	 * Calculates all possible stack states for the given node before the corresponding 
+	 * byte code instruction has been executed.
+	 * @param node is a vertex in the control flow graph
+	 * @param i byte instruction object
+	 * @return list of stacks
+	 */
+	public List<Stack<OperandStackEntry>> getStackBefore(INodeExt node, AbstractInstruction i){
 		List<Stack<OperandStackEntry>> listOfStacks = new ArrayList<Stack<OperandStackEntry>>();
 		IEdgeListExt incEdgeList = node.getIncomingEdgeList();
 
@@ -628,6 +655,17 @@ public class OperandStack implements Opcodes{
 						}
 						else{
 							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE, ANY_EXCEPTION));
+							if(i != null){
+								if(isStoreIstruction(i.getOpcode())){/* handle special case: store unnamed variable */
+									String name = getLocalVariableName(i);
+									if(name == null){
+										if (i instanceof ILocalVariableIndexProvider){
+											int index = ((ILocalVariableIndexProvider)i).getLocalVariableIndex();
+											tmpLocalVariableTable.put(index, ANY_EXCEPTION);
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -665,17 +703,6 @@ public class OperandStack implements Opcodes{
 
 		return listOfStacks;
 	}
-
-	/* Java class file constants */
-	public static String B_BYTE = String.valueOf(ByteCodeConstants.B_BYTE);
-	public static String C_CHAR = String.valueOf(ByteCodeConstants.C_CHAR);
-	public static String D_DOUBLE = String.valueOf(ByteCodeConstants.D_DOUBLE);
-	public static String F_FLOAT = String.valueOf(ByteCodeConstants.F_FLOAT);
-	public static String I_INT = String.valueOf(ByteCodeConstants.I_INT);
-	public static String J_LONG = String.valueOf(ByteCodeConstants.J_LONG);
-	public static String S_SHORT = String.valueOf(ByteCodeConstants.S_SHORT);
-	public static String Z_BOOLEAN = String.valueOf(ByteCodeConstants.Z_BOOLEAN);
-	public static String L_REFERENCE = String.valueOf(ByteCodeConstants.L_REFERENCE);
 
 	/**
 	 * Updates the stack by interpreting the byte code
@@ -1226,7 +1253,55 @@ public class OperandStack implements Opcodes{
 		case OPCODE_JSR:
 		case OPCODE_JSR_W:
 			//TODO is the branch offset the address?
-			stack.push(new OperandStackEntry(i, i.getOpcode() == OPCODE_JSR_W ? 8 : 4, "ADDR", "?"));
+			/*
+			 * jsr
+			 * jump to subroutine at branchoffset 
+			 * (signed short constructed from unsigned bytes branchbyte1 << 8 + branchbyte2) 
+			 * and place the return address on the stack
+			 * 
+			 * jsr_w
+			 * jump to subroutine at branchoffset 
+			 * (signed int constructed from unsigned bytes 
+			 * branchbyte1 << 24 + branchbyte2 << 16 + branchbyte3 << 8 + branchbyte4) 
+			 * and place the return address on the stack
+			 * 
+			 * Example:
+			 * 
+			 * // The bytecode sequence for the try block: 
+			 *   0 iload_0 // Push local variable 0 (arg passed as divisor)
+			 *   1 ifeq 11 // Push local variable 1 (arg passed as dividend)
+			 *   4 iconst_1 // Push int 1
+			 *   5 istore_3 // Pop an int (the 1), store into local variable 3
+			 *   6 jsr 24 // Jump to the mini-subroutine for the finally clause
+			 *   9 iload_3 // Push local variable 3 (the 1)
+			 *  10 ireturn // Return int on top of the stack (the 1)
+			 *  11 iconst_0 // Push int 0
+			 *  12 istore_3 // Pop an int (the 0), store into local variable 3
+			 *  13 jsr 24 // Jump to the mini-subroutine for the finally clause
+			 *  16 iload_3 // Push local variable 3 (the 0)
+			 *  17 ireturn // Return int on top of the stack (the 0)
+			 *
+			 * // The bytecode sequence for a catch clause that catches any kind of exception
+			 * // thrown from within the try block.
+			 *
+			 *  18 astore_1 // Pop the reference to the thrown exception, store
+			 *                           // into local variable 1
+			 *  19 jsr 24 // Jump to the mini-subroutine for the finally clause
+			 *  22 aload_1 // Push the reference (to the thrown exception) from
+			 *                           // local variable 1
+			 *  23 athrow // Rethrow the same exception
+			 *
+			 * // The miniature subroutine that implements the finally block.
+			 *
+			 *  24 astore_2 // Pop the return address, store it in local variable 2
+			 *  25 getstatic #8 // Get a reference to java.lang.System.out
+			 *  28 ldc #1 // Push <String "Got old fashioned."> from the constant pool
+			 *  30 invokevirtual #7 // Invoke System.out.println()
+			 *  33 ret 2 // Return to return address stored in local variable 2
+			 * 
+			 */
+			
+			stack.push(new OperandStackEntry(i, i.getOpcode() == OPCODE_JSR_W ? 8 : 4, "<ADDR>", "?"));
 			return;
 
 			/* key -> */
@@ -1325,14 +1400,17 @@ public class OperandStack implements Opcodes{
 	 * @return ? if the name can't be acquired otherwise returns the name
 	 */
 	private String getLocalVariableName(AbstractInstruction i){
-
 		if (i instanceof ILocalVariableIndexProvider) {
-
-			String argName = 	localVariableTable.findArgName(((ILocalVariableIndexProvider)i).getLocalVariableIndex() - 1, 
+			int index = ((ILocalVariableIndexProvider)i).getLocalVariableIndex();
+			String argName = 	localVariableTable.findArgName(index - 1, 
 					i.getOffset(), 
 					false, 
 					false);
 
+			if(argName == null){
+				argName = tmpLocalVariableTable.get(index);
+			}
+			
 			return argName;
 		} 
 
@@ -1610,4 +1688,17 @@ public class OperandStack implements Opcodes{
 		}
 	}
 
+	/**
+	 * Returns <code>true</code> if the instruction is a store
+	 * instruction, otherwise s<code>false</code>.
+	 * @param opcode
+	 * @return <code>true</code> or <code>false</code>
+	 */
+	public static boolean isStoreIstruction(int opcode) {
+		if(OPCODE_ISTORE <= opcode && opcode <= OPCODE_SASTORE){
+			return true;
+		}
+		
+		return false;
+	}
 }

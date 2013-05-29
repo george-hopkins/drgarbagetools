@@ -38,6 +38,7 @@ import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
 import com.drgarbage.controlflowgraph.intf.MarkEnum;
+import com.drgarbage.core.CoreMessages;
 
 /**
  * The implementation of the Operand Stack View Page.
@@ -269,7 +270,7 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
         				switchChild.setObject(e1.getData().toString());
         			}
         			else{
-        				switchChild.setObject("ERROR");//TODO: define constant and text
+        				switchChild.setObject(CoreMessages.Error);
         			}
         			child.addhild(switchChild);
         			
