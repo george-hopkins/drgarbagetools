@@ -1,5 +1,7 @@
 package com.drgarbage.bytecodevisualizer.view;
 
+import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -14,6 +16,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.console.IConsoleConstants;
 
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 
@@ -64,12 +68,15 @@ public class OperandStackReportDialog extends Composite {
 	
 	public void setText(String txt){
 		StyledText styledText = new StyledText(this, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		/*Monaco- a monospace font is chosen for formatting purpose in the analyse report*/
-		styledText.setFont(new Font(getDisplay(),"Monaco",REPORT_FONT_SIZE,SWT.NONE));
+		
+		/* Use the default text font */
+		Font f = JFaceResources.getFont(JFaceResources.TEXT_FONT);
+		styledText.setFont(f);
+		
 		styledText.setText(txt);
+		
 		styledText.setLayoutData(new GridData(GridData.FILL_BOTH));
-		//TODO : later set to true
-//		styledText.setEditable(false);
+		styledText.setEditable(false);
 
 		StyleRange Error = new StyleRange();
 		StyleRange Warning = new StyleRange();
