@@ -1,6 +1,5 @@
 package com.drgarbage.bytecodevisualizer.view;
 
-import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -16,20 +15,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.console.IConsoleConstants;
 
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 
 
 public class OperandStackReportDialog extends Composite {
 	
-	/** Font size in the report dialog */
-	public static int REPORT_FONT_SIZE = 11;
-	
 	/** size of the report dialog */
 	private Point dialogSize = new Point(800, 480);
-	
 	
 	public OperandStackReportDialog() {
 		super(new Shell(SWT.APPLICATION_MODAL | SWT.CLOSE | SWT.ON_TOP), SWT.NONE);
