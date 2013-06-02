@@ -116,8 +116,8 @@ public class OperandStack implements Opcodes{
 	
 	/* Operand Stack specific constants */
 	public static String ANY_EXCEPTION = "<any exception>";
-	public static String RETURN_VALUE = "<RET>";
-	public static String ADDRESS_VALUE = "<ADDR>";
+	public static String RETURN_VALUE = "<return value>";
+	public static String ADDRESS_VALUE = "<return address>";
 	public static String EMPTY_STACK = "<empty>";
 	
 	/* Java class file constants */
@@ -1325,9 +1325,7 @@ public class OperandStack implements Opcodes{
 			 *  33 ret 2 // Return to return address stored in local variable 2
 			 * 
 			 */
-			stack.push(new OperandStackEntry(i, i.getOpcode() == OPCODE_JSR_W ? 8 : 4, 
-					i.getOpcode() == OPCODE_JSR_W ? I_INT : S_SHORT, //TODO: check type integer or double 
-							ADDRESS_VALUE));
+			stack.push(new OperandStackEntry(i, 4, L_REFERENCE, ADDRESS_VALUE));
 			return;
 
 			/* key -> */

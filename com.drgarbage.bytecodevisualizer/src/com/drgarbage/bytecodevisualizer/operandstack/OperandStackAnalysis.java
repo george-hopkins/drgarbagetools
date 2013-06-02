@@ -531,6 +531,8 @@ public class OperandStackAnalysis {
 									}
 									else{
 										errorOrWarning = true;
+										buf.append(JavaLexicalConstants.NEWLINE);
+										buf.append(spacesErr(OFFSET_COLWIDTH + BYTECODESTRING_COLWIDTH));
 										buf.append(CoreMessages.Error);
 										buf.append(JavaLexicalConstants.COLON);
 										buf.append(JavaLexicalConstants.SPACE);
@@ -632,6 +634,8 @@ public class OperandStackAnalysis {
 									}
 									else{
 										errorOrWarning = true;
+										buf.append(JavaLexicalConstants.NEWLINE);
+										buf.append(spacesErr(OFFSET_COLWIDTH + BYTECODESTRING_COLWIDTH));
 										buf.append(CoreMessages.Error);
 										buf.append(JavaLexicalConstants.COLON);
 										buf.append(JavaLexicalConstants.SPACE);
@@ -668,6 +672,7 @@ public class OperandStackAnalysis {
 									returnType = OperandStack.J_LONG;
 									break;
 								case Opcodes.OPCODE_RETURN:
+								case Opcodes.OPCODE_RET:
 									voidReturn = true;
 								}
 
@@ -694,6 +699,8 @@ public class OperandStackAnalysis {
 									}
 									else{
 										errorOrWarning = true;
+										buf.append(JavaLexicalConstants.NEWLINE);
+										buf.append(spacesErr(OFFSET_COLWIDTH + BYTECODESTRING_COLWIDTH));
 										buf.append(CoreMessages.Error);
 										buf.append(JavaLexicalConstants.COLON);
 										buf.append(JavaLexicalConstants.SPACE);
