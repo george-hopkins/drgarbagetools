@@ -22,8 +22,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IStatus;
 
@@ -645,23 +647,28 @@ public class OperandStack implements Opcodes{
 
 		/* entry nodes */
 		if(incEdgeList.size() == 0){
-			Stack<OperandStackEntry> startStack = new Stack<OperandStackEntry>();
 			if(node.getByteCodeOffset() != 0){
 				/* 
 				 * The start node is initialized with an empty stack.
 				 * For start nodes of exception handlers the exception 
 				 * objects have to be put onto the stack.
 				 */
+				Set<String> exceptionList = new TreeSet<String>();
 				for(ExceptionTableEntry ete: exceptionTable){
 					if(node.getByteCodeOffset() == ete.getHandlerPc()){
+						
 						if(ete.getCatchType() != 0){ /* index = 0 has no references in the constant pool */
 							String className = getConstantPoolClassName(ete.getCatchType(), classConstantPool);
-							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE,
-									JavaLexicalConstants.LT + className + JavaLexicalConstants.GT));
+							exceptionList.add(JavaLexicalConstants.LT + className + JavaLexicalConstants.GT);
+							
+//							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE,
+//									JavaLexicalConstants.LT + className + JavaLexicalConstants.GT));
 						}
 						else{
-							//FIXME: put exception object only once onto the stack.
-							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE, ANY_EXCEPTION));
+							exceptionList.add(ANY_EXCEPTION);
+							
+//							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE, ANY_EXCEPTION));
+							
 							if(i != null){
 								if(isStoreIstruction(i.getOpcode())){/* handle special case: store unnamed variable */
 									String name = getLocalVariableName(i);
@@ -676,9 +683,20 @@ public class OperandStack implements Opcodes{
 						}
 					}
 				}
+				
+				for(String e: exceptionList){
+					Stack<OperandStackEntry> startStack = new Stack<OperandStackEntry>();
+					startStack.add(new OperandStackEntry(null, 4, L_REFERENCE, e));
+					listOfStacks.add(startStack);
+				}
 			}
+			
+			/* add an empty stack entry */
+			if(listOfStacks.size() == 0){
+				listOfStacks.add(new Stack<OperandStackEntry>());
+			}
+			
 
-			listOfStacks.add(startStack);
 		}
 		else{
 			Map<String, Stack<OperandStackEntry>> m = new TreeMap<String, Stack<OperandStackEntry>>();
