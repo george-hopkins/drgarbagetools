@@ -889,6 +889,87 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 					
 				}
 			}
+	        
+	        private void renderExceptionTable() {
+					if (exceptionTable == null) {
+						appendNewline();
+						appendCommentBegin();
+						appendSpace();
+						sb.append(ByteCodeConstants.EXCEPTION_TABLE_NOT_AVAILABLE);
+						appendSpace();
+						appendCommentEnd();
+						appendNewline();
+					}
+					else if (exceptionTable.length == 0) {
+						appendNewline();
+						appendCommentBegin();
+						appendSpace();
+						sb.append(ByteCodeConstants.EXCEPTION_TABLE_EMPTY);
+						appendSpace();
+						appendCommentEnd();
+						appendNewline();
+					}
+					else {
+						appendNewline();
+						
+						TextTable tbl = new TextTable(new ByteCodeConstants.Align[] {
+								ByteCodeConstants.Align.RIGHT,
+								ByteCodeConstants.Align.RIGHT,
+								ByteCodeConstants.Align.RIGHT,
+								ByteCodeConstants.Align.RIGHT
+						});
+						
+						/*
+						 * u2 exception_table_length;
+						 * {    u2 start_pc;
+						 *    	u2 end_pc;
+						 *   	u2  handler_pc;
+						 *  	u2  catch_type;
+						 * }	exception_table[exception_table_length];
+						 */
+						tbl.addRow(new String[] {
+								ByteCodeConstants.START_PC,
+								ByteCodeConstants.END_PC,
+								ByteCodeConstants.HANDLER_PC,
+								ByteCodeConstants.CATCH_TYPE
+						});
+						
+						for (int i = 0; i < exceptionTable.length; i++) {
+							ExceptionTableEntry en = exceptionTable[i];
+							
+							String catch_type_class = String.valueOf(ByteCodeConstants.UNKNOWN_INFORMATION);
+							
+							int catch_type = en.getCatchType();
+							if(catch_type == 0){
+								catch_type_class = ByteCodeConstants.ANY_EXCEPTION;
+							}
+							else{
+								AbstractConstantPoolEntry cpInfo = constantPool[catch_type];
+								if (cpInfo instanceof ConstantClassInfo) {
+									ConstantClassInfo constantClassInfo = (ConstantClassInfo) cpInfo;
+									String name = ((ConstantUtf8Info) constantPool[constantClassInfo.getNameIndex()]).getString();
+									catch_type_class = name.replace(ByteCodeConstants.CLASS_NAME_SLASH, JavaLexicalConstants.DOT);
+								}
+							}
+							
+							tbl.addRow(
+									new String[] {
+											String.valueOf(en.getStartPc()),
+											String.valueOf(en.getEndPc()),
+											String.valueOf(en.getHandlerPc()),
+											catch_type_class
+									}
+							);
+						}
+						
+						tbl.recomputeColumnWidths();
+						tbl.beginRow();
+						tbl.appendValue(ByteCodeConstants.EXCEPTION_TABLE, ByteCodeConstants.Align.CENTER, tbl.computeWidth());
+						tbl.endRow();
+						tbl.render();
+		
+					}
+	        }
 	
 	        private void renderMaxs() {
 					appendNewline();
@@ -1162,6 +1243,10 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 	
 				if (showLocalVariableTable) {
 					renderLocalVariableTable();
+				}
+				
+				if(showExceptionTable){
+					renderExceptionTable();
 				}
 
 				return true;
@@ -2607,6 +2692,7 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 	protected boolean showLineNumberTable = false;
 
 	protected boolean showLocalVariableTable = false;
+	protected boolean showExceptionTable = false;
 	protected boolean showRelativeBranchTargetOffsets = true;
 	protected boolean showSourceLineNumbers = false;
 	protected boolean showMaxs = false;
@@ -2623,6 +2709,7 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 			showLineNumberTable = store.getBoolean(CLASS_FILE_ATTR_SHOW_LINE_NUMBER_TABLE);
 			showSourceLineNumbers = store.getBoolean(CLASS_FILE_ATTR_SHOW_SOURCE_LINE_NUMBERS);
 			showLocalVariableTable = store.getBoolean(CLASS_FILE_ATTR_SHOW_VARIABLE_TABLE);
+			showExceptionTable = store.getBoolean(CLASS_FILE_ATTR_SHOW_EXCEPTION_TABLE);
 			showMaxs= store.getBoolean(CLASS_FILE_ATTR_SHOW_MAXS);
 			renderTryCatchFinallyBlocks = store.getBoolean(CLASS_FILE_ATTR_RENDER_TRYCATCH_BLOCKS);
 			

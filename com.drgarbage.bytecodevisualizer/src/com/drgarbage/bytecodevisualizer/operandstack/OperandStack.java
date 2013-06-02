@@ -660,6 +660,7 @@ public class OperandStack implements Opcodes{
 									JavaLexicalConstants.LT + className + JavaLexicalConstants.GT));
 						}
 						else{
+							//FIXME: put exception object only once onto the stack.
 							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE, ANY_EXCEPTION));
 							if(i != null){
 								if(isStoreIstruction(i.getOpcode())){/* handle special case: store unnamed variable */
