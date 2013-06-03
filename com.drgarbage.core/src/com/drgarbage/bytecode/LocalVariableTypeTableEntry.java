@@ -24,7 +24,7 @@ import java.io.IOException;
  *
  * @author Sergej Alekseev and Peter Palaga 
  * @version $Revision$
- * $Id: LocalVariableTypeTableEntry.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class LocalVariableTypeTableEntry extends LocalVariableCommonEntry {
 

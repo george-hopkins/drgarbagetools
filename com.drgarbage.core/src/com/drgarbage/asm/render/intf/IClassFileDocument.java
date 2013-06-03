@@ -26,7 +26,7 @@ import com.drgarbage.bytecode.constant_pool.AbstractConstantPoolEntry;
  * 
  * @author Peter Palaga
  * @version $Revision$
- * $Id: IClassFileDocument.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public interface IClassFileDocument extends Appendable {
 	

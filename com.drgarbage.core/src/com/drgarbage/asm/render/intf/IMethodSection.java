@@ -26,7 +26,7 @@ import com.drgarbage.bytecode.ExceptionTableEntry;
  * 
  * @author Peter Palaga
  * @version $Revision$
- * $Id: IMethodSection.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public interface IMethodSection {
 

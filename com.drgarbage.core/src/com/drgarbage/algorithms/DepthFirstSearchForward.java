@@ -25,7 +25,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  *
  *  @author Sergej Alekseev 
  *  @version $Revision$
- *  $Id: DepthFirstSearchForward.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ *  $Id$
  */
 public abstract class DepthFirstSearchForward extends DepthFirstSearchBaseVisitor {
 

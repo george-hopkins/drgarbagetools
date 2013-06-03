@@ -24,7 +24,7 @@ import com.drgarbage.bytecode.instructions.Opcodes;
   *
   * @author Sergej Alekseev and Peter Palaga
   * @version $Revision$
-  * $Id: ByteCodeConstants.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+  * $Id$
   */
 public class ByteCodeConstants implements Opcodes {
 	
@@ -542,11 +542,18 @@ public class ByteCodeConstants implements Opcodes {
 	public static final String LINE_NUMBER_TABLE_NOT_AVAILABLE = "LineNumberTable not available";
 	public static final String LOCAL_VARIABLE_TABLE = "LocalVariableTable";
 	public static final String LOCAL_VARIABLE_TYPE_TABLE = "LocalVariableTypeTable";
+	public static final String EXCEPTION_TABLE = "ExceptionTable";
+	public static final String EXCEPTION_TABLE_NOT_AVAILABLE = "ExceptionTable not available";
+	public static final String EXCEPTION_TABLE_EMPTY = "ExceptionTable (empty)";
+	public static final String ANY_EXCEPTION = "any";
 	public static final String MAX_STACK = "max_stack";
 	public static final String MAX_LOCALS = "max_locals";
 	public static final String CODE = "Code";
 
 	public static final String START_PC = "start_pc";
+	public static final String END_PC = "end_pc";
+	public static final String HANDLER_PC = "handler_pc";
+	public static final String CATCH_TYPE = "catch_type";
 	public static final String LINE = "line";
 	public static final Object LOCAL_VARIABLE_TABLE_NOT_AVAILABLE = "LocalVariableTable not available";
 	public static final Object LOCAL_VARIABLE_TABLE_EMPTY = "LocalVariableTable (empty)";

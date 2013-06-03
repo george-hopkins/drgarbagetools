@@ -29,7 +29,7 @@ import com.drgarbage.controlflowgraph.intf.MarkEnum;
  *
  * @author Sergej Alekseev 
  * @version $Revision$
- * $Id: NodeExt.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class NodeExt extends Node implements INodeExt {
 

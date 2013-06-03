@@ -29,7 +29,7 @@ import org.eclipse.draw2d.text.TextFlow;
  * 
  * @author Sergej Alekseev  
  * @version $Revision$
- * $Id: CommentFigure.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class CommentFigure extends BentCornerFigure
 {

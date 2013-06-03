@@ -21,7 +21,7 @@ package com.drgarbage.javasrc;
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: JavaCodeAttributes.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class JavaCodeAttributes {
 	public static final String LINE_NUMBER_TABLE = "LineNumberTable";

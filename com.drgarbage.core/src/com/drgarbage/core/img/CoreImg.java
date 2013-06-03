@@ -23,7 +23,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: CoreImg.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class CoreImg {
 	public static final ImageDescriptor drgarbage_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "dr.garbage-16x16.png");

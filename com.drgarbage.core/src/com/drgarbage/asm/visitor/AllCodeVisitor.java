@@ -28,7 +28,7 @@ import com.drgarbage.bytecode.instructions.AbstractInstruction;
 /**
  * All Code Visitor class
  * @version $Revision$
- * $Id: AllCodeVisitor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class AllCodeVisitor extends AbstractCodeVisitor {
 	private List<Map<String, Object>> instructionLists = new ArrayList<Map<String,Object>>();

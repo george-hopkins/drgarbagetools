@@ -29,7 +29,7 @@ import com.drgarbage.bytecode.constant_pool.AbstractConstantPoolEntry;
 /**
  * Method Filtering visitor class.
  * @version $Revision$
- * $Id: MethodFilteringVisitor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class MethodFilteringVisitor extends ClassVisitor implements IConstantPoolVisitor {
 	

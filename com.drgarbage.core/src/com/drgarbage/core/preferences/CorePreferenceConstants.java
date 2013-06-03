@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.RGB;
  * 
  * @author Peter Palaga
  * @version $Revision$
- * $Id: CorePreferenceConstants.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public interface CorePreferenceConstants {
 

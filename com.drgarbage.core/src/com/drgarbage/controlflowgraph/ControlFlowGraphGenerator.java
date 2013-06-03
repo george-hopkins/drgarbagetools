@@ -55,7 +55,7 @@ import com.drgarbage.javalang.JavaLangUtils;
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: ControlFlowGraphGenerator.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class ControlFlowGraphGenerator  implements Opcodes{
 	

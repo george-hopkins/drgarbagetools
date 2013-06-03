@@ -31,7 +31,7 @@ import com.drgarbage.core.CoreMessages;
  * The View for the control flow graph visualization.
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: ControlFlowGraphView.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class ControlFlowGraphView extends PageBookView {
 

@@ -24,7 +24,7 @@ import com.drgarbage.core.CorePlugin;
  * 
  * @author Peter Palaga
  * @version $Revision$
- * $Id: GraphColorsPreferencePage.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class GraphColorsPreferencePage extends AbstractFieldPreferencePage implements CorePreferenceConstants {
 

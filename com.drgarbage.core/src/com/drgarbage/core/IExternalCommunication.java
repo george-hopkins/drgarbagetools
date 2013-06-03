@@ -26,7 +26,7 @@ import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: IExternalCommunication.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public interface IExternalCommunication {
 	

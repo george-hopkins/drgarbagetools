@@ -30,7 +30,7 @@ import com.drgarbage.core.img.CoreImg;
  *
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: InputDialog.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class InputDialog extends org.eclipse.jface.dialogs.InputDialog {
 

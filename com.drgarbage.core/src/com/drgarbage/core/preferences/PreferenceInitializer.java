@@ -27,7 +27,7 @@ import com.drgarbage.core.CorePlugin;
  * 
  * @author Peter Palaga
  * @version $Revision$
- * $Id: PreferenceInitializer.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class PreferenceInitializer extends AbstractPreferenceInitializer implements CorePreferenceConstants {
 

@@ -28,7 +28,7 @@ import com.drgarbage.bytecode.instructions.AbstractInstruction;
 /**
  * Filtering code visitor class.
  * @version $Revision$
- * $Id: FilteringCodeVisitor.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class FilteringCodeVisitor extends AbstractCodeVisitor {
 	private String name;

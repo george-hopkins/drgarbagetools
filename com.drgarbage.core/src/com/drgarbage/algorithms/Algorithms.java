@@ -36,7 +36,7 @@ import com.drgarbage.core.CorePlugin;
 /**
  *  @author Sergej Alekseev  
  *  @version $Revision$
- *  $Id: Algorithms.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ *  $Id$
  */
 public class Algorithms {
 

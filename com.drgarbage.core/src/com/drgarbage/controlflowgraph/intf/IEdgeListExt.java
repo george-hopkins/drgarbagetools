@@ -22,7 +22,7 @@ package com.drgarbage.controlflowgraph.intf;
  *
  * @author Sergej Alekseev  
  * @version $Revision$
- * $Id: IEdgeListExt.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public interface IEdgeListExt {
 

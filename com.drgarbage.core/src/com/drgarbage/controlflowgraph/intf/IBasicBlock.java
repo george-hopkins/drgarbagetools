@@ -23,7 +23,7 @@ import com.drgarbage.controlflowgraph.ControlFlowGraphException;
  *
  * @author Sergej Alekseev  
  * @version $Revision$
- * $Id: IBasicBlock.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public interface IBasicBlock extends INodeExt {
 
