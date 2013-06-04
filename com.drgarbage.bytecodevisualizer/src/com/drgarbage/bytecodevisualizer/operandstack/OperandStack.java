@@ -790,7 +790,7 @@ public class OperandStack implements Opcodes{
 		case OPCODE_DLOAD_2:
 		case OPCODE_DLOAD_3:
 
-			stack.push(new OperandStackEntry(i, 4, D_DOUBLE, getLocalVariableName(i)));
+			stack.push(new OperandStackEntry(i, 8, D_DOUBLE, getLocalVariableName(i)));
 			return;
 
 		case OPCODE_FLOAD:
@@ -994,7 +994,7 @@ public class OperandStack implements Opcodes{
 		case OPCODE_F2D:
 		case OPCODE_I2D:
 		case OPCODE_L2D:
-			stack.push(new OperandStackEntry(i, 4, D_DOUBLE, stack.pop().getValue()));
+			stack.push(new OperandStackEntry(i, 8, D_DOUBLE, stack.pop().getValue()));
 			return;
 
 		case OPCODE_I2C:
@@ -1007,35 +1007,62 @@ public class OperandStack implements Opcodes{
 
 			/* value1, value2 -> result */
 		case OPCODE_DADD:
-		case OPCODE_IADD:
-		case OPCODE_FADD:
 		case OPCODE_LADD:
 
 		case OPCODE_DDIV:
-		case OPCODE_IDIV:
-		case OPCODE_FDIV:
 		case OPCODE_LDIV:
 
 		case OPCODE_DMUL:
-		case OPCODE_IMUL:
-		case OPCODE_FMUL:
 		case OPCODE_LMUL:
 
 		case OPCODE_DREM:
-		case OPCODE_IREM:
-		case OPCODE_FREM:
 		case OPCODE_LREM:
-
+			
 		case OPCODE_DSUB:
-		case OPCODE_ISUB:
-		case OPCODE_FSUB:
 		case OPCODE_LSUB:
 		{
 			OperandStackEntry value2 = stack.pop();
 			OperandStackEntry value1 = stack.pop();
 
+			StringBuffer buf = new StringBuffer();
+			buf.append(JavaLexicalConstants.LEFT_PARENTHESIS);
+			buf.append(value1.getValue());
+			buf.append(resolveMathOperation(i));
+			buf.append(value2.getValue());
+			buf.append(JavaLexicalConstants.RIGHT_PARENTHESIS);
+			
+			stack.push(new OperandStackEntry(i, 8, value1.getVarType(), 
+					buf.toString()));
+			return;
+		}			
+			
+		case OPCODE_IADD:
+		case OPCODE_FADD:
+
+		case OPCODE_IDIV:
+		case OPCODE_FDIV:
+
+		case OPCODE_IMUL:
+		case OPCODE_FMUL:
+
+		case OPCODE_IREM:
+		case OPCODE_FREM:
+
+		case OPCODE_ISUB:
+		case OPCODE_FSUB:
+		{
+			OperandStackEntry value2 = stack.pop();
+			OperandStackEntry value1 = stack.pop();
+
+			StringBuffer buf = new StringBuffer();
+			buf.append(JavaLexicalConstants.LEFT_PARENTHESIS);
+			buf.append(value1.getValue());
+			buf.append(resolveMathOperation(i));
+			buf.append(value2.getValue());
+			buf.append(JavaLexicalConstants.RIGHT_PARENTHESIS);
+			
 			stack.push(new OperandStackEntry(i, 4, value1.getVarType(), 
-					"(" + value1.getValue() + resolveMathOperation(i) + value2.getValue() + ")"));
+					buf.toString()));
 			return;
 		}	
 		/* value1 -> result */				
@@ -1043,10 +1070,22 @@ public class OperandStack implements Opcodes{
 		case OPCODE_INEG:
 		case OPCODE_FNEG:
 		case OPCODE_LNEG:
+		{
 			OperandStackEntry negValue = stack.pop();
-			stack.push(new OperandStackEntry(i, 4, negValue.getVarType(), "(" + "-" + negValue.getValue() + ")"));
+			
+			StringBuffer buf = new StringBuffer();
+			buf.append(JavaLexicalConstants.LEFT_PARENTHESIS);
+			buf.append(JavaLexicalConstants.MINUS);
+			buf.append(negValue.getValue());
+			buf.append(JavaLexicalConstants.RIGHT_PARENTHESIS);
+			
+			stack.push(new OperandStackEntry(i, 
+									i.getOpcode() == OPCODE_DNEG || i.getOpcode() == OPCODE_LNEG ? 8 : 4,
+									negValue.getVarType(), 
+									buf.toString())
+					);
 			return;
-
+		}
 			/* value1, value2 -> result */
 		case OPCODE_DCMPG:
 		case OPCODE_DCMPL:
@@ -1062,7 +1101,7 @@ public class OperandStack implements Opcodes{
 		case OPCODE_LDC: /* 8-bit index ConstantPoolByteIndexInstruction*/
 		case OPCODE_LDC_W: /* 16-bit index ConstantPoolShortIndexInstruction*/
 		case OPCODE_LDC2_W: /* 16-bit index and pushes a two-word constant on the stack ConstantPoolShortIndexInstruction*/
-
+		{
 			String const_ = "?";
 			if (i instanceof ConstantPoolShortIndexInstruction || i instanceof ConstantPoolByteIndexInstruction) {
 				AbstractConstantPoolEntry cpInfo = classConstantPool[((IConstantPoolIndexProvider)i).getConstantPoolIndex()];
@@ -1089,6 +1128,7 @@ public class OperandStack implements Opcodes{
 				}
 				else if (cpInfo instanceof ConstantStringInfo) {
 					int j = ((ConstantStringInfo)cpInfo).getStringIndex();
+					
 					StringBuffer buf = new StringBuffer();
 					BytecodeUtils.appendString(buf, ((ConstantUtf8Info)classConstantPool[j]).getString());
 					const_ = buf.toString();
@@ -1101,7 +1141,7 @@ public class OperandStack implements Opcodes{
 			stack.push(new OperandStackEntry(i, 4, "?", const_));
 			return;
 
-
+		}
 
 			/* value -> value, value */
 		case OPCODE_DUP:
@@ -1358,18 +1398,20 @@ public class OperandStack implements Opcodes{
 
 			/* arrayref -> length (as int)*/
 		case OPCODE_ARRAYLENGTH:
+		{
 			OperandStackEntry arrayLength = stack.pop();
-			
+
 			StringBuffer buf = new StringBuffer();
 			buf.append(JavaLexicalConstants.LT );
 			buf.append(arrayLength.getValue() );
 			buf.append(JavaLexicalConstants.DOT);
 			buf.append(ByteCodeConstants.LENGTH);
 			buf.append(JavaLexicalConstants.LT );
-			
-			stack.push(new OperandStackEntry(i, 4, I_INT, buf.toString()));
-			return;
 
+			stack.push(new OperandStackEntry(i, 4, I_INT, buf.toString()));
+
+			return;
+		}
 			/* objectref,value -> */
 		case OPCODE_PUTFIELD:
 			stack.pop();
@@ -1384,9 +1426,9 @@ public class OperandStack implements Opcodes{
 
 			/* value2, value1 -> value1, value2 */
 		case OPCODE_SWAP:
-			OperandStackEntry tmpSwap = stack.get(stack.size()-2);
-			stack.set(stack.size()-1, tmpSwap);
-			stack.set(stack.size()-2, stack.get(stack.size()-1));
+			OperandStackEntry tmpSwap = stack.get(stack.size() - 2);
+			stack.set(stack.size() - 1, tmpSwap);
+			stack.set(stack.size() - 2, stack.get(stack.size() - 1));
 			return;		
 		}
 
