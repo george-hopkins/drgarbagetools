@@ -30,6 +30,7 @@ import com.drgarbage.asm.render.intf.IInstructionLine;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.ControlFlowGraphGenerator;
+import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
 import com.drgarbage.controlflowgraph.intf.IBasicBlock;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
@@ -37,6 +38,7 @@ import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
+import com.drgarbage.controlflowgraph.intf.INodeType;
 import com.drgarbage.controlflowgraph.intf.MarkEnum;
 import com.drgarbage.core.CoreMessages;
 
@@ -97,7 +99,7 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
 		GraphUtils.clearGraph(graph);
 		BasicBlockGraphVisitor basicBlockVisitor = new BasicBlockGraphVisitor();
 		try {
-			basicBlockVisitor.visit(graph);
+			basicBlockVisitor.start(graph);
 		} catch (ControlFlowGraphException e) {
 			BytecodeVisualizerPlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, BytecodeVisualizerPlugin.PLUGIN_ID, e.getMessage(), e)
@@ -155,7 +157,12 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
     private  Object  generateTreeInput(List<IInstructionLine> instructions)
     {
 		IDirectedGraphExt graph = ControlFlowGraphGenerator.generateSynchronizedControlFlowGraphFrom(instructions, true);
-
+		
+		/* remove back edges (loops) from the graph */
+		removeBackEdges(graph);
+		GraphUtils.clearGraph(graph);
+		GraphUtils.clearGraphColorMarks(graph);
+		
 		/* 
 		 * Mark nodes and create spanning tree.
 		 * Marking should be done before the spanning tree is created, 
@@ -163,19 +170,19 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
 		 * of the spanning tree algorithm.
 		 */
 		markNodes(graph);
-		Algorithms.resetVisitFlags(graph);
-		
-		/* remove back edges (loops) from the graph */
-		removeBackEdges(graph);
+		GraphUtils.clearGraph(graph);
 		
 		Algorithms.doSpanningTreeAlgorithm(graph, false);
-		Algorithms.resetVisitFlags(graph);
-				
+		GraphUtils.clearGraph(graph);
+		
 		Node root = new Node();
 		List<INodeExt> listOfStartNodes = getAllStartNodes(graph);
-		for(INodeExt n: listOfStartNodes)
+		for(INodeExt n: listOfStartNodes){
 			parseGraph(root, n);
-		
+		}
+
+		GraphUtils.clearGraph(graph);
+		GraphUtils.clearGraphColorMarks(graph);
 		
 		return root;
     }
@@ -185,18 +192,19 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
      * incidence lists of nodes.
      * @param graph control flow graph
      */
-    private void removeBackEdges(IDirectedGraphExt graph){
-    	IEdgeListExt edges = graph.getEdgeList();
-    	for(int i = 0; i < edges.size(); i++){
-    		IEdgeExt e = edges.getEdgeExt(i);
-    		INodeExt source = e.getSource(); 
-    		INodeExt target = e.getTarget();
-    		if(source.getByteCodeOffset() > target.getByteCodeOffset()){
-    			source.getOutgoingEdgeList().remove(e);
-    			target.getIncomingEdgeList().remove(e);
-    			edges.remove(i);
-    		}
-    	}
+    private void removeBackEdges(IDirectedGraphExt graph){    	
+    	IEdgeListExt backEdges = Algorithms.doFindBackEdgesAlgorithm(graph);
+		
+		IEdgeListExt edges = graph.getEdgeList();
+		for(int i = 0; i < backEdges.size(); i++){
+			IEdgeExt e = backEdges.getEdgeExt(i);
+			INodeExt source = e.getSource(); 
+			INodeExt target = e.getTarget();
+			
+			source.getOutgoingEdgeList().remove(e);
+			target.getIncomingEdgeList().remove(e);
+			edges.remove(e);
+		}
     }
     
     /**
@@ -321,9 +329,24 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
     			outEdges.getEdgeExt(1).setMark(MarkEnum.BLACK); /* true */
     			outEdges.getEdgeExt(0).setMark(MarkEnum.WHITE); /* false */
     		}
-    		if(out > 2){ /* switch */
+    		else if(out > 2){ /* switch */
     			node.setMark(MarkEnum.ORANGE);
     			markSwitchNodes(graphNodelist, i, node.getOutgoingEdgeList().size());
+    		}
+    		else if(out == 1 && node.getVertexType() == INodeType.NODE_TYPE_IF){
+    			/* special case: do- while loop */
+    			node.setMark(MarkEnum.GREEN);
+    			IEdgeListExt outEdges = graphNodelist.getNodeExt(i).getOutgoingEdgeList();
+    			outEdges.getEdgeExt(0).setMark(MarkEnum.BLACK); /* true */
+    			
+    			/* false - create pseudo arc */
+//    			INodeExt loopTargetNode = GraphExtentionFactory.createNodeExtention("LOOP");
+//    			graphNodelist.add(loopTargetNode);
+//    			IEdgeExt pseudoEdge = GraphExtentionFactory.createEdgeExtention(node, loopTargetNode);
+    			
+    			IEdgeExt pseudoEdge = GraphExtentionFactory.createEdgeExtention(node, node);
+    			pseudoEdge.setData("false");
+    			outEdges.add(pseudoEdge);
     		}
     		
     		node.setVisited(true);

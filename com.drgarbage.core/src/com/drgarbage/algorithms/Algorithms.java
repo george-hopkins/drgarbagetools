@@ -42,7 +42,8 @@ public class Algorithms {
 
 	/* static algorithms */
 	private static KnuthStevensonTransformation fKnuthStevensonTransformation = new KnuthStevensonTransformation();
-	private static SpanningTreeBFS fSpanningTreeBFS = new SpanningTreeBFS();
+	private static SpanningTreeBFS fSpanningTreeBFS;
+	private static FindBackEdgesDFS fFindBackEdgesDFS;
 
 	/**
 	 * Finds a spanning tree for the given graph. The original graph is 
@@ -63,6 +64,10 @@ public class Algorithms {
 	 * @return the spanning tree graph
 	 */
 	public static IDirectedGraphExt doSpanningTreeAlgorithm(IDirectedGraphExt graph, boolean createNewGraph){
+		if(fSpanningTreeBFS == null){
+			fSpanningTreeBFS = new SpanningTreeBFS();
+		}
+		
 		try {
 			fSpanningTreeBFS.setCreateNewGraph(createNewGraph);
 			fSpanningTreeBFS.start(graph);
@@ -71,6 +76,28 @@ public class Algorithms {
 		}
 
 		return fSpanningTreeBFS.getSpanningTree();
+	}
+
+	
+	/**
+	 * Finds a set of back edges for the given graph. 
+	 *  The set is empty if the graph doesn't contain
+	 *  any cycles.
+	 * @param graph
+	 * @return the spanning tree graph
+	 */
+	public static IEdgeListExt doFindBackEdgesAlgorithm(IDirectedGraphExt graph){
+		if(fFindBackEdgesDFS == null){
+			fFindBackEdgesDFS = new FindBackEdgesDFS();
+		}
+		
+		try {
+			fFindBackEdgesDFS.start(graph);
+		} catch (ControlFlowGraphException e) {
+			CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR, CorePlugin.PLUGIN_ID, e.getMessage(), e));
+		}
+
+		return fFindBackEdgesDFS.getBackEdgeList();
 	}
 	
 //	public static List<INodeExt> doKnuthstevensonAlgorithm(IDirectedGraphExt graph){
@@ -347,21 +374,6 @@ public class Algorithms {
 		}
 		
 
-	}
-
-	
-	public static void resetVisitFlags(IDirectedGraphExt graph){
-		/* nodes */
-		INodeListExt nodes = graph.getNodeList();
-		for(int i = 0; i < nodes.size(); i++){
-			nodes.getNodeExt(i).setVisited(false);
-		}
-
-		/* edges */
-		IEdgeListExt edges  = graph.getEdgeList();
-		for(int i = 0; i < edges.size(); i++){
-			edges.getEdgeExt(i).setVisited(false);
-		}
 	}
 
 	private static boolean debug = false;

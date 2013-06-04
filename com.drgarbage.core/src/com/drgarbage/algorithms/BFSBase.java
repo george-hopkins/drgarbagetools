@@ -25,6 +25,7 @@ import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
+import com.drgarbage.core.CorePlugin;
 
 
 /**
@@ -36,18 +37,25 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  */
 public abstract class BFSBase {
 
-	protected  static boolean debug = false;
-
-	/* log method */
-	protected static void log(String msg){
-		if(debug){
-			System.out.println(msg);
-		}
-	}
+    /**
+     * Debug flag.
+     */
+    protected static boolean debug = false;
+    
+    /**
+     * Prints debug messages.
+     * @param message 
+     */
+    protected static void log(String message) {
+        if (debug) {
+        	CorePlugin.log(CorePlugin.createInfoStatus(message));
+        	//System.out.println(message);
+        }
+    }
 
 	/**
-	 * Start visiting from any node.
-	 * @param graph
+	 * Starts bfs from any node.
+	 * @param graph the graph
 	 * @throws ControlFlowGraphException
 	 */
 	public void start(IDirectedGraphExt graph) throws ControlFlowGraphException{
@@ -62,16 +70,14 @@ public abstract class BFSBase {
 		}
 		
 	}
-
 	
 	/**
-	 * Start visiting from the given node.
-	 * @param graph
-	 * @param start
+	 * Start bfs from the given node.
+	 * @param graph the graph
+	 * @param start the start node
 	 * @throws ControlFlowGraphException
 	 */
 	protected void start(IDirectedGraphExt graph, INodeExt start) throws ControlFlowGraphException{
-		
 		if(!graph.getNodeList().contains(start)){
 			throw new ControlFlowGraphException("Can't start BFS. Start Vertex '" + start.toString()+ "' not found." );
 		}

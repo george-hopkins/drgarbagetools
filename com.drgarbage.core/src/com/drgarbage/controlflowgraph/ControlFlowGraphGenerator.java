@@ -646,7 +646,7 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 		/* find basic blocks */
 		GraphUtils.clearGraph(graph);
 		BasicBlockGraphVisitor basicBlockVisitor = new BasicBlockGraphVisitor();
-		basicBlockVisitor.visit(graph);
+		basicBlockVisitor.start(graph);
 
 		IDirectedGraphExt basicBlockGraph = basicBlockVisitor.getBasicBlockGraph();
 

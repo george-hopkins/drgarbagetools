@@ -40,4 +40,21 @@ public class GraphUtils {
 			list.getEdgeExt(i).setVisited(false);
 		}
 	}
+	
+	public static void clearGraphColorMarks(IDirectedGraphExt graph){
+		clearNodes(graph.getNodeList());
+		clearEdges(graph.getEdgeList());
+	}
+	
+	public static void clearNodesColorMarks(INodeListExt list){
+		for(int i = 0; i < list.size(); i++){
+			list.getNodeExt(i).setMark(MarkEnum.DEFAULT);
+		}	
+	}
+
+	public static void clearEdgesColorMarks(IEdgeListExt list){
+		for(int i = 0; i < list.size(); i++){
+			list.getEdgeExt(i).setMark(MarkEnum.DEFAULT);
+		}
+	}
 }

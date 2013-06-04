@@ -29,6 +29,7 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IStatus;
 
+import com.drgarbage.algorithms.Algorithms;
 import com.drgarbage.asm.render.intf.IInstructionLine;
 import com.drgarbage.asm.render.intf.ILocalVariableTable;
 import com.drgarbage.bytecode.ByteCodeConstants;
@@ -57,6 +58,7 @@ import com.drgarbage.bytecode.instructions.Opcodes;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.controlflowgraph.ControlFlowGraphGenerator;
 import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
+import com.drgarbage.controlflowgraph.intf.GraphUtils;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
@@ -479,17 +481,20 @@ public class OperandStack implements Opcodes{
 	 * @param graph control flow graph
 	 */
 	private void removeBackEdges(IDirectedGraphExt graph){
-		backEdges = GraphExtentionFactory.createEdgeListExtention();
+		
+		backEdges = Algorithms.doFindBackEdgesAlgorithm(graph);
+		GraphUtils.clearGraph(graph);
+		GraphUtils.clearGraphColorMarks(graph);
+		
 		IEdgeListExt edges = graph.getEdgeList();
-		for(int i = 0; i < edges.size(); i++){
-			IEdgeExt e = edges.getEdgeExt(i);
+		for(int i = 0; i < backEdges.size(); i++){
+			IEdgeExt e = backEdges.getEdgeExt(i);
 			INodeExt source = e.getSource(); 
 			INodeExt target = e.getTarget();
-			if(source.getByteCodeOffset() > target.getByteCodeOffset()){
-				source.getOutgoingEdgeList().remove(e);
-				target.getIncomingEdgeList().remove(e);
-				backEdges.add(edges.remove(i));
-			}
+			
+			source.getOutgoingEdgeList().remove(e);
+			target.getIncomingEdgeList().remove(e);
+			edges.remove(e);
 		}
 	}
 
@@ -1277,7 +1282,6 @@ public class OperandStack implements Opcodes{
 			/* -> address */
 		case OPCODE_JSR:
 		case OPCODE_JSR_W:
-			//TODO is the branch offset the address?
 			/*
 			 * jsr
 			 * jump to subroutine at branchoffset 

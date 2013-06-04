@@ -34,7 +34,7 @@ import com.drgarbage.controlflowgraph.intf.INodeType;
  *  @version $Revision$
  *  $Id$
  */
-public class ByteCodeSimpleLayout extends DepthFirstSearchBaseVisitor {
+public class ByteCodeSimpleLayout extends DFSBase {
 
 	/* default */
 	private int offset = 39;
@@ -158,7 +158,7 @@ public class ByteCodeSimpleLayout extends DepthFirstSearchBaseVisitor {
 	 */
 	public void visit(){
 		try {
-			visit(graph);
+			start(graph);
 		} catch (ControlFlowGraphException e) {
 			e.printStackTrace(System.err);
 		}
@@ -182,7 +182,7 @@ public class ByteCodeSimpleLayout extends DepthFirstSearchBaseVisitor {
 	 * @see com.drgarbage.visualgraphic.controlflowgraph.algorithms.DepthFirstSearchBaseVisitor#visit(com.drgarbage.visualgraphic.controlflowgraph.intf.IDirectedGraphExt)
 	 */
 	@Override	
-	public void visit(IDirectedGraphExt graph) throws ControlFlowGraphException{
+	public void start(IDirectedGraphExt graph) throws ControlFlowGraphException{
 		INodeListExt nodeList = graph.getNodeList();
 		
 		if(	nodeList == null || nodeList.size() < 1){
@@ -197,7 +197,7 @@ public class ByteCodeSimpleLayout extends DepthFirstSearchBaseVisitor {
 				node.setX(activeNode.getX() - offset * 2);
 			}
 			
-			traverse(node);
+			dfs(node);
 		}
 	}
 	
@@ -281,7 +281,7 @@ public class ByteCodeSimpleLayout extends DepthFirstSearchBaseVisitor {
 		activeNode = null;
 	}
 
-	protected void traverse(INodeExt node){
+	protected void dfs(INodeExt node){
 		if(stopRecurion)
 			return;
 
@@ -309,7 +309,7 @@ public class ByteCodeSimpleLayout extends DepthFirstSearchBaseVisitor {
 				e = it.next();
 
 				if(allIncomingEdgesVisited(e.getTarget()))
-					traverse(e.getTarget());
+					dfs(e.getTarget());
 			}
 		
 		}
@@ -321,7 +321,7 @@ public class ByteCodeSimpleLayout extends DepthFirstSearchBaseVisitor {
 				e.setVisited(true);
 
 				if(allIncomingEdgesVisited(e.getTarget()))
-					traverse(e.getTarget());
+					dfs(e.getTarget());
 			}
 		}
 	
@@ -338,4 +338,18 @@ public class ByteCodeSimpleLayout extends DepthFirstSearchBaseVisitor {
 		return true;		
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.drgarbage.algorithms.DFSBase#postVisitNode(com.drgarbage.controlflowgraph.intf.INodeExt)
+	 */
+	public void postVisitNode(INodeExt node){
+		/* default implementation */
+	}
+
+	/* (non-Javadoc)
+	 * @see com.drgarbage.algorithms.DFSBase#visitEdge(com.drgarbage.controlflowgraph.intf.IEdgeExt)
+	 */
+	@Override
+	public void visitEdge(IEdgeExt edge) {
+		/* default implementation */
+	}
 }

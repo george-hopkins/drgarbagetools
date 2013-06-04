@@ -37,7 +37,7 @@ import com.drgarbage.bytecodevisualizer.editors.BytecodeEditor;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: OperandStackView.java 45 2013-02-08 19:03:38Z salekseev $
+ * $Id$
  */
 public class OperandStackView extends PageBookView {
 

@@ -418,7 +418,7 @@ public class ControlFlowGraphFigure extends LayeredPane {
 		GraphUtils.clearGraph(graph);
 		BasicBlockGraphVisitor basicBlockVisitor = new BasicBlockGraphVisitor();
 		try {
-			basicBlockVisitor.visit(graph);
+			basicBlockVisitor.start(graph);
 		} catch (ControlFlowGraphException e) {
 			e.printStackTrace(System.err);
 		}

@@ -18,8 +18,10 @@ package com.drgarbage.algorithms;
 
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
+import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
+import com.drgarbage.core.CorePlugin;
 
 
 /**
@@ -29,9 +31,30 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  *  @version $Revision$
  *  $Id$
  */
-public abstract class DepthFirstSearchBaseVisitor {
+public abstract class DFSBase {
+	
+    /**
+     * Debug flag.
+     */
+    protected static boolean debug = false;
+    
+    /**
+     * Prints debug messages.
+     * @param message 
+     */
+    protected static void log(String message) {
+        if (debug) {
+        	CorePlugin.log(CorePlugin.createInfoStatus(message));
+        	//System.out.println(message);
+        }
+    }
 
-	public void visit(IDirectedGraphExt graph) throws ControlFlowGraphException{
+	/**
+	 * Starts dfs from any node.
+	 * @param graph the graph
+	 * @throws ControlFlowGraphException
+	 */
+	public void start(IDirectedGraphExt graph) throws ControlFlowGraphException{
 		INodeListExt nodeList = graph.getNodeList();
 		
 		if(	nodeList == null || nodeList.size() < 1){
@@ -39,29 +62,38 @@ public abstract class DepthFirstSearchBaseVisitor {
 		}
 
 		for(int i = 0; i < nodeList.size(); i++ ){
-			traverse(nodeList.getNodeExt(i));
+			dfs(nodeList.getNodeExt(i));
 		}
 		
 		postHandling();
 	}
 
-	
-	public void visit(IDirectedGraphExt graph, INodeExt start) throws ControlFlowGraphException{
+	/**
+	 * Start bfs from the given node.
+	 * @param graph the graph
+	 * @param start the start node
+	 * @throws ControlFlowGraphException
+	 */
+	public void start(IDirectedGraphExt graph, INodeExt start) throws ControlFlowGraphException{
 		
 		if(!graph.getNodeList().contains(start)){
 			throw new ControlFlowGraphException("Can't start DFS. Start Vertex '" + start.toString()+ "' not found." );
 		}
 
-		traverse(start);
+		dfs(start);
 		
 		postHandling();
 	}
 	
-	protected abstract void traverse(INodeExt node);
-
+	protected abstract void dfs(INodeExt node);
 	protected abstract void postHandling() throws ControlFlowGraphException; 
 	
 	protected boolean stopRecurion = false;
+	
+	/* public visitor hooks */
+	public abstract void visitNode(INodeExt node);
+	public abstract void postVisitNode(INodeExt node);
+	public abstract void visitEdge(IEdgeExt edge);
 	
 
 

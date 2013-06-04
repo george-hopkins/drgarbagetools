@@ -37,7 +37,7 @@ import com.drgarbage.logger.TraceTopics;
  *  @version $Revision$
  *  $Id$
  */
-public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
+public class BasicBlockGraphVisitor extends DFSForward {
 
 	private boolean openBB = false;
 	
@@ -51,8 +51,8 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 	
 	public BasicBlockGraphVisitor(){
 		/* activate logger */
-        debugOn = TraceTopics.LOG_VISUALGRAPHIC;
-        if(debugOn)log("BasicBlockGraphVisitor: Create Basic Block Graph");
+        debug = TraceTopics.LOG_VISUALGRAPHIC;
+        if(debug)log("BasicBlockGraphVisitor: Create Basic Block Graph");
         
 		basicBlockGraph = GraphExtentionFactory.createDirectedGraphExtention();
 	}
@@ -62,11 +62,11 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 	 */
 	@Override
 	public void visitEdge(IEdgeExt edge) {
-		if(debugOn)log("visit EDGE: " + edge.getSource().getByteCodeOffset() + "->" + edge.getTarget().getByteCodeOffset());
+		if(debug)log("visit EDGE: " + edge.getSource().getByteCodeOffset() + "->" + edge.getTarget().getByteCodeOffset());
 		if(openBB){
 			if(edge.getTarget().isVisited()){			
 				openBB = false;
-				if(debugOn)log("target visited");
+				if(debug)log("target visited");
 			}
 		}
 	}
@@ -76,12 +76,12 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 	 */
 	@Override
 	public void visitNode(INodeExt node) {
-		if(debugOn)log("visit NODE: " + node.getByteCodeOffset());
+		if(debug)log("visit NODE: " + node.getByteCodeOffset());
 		
 		int incdegree = node.getIncomingEdgeList().size();
 		int outdegree = node.getOutgoingEdgeList().size();
 
-		if(debugOn)log("incdegree: " + incdegree +", outdegree: " + outdegree);
+		if(debug)log("incdegree: " + incdegree +", outdegree: " + outdegree);
 
 		if( outdegree > 1 ){
 			
@@ -91,17 +91,17 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 				basicBlocks.add(bb);
 				basicBlockCounter ++;
 				bb.setData("B" + basicBlockCounter);
-				if(debugOn)log("Create BB: " + bb.getData());
+				if(debug)log("Create BB: " + bb.getData());
 			}
 			
 			/* add vertex to the basicblock */
 			bb.addVertex(node);
 			node.setBasicBlockReference(bb);
-			if(debugOn)log("   add " + node.getByteCodeOffset() + " to BB=" + bb.getData());
+			if(debug)log("   add " + node.getByteCodeOffset() + " to BB=" + bb.getData());
 			
 			/* close basic block */
 			openBB = false;
-			if(debugOn)log("openBB = " + openBB);
+			if(debug)log("openBB = " + openBB);
 			
 			return;
 		}
@@ -113,7 +113,7 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 			basicBlocks.add(bb);
 			basicBlockCounter ++;
 			bb.setData("B" + basicBlockCounter);
-			if(debugOn)log("Create BB: " + bb.getData());
+			if(debug)log("Create BB: " + bb.getData());
 			
 			/* close basic block */
 			if(outdegree == 0){
@@ -123,12 +123,12 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 				openBB = true;
 			}
 
-			if(debugOn)log("openBB = " + openBB);
+			if(debug)log("openBB = " + openBB);
 			
 			/* add vertex to the basicblock */
 			bb.addVertex(node);
 			node.setBasicBlockReference(bb);
-			if(debugOn)log("   add " + node.getByteCodeOffset() + " to BB=" + bb.getData());
+			if(debug)log("   add " + node.getByteCodeOffset() + " to BB=" + bb.getData());
 			
 			return;
 		}
@@ -140,13 +140,13 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 			basicBlockCounter++;
 			bb.setData("B" + basicBlockCounter);
 			openBB = true;
-			if(debugOn)log("Create BB: " + bb.getData());
-			if(debugOn)log("openBB = " + openBB);
+			if(debug)log("Create BB: " + bb.getData());
+			if(debug)log("openBB = " + openBB);
 			
 			/* add vertex to the basicblock */		
 			bb.addVertex(node);
 			node.setBasicBlockReference(bb);
-			if(debugOn)log("   add " + node.getByteCodeOffset() + " to BB=" + bb.getData());
+			if(debug)log("   add " + node.getByteCodeOffset() + " to BB=" + bb.getData());
 
 			return;
 		}
@@ -158,13 +158,13 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 				basicBlocks.add(bb);
 				basicBlockCounter++;
 				bb.setData("B" + basicBlockCounter);
-				if(debugOn)log("Create BB: " + bb.getData());
+				if(debug)log("Create BB: " + bb.getData());
 			}
 			
 			/* add vertex to the basicblock	*/			
 			bb.addVertex(node);
 			node.setBasicBlockReference(bb);
-			if(debugOn)log("   add " + node.getByteCodeOffset() + " to BB=" + bb.getData());			
+			if(debug)log("   add " + node.getByteCodeOffset() + " to BB=" + bb.getData());			
 			
 		    /* close basicblock */
 			openBB = false;
@@ -181,15 +181,15 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 				basicBlockCounter++;
 				bb.setData("B" + basicBlockCounter);
 				openBB = true;
-				if(debugOn)log("Create BB: " + bb.getData());
+				if(debug)log("Create BB: " + bb.getData());
 			}
 
-			if(debugOn)log("openBB = " + openBB);
+			if(debug)log("openBB = " + openBB);
 			
 			/* add vertex to the basicblock	*/
 			bb.addVertex(node);
 			node.setBasicBlockReference(bb);
-			if(debugOn)log("   add " + node.getByteCodeOffset() + " to BB=" + bb.getData());
+			if(debug)log("   add " + node.getByteCodeOffset() + " to BB=" + bb.getData());
 		}
 		
 		
@@ -197,7 +197,7 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 
 	@Override
 	protected void postHandling() throws ControlFlowGraphException {
-		if(debugOn)log("POST HANDLING:");
+		if(debug)log("POST HANDLING:");
 		
 		INodeListExt basicBlocksList = basicBlockGraph.getNodeList();
 		IEdgeListExt basicBlockEdges = basicBlockGraph.getEdgeList();
@@ -208,11 +208,11 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 		IEdgeExt oldEdge = null;
 		IEdgeExt newEdge = null;
 		for(IBasicBlock n : basicBlocks){
-			if(debugOn)log("add Basic block" + n.getData() + " to list.");
+			if(debug)log("add Basic block" + n.getData() + " to list.");
 			
 			basicBlocksList.add(n);
 			firstNode = n.getFirstBasicBlockVertex();
-			if(debugOn)log("  first node: " + firstNode.getByteCodeOffset());
+			if(debug)log("  first node: " + firstNode.getByteCodeOffset());
 			
 			incomimgList = firstNode.getIncomingEdgeList();
 			if(incomimgList.size() != 0){				
@@ -226,7 +226,7 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 			}
 		}
 		
-		if(debugOn)
+		if(debug)
 			printBasicBlockGraph(basicBlockGraph);
 	}
 
@@ -269,21 +269,12 @@ public class BasicBlockGraphVisitor extends DepthFirstSearchForward {
 		log("END GRAPH");
 	}
 	
-    /**
-     * Flag for logging while reading and writing class files.
-     */
-    protected static boolean debugOn = false;
+	/* (non-Javadoc)
+	 * @see com.drgarbage.algorithms.DFSBase#postVisitNode(com.drgarbage.controlflowgraph.intf.INodeExt)
+	 */
+	@Override
+	public void postVisitNode(INodeExt node) {
+		/* default implementation */
+	}
     
-    /**
-     * Utility method for derived structures. Dump a specific debug message.
-     *
-     * @param message the debug message
-     */
-    protected static void log(String message) {
-        if (debugOn) {
-        	CorePlugin.log(CorePlugin.createInfoStatus(message));
-        	//System.out.println(message);
-        }
-    }
-
 }

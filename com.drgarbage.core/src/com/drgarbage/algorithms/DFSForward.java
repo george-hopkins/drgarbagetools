@@ -21,15 +21,19 @@ import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 
 /**
- *  Depth first search algorithm. Traverse of arcs is allowed only in forward direction
+ *  Depth first search algorithm. Traversing is allowed 
+ *  only in arc forward direction.
  *
  *  @author Sergej Alekseev 
  *  @version $Revision$
  *  $Id$
  */
-public abstract class DepthFirstSearchForward extends DepthFirstSearchBaseVisitor {
+public abstract class DFSForward extends DFSBase {
 
-	protected void traverse(INodeExt node){
+	/* (non-Javadoc)
+	 * @see com.drgarbage.algorithms.DFSBase#dfs(com.drgarbage.controlflowgraph.intf.INodeExt)
+	 */
+	protected void dfs(INodeExt node){
 		if(stopRecurion)
 			return;
 
@@ -38,7 +42,7 @@ public abstract class DepthFirstSearchForward extends DepthFirstSearchBaseVisito
 		
 		node.setVisited(true);
 
-		//vertex visitor hook
+		/* vertex visitor hook */
 		visitNode(node);
 		
 		IEdgeListExt outList = node.getOutgoingEdgeList();
@@ -47,15 +51,12 @@ public abstract class DepthFirstSearchForward extends DepthFirstSearchBaseVisito
 			e = outList.getEdgeExt(i);
 			e.setVisited(true);
 
-			//edge visitor hook
+			/* edge visitor hook */
 			visitEdge(e);
 
-			traverse(e.getTarget());
+			dfs(e.getTarget());
 		}
+		
+		postVisitNode(node);
 	}
-	
-	public abstract void visitNode(INodeExt node);
-	
-	public abstract void visitEdge(IEdgeExt edge);
-	
 }
