@@ -515,6 +515,7 @@ public class ByteCodeConstants implements Opcodes {
     
     public static final int INVALID_OFFSET = -1;
 	public static final String JAVA = "java";
+	public static final String NULL = "null";
 	
 	public static final String JAVA_LANG_OBJECT = "java/lang/Object";
 	public static final String DEBUG_INFO = "debug info";

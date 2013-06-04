@@ -57,7 +57,6 @@ import com.drgarbage.bytecode.instructions.MultianewarrayInstruction;
 import com.drgarbage.bytecode.instructions.Opcodes;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.controlflowgraph.ControlFlowGraphGenerator;
-import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeExt;
@@ -574,7 +573,6 @@ public class OperandStack implements Opcodes{
 					parseGraph(edge.getTarget());
 				}
 			}
-
 		} 
 	}
 
@@ -665,17 +663,12 @@ public class OperandStack implements Opcodes{
 						if(ete.getCatchType() != 0){ /* index = 0 has no references in the constant pool */
 							String className = getConstantPoolClassName(ete.getCatchType(), classConstantPool);
 							exceptionList.add(JavaLexicalConstants.LT + className + JavaLexicalConstants.GT);
-							
-//							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE,
-//									JavaLexicalConstants.LT + className + JavaLexicalConstants.GT));
 						}
 						else{
 							exceptionList.add(ANY_EXCEPTION);
-							
-//							startStack.add(new OperandStackEntry(null, 4, L_REFERENCE, ANY_EXCEPTION));
-							
 							if(i != null){
-								if(isStoreIstruction(i.getOpcode())){/* handle special case: store unnamed variable */
+								/* handle special case: store unnamed variable */
+								if(isStoreIstruction(i.getOpcode())){
 									String name = getLocalVariableName(i);
 									if(name == null){
 										if (i instanceof ILocalVariableIndexProvider){
@@ -889,7 +882,7 @@ public class OperandStack implements Opcodes{
 
 			/* -> null */
 		case OPCODE_ACONST_NULL:
-			stack.push(new OperandStackEntry(i, 4, L_REFERENCE, "null"));
+			stack.push(new OperandStackEntry(i, 4, L_REFERENCE, ByteCodeConstants.NULL));
 			return;
 
 			/* -> const */
@@ -1143,14 +1136,12 @@ public class OperandStack implements Opcodes{
 			/* objectref -> value */
 		case OPCODE_GETFIELD:
 			stack.pop();
-			stack.push(new OperandStackEntry(i, 4, L_REFERENCE, 
-					getFieldName(i, classConstantPool)));
-			return;
 
 			/* -> value */
 		case OPCODE_GETSTATIC:
-			stack.push(new OperandStackEntry(i, 4, L_REFERENCE, 
-					getFieldName(i, classConstantPool)));
+			String[] fieldNameAndDescriptor = getFieldNameAndDescriptor(i, classConstantPool);
+			stack.push(new OperandStackEntry(i, 4, fieldNameAndDescriptor[1], 
+					fieldNameAndDescriptor[0]));
 			return;
 
 			/* value1, value2 -> result */
@@ -1368,7 +1359,15 @@ public class OperandStack implements Opcodes{
 			/* arrayref -> length (as int)*/
 		case OPCODE_ARRAYLENGTH:
 			OperandStackEntry arrayLength = stack.pop();
-			stack.push(new OperandStackEntry(i, 4, I_INT, "<"+arrayLength.getValue()+".length>"));
+			
+			StringBuffer buf = new StringBuffer();
+			buf.append(JavaLexicalConstants.LT );
+			buf.append(arrayLength.getValue() );
+			buf.append(JavaLexicalConstants.DOT);
+			buf.append(ByteCodeConstants.LENGTH);
+			buf.append(JavaLexicalConstants.LT );
+			
+			stack.push(new OperandStackEntry(i, 4, I_INT, buf.toString()));
 			return;
 
 			/* objectref,value -> */
@@ -1447,12 +1446,14 @@ public class OperandStack implements Opcodes{
 	}
 
 	/**
-	 * Returns the resolved field name.
+	 * Returns the resolved field name and the filed descriptor.
 	 * @param i byte code instruction
 	 * @param classConstantPool
-	 * @return field name
+	 * @return {field name, filed descriptor}
 	 */
-	private String getFieldName(AbstractInstruction i, AbstractConstantPoolEntry[] classConstantPool){
+	private String[] getFieldNameAndDescriptor(AbstractInstruction i, AbstractConstantPoolEntry[] classConstantPool){
+		String[] ret = new String[2];
+		
 		AbstractConstantPoolEntry cpInfo = classConstantPool[((IConstantPoolIndexProvider)i).getConstantPoolIndex()];
 		String const_ = null;
 		ConstantFieldrefInfo constantFieldrefInfo = (ConstantFieldrefInfo) cpInfo;
@@ -1467,8 +1468,15 @@ public class OperandStack implements Opcodes{
 		ConstantNameAndTypeInfo constantNameAndTypeInfo = (ConstantNameAndTypeInfo) classConstantPool[constantFieldrefInfo.getNameAndTypeIndex()];
 		String fieldName = ((ConstantUtf8Info)classConstantPool[constantNameAndTypeInfo.getNameIndex()]).getString();
 		const_ += JavaLexicalConstants.DOT + fieldName;
+		
+		/* field name */
+		ret[0] = const_;
+		
+		/* filed descriptor */
+		String descriptor = constantNameAndTypeInfo.getDescriptor();
+		ret[1] = descriptor.startsWith(L_REFERENCE) ? L_REFERENCE : descriptor;
 
-		return const_;
+		return ret;
 	}
 
 
@@ -1730,3 +1738,4 @@ public class OperandStack implements Opcodes{
 		return false;
 	}
 }
+
