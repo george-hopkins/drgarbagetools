@@ -164,5 +164,33 @@ public class BytecodeVisualizerMessages extends NLS {
 	public static String OperandStackAnalysis_CurrentStackSize_Info;
 	public static String OperandStackAnalysis_Possible_unused_bytecodes;
 	public static String OperandStackAnalysis_Error_Different_StackTypes;
+	public static String OSA_Size_Based_Analysis;
+	public static String OSA_Size_Based_Success;
+	public static String OSA_Size_Based_Error;
+	public static String OSA_Type_Based_Analysis;
+	public static String Undefined_type;
+	
+	public static String OSA_Type_Based_Success;
+	public static String OSA_Type_Based_Error;
+	
+	public static String OSA_Content_Based_Analysis;
+	public static String Undefined_stack;
+	public static String OSA_Content_Based_Analysis_success;
+	public static String OSA_Content_Based_Analysis_error;
+	
+	public static String OSA_Loop_Based_Analysis;
+	public static String OSA_Loop_failed;
+	public static String OSA_No_Loop;
+	public static String OSA_Loop_Based_success;
+	public static String OSA_Loop_Based_error;
+	
+	public static String OSA_statistic;
+	public static String OSA_instruction_obj_missing;
+	public static String OSA_expect_to_find;
+	public static String OSA_on_stack;
+	public static String OSA_type_on_stack;
+	public static String OSA_expected_type;
+	public static String OSA_return_type_mismatched;
+	
 	
 }
