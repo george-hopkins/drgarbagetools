@@ -1024,15 +1024,12 @@ public class OperandStack implements Opcodes{
 			OperandStackEntry value2 = stack.pop();
 			OperandStackEntry value1 = stack.pop();
 
-			StringBuffer buf = new StringBuffer();
-			buf.append(JavaLexicalConstants.LEFT_PARENTHESIS);
-			buf.append(value1.getValue());
-			buf.append(resolveMathOperation(i));
-			buf.append(value2.getValue());
-			buf.append(JavaLexicalConstants.RIGHT_PARENTHESIS);
-			
-			stack.push(new OperandStackEntry(i, 8, value1.getVarType(), 
-					buf.toString()));
+			stack.push(new OperandStackEntry(
+					i, 
+					8, 
+					value1.getVarType(), 
+					mathOperation(value1.getValue(), value2.getValue(), i))
+					);
 			return;
 		}			
 			
@@ -1053,16 +1050,13 @@ public class OperandStack implements Opcodes{
 		{
 			OperandStackEntry value2 = stack.pop();
 			OperandStackEntry value1 = stack.pop();
-
-			StringBuffer buf = new StringBuffer();
-			buf.append(JavaLexicalConstants.LEFT_PARENTHESIS);
-			buf.append(value1.getValue());
-			buf.append(resolveMathOperation(i));
-			buf.append(value2.getValue());
-			buf.append(JavaLexicalConstants.RIGHT_PARENTHESIS);
 			
-			stack.push(new OperandStackEntry(i, 4, value1.getVarType(), 
-					buf.toString()));
+			stack.push(new OperandStackEntry(
+					i, 
+					4, 
+					value1.getVarType(), 
+					mathOperation(value1.getValue(), value2.getValue(), i))
+					);
 			return;
 		}	
 		/* value1 -> result */				
@@ -1195,8 +1189,7 @@ public class OperandStack implements Opcodes{
 			OperandStackEntry value2 = stack.pop();
 			OperandStackEntry value1 = stack.pop();
 
-			stack.push(new OperandStackEntry(i, 4, I_INT, 
-					"(" + value1.getValue() + resolveMathOperation(i) + value2.getValue() + ")"));
+			stack.push(new OperandStackEntry(i, 4, I_INT, mathOperation(value1.getValue(), value2.getValue(), i)));
 			return;
 		}
 
@@ -1209,9 +1202,8 @@ public class OperandStack implements Opcodes{
 		{
 			OperandStackEntry value2 = stack.pop();
 			OperandStackEntry value1 = stack.pop();
-
-			stack.push(new OperandStackEntry(i, 8, J_LONG, 
-					"(" + value1.getValue() + resolveMathOperation(i) + value2.getValue() + ")"));
+			
+			stack.push(new OperandStackEntry(i, 8, J_LONG, mathOperation(value1.getValue(), value2.getValue(), i)));
 			return;
 		}
 
@@ -1601,6 +1593,35 @@ public class OperandStack implements Opcodes{
 		}
 		return descriptor;
 	}
+	
+	/**
+	 * Returns a logical representation of an mathematical 
+	 * operation in format: 
+	 * <code>
+	 * (var1 operation var2)
+	 * </code>
+	 * <br> <br>
+	 * 
+	 * Example:
+	 * <pre>
+	 * var1 = a, var2 = b, operation = '+' => (a+b)
+	 * var1 = (a+b), var2 = c, operation '=' - => ((a+b)-c)
+	 * </pre>
+	 * 
+	 * @param var1 first variable
+	 * @param var2 second variable
+	 * @param operation bytecode instruction
+	 * @return string representation
+	 */
+	private String mathOperation(String var1, String var2, AbstractInstruction operation){
+		StringBuffer buf = new StringBuffer();
+		buf.append(JavaLexicalConstants.LEFT_PARENTHESIS);
+		buf.append(var1);
+		buf.append(resolveMathOperation(operation));
+		buf.append(var2);
+		buf.append(JavaLexicalConstants.RIGHT_PARENTHESIS);
+		return buf.toString();
+	}
 
 	/**
 	 * Resolves the math operation of the given byte code instruction
@@ -1609,7 +1630,7 @@ public class OperandStack implements Opcodes{
 	 * @param i byte code instruction
 	 * @return math operation string one of +,-,*,/ or %
 	 */
-	private String resolveMathOperation(AbstractInstruction i){
+	protected String resolveMathOperation(AbstractInstruction i){
 		switch (i.getOpcode()) {
 		case OPCODE_DADD:
 		case OPCODE_IADD:
