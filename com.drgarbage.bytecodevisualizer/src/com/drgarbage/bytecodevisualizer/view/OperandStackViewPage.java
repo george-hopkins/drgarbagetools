@@ -619,6 +619,10 @@ public abstract class OperandStackViewPage extends Page {
 			return;
 		}
 
+		if(m.isAbstract()){
+			return;
+		}
+		
 		if(m!= null && m.equals(methodInput)){
 			return;
 		}
