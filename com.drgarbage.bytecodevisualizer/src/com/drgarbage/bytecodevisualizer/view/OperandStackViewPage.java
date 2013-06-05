@@ -619,7 +619,7 @@ public abstract class OperandStackViewPage extends Page {
 			return;
 		}
 
-		if(m.isAbstract()){
+		if(m != null && m.isAbstract()){
 			return;
 		}
 		
