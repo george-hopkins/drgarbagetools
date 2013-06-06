@@ -189,8 +189,11 @@ public class BytecodeVisualizerMessages extends NLS {
 	public static String OSA_expect_to_find;
 	public static String OSA_on_stack;
 	public static String OSA_type_on_stack;
+	
+	public static String OSA_expect_find_onStack_type_onStack;
 	public static String OSA_expected_type;
 	public static String OSA_return_type_mismatched;
+	
 	
 	
 }

@@ -571,11 +571,12 @@ public class OperandStackAnalysis {
 											buf.append(CoreMessages.Error);
 											buf.append(JavaLexicalConstants.COLON);
 											buf.append(JavaLexicalConstants.SPACE);
-											buf.append(BytecodeVisualizerMessages.OSA_expect_to_find
-													+ methodArgumentList
-													+ BytecodeVisualizerMessages.OSA_on_stack);
-											buf.append(BytecodeVisualizerMessages.OSA_type_on_stack
-													+ opStackType);
+											String msg = MessageFormat
+													.format(BytecodeVisualizerMessages.OSA_expect_find_onStack_type_onStack,
+															new Object[] { 
+															String.valueOf(methodArgumentList),
+															String.valueOf(opStackType)});
+											buf.append(msg);
 											buf.append(JavaLexicalConstants.DOT);
 											buf.append(JavaLexicalConstants.SPACE);
 											buf.append(JavaLexicalConstants.NEWLINE);
@@ -680,11 +681,12 @@ public class OperandStackAnalysis {
 											buf.append(CoreMessages.Error);
 											buf.append(JavaLexicalConstants.COLON);
 											buf.append(JavaLexicalConstants.SPACE);
-											buf.append(BytecodeVisualizerMessages.OSA_expect_to_find
-													+ storeType
-													+ BytecodeVisualizerMessages.OSA_on_stack);
-											buf.append(BytecodeVisualizerMessages.OSA_type_on_stack
-													+ opStackType);
+											String msg = MessageFormat
+													.format(BytecodeVisualizerMessages.OSA_expect_find_onStack_type_onStack,
+															new Object[] { 
+															String.valueOf(storeType),
+															String.valueOf(opStackType)});
+											buf.append(msg);
 											buf.append(JavaLexicalConstants.DOT);
 											buf.append(JavaLexicalConstants.SPACE);
 											buf.append(JavaLexicalConstants.NEWLINE);
