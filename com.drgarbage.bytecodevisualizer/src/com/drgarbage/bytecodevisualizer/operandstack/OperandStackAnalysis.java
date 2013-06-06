@@ -652,7 +652,7 @@ public class OperandStackAnalysis {
 									break;
 
 								case Opcodes.OPCODE_BASTORE:
-									storeType = OperandStack.B_BYTE;
+									storeType = OperandStack.I_INT;
 									break;
 								case Opcodes.OPCODE_CASTORE:
 									storeType = OperandStack.C_CHAR;
