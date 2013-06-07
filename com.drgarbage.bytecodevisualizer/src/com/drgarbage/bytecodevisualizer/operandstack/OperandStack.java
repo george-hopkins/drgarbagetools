@@ -1081,6 +1081,7 @@ public class OperandStack implements Opcodes{
 			return;
 		}
 			/* value1, value2 -> result */
+		case OPCODE_LCMP:
 		case OPCODE_DCMPG:
 		case OPCODE_DCMPL:
 		case OPCODE_FCMPG:
