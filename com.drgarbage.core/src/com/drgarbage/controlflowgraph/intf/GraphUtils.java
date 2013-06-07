@@ -42,8 +42,8 @@ public class GraphUtils {
 	}
 	
 	public static void clearGraphColorMarks(IDirectedGraphExt graph){
-		clearNodes(graph.getNodeList());
-		clearEdges(graph.getEdgeList());
+		clearNodesColorMarks(graph.getNodeList());
+		clearEdgesColorMarks(graph.getEdgeList());
 	}
 	
 	public static void clearNodesColorMarks(INodeListExt list){
