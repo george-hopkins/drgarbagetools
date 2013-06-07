@@ -21,7 +21,7 @@ package com.drgarbage.bytecodevisualizer.editors;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: IClassFileEditorSelectionListener.java 171 2013-05-23 12:18:28Z salekseev $
+ * $Id$
  */
 public interface IClassFileEditorSelectionListener {
 
