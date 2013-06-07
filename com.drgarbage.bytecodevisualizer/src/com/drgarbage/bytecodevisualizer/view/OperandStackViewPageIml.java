@@ -181,6 +181,20 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
 			parseGraph(root, n);
 		}
 
+		/* 
+		 * FIX: #13 NullPointerException when operand stack 
+		 *      representation is created
+		 *      
+		 * Check if some nodes are still unvisited.
+		 */
+		
+		INodeListExt nodeList = graph.getNodeList();
+		for(int i = 0; i < nodeList.size(); i++){
+			if(!nodeList.getNodeExt(i).isVisited()){
+				parseGraph(root, nodeList.getNodeExt(i));
+			}
+		}
+		
 		GraphUtils.clearGraph(graph);
 		GraphUtils.clearGraphColorMarks(graph);
 		
