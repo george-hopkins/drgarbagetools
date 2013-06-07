@@ -26,6 +26,7 @@ import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeType;
+import com.drgarbage.core.CorePlugin;
 
 /**
  *  Simple Layout for placing of nodes.
@@ -160,7 +161,7 @@ public class ByteCodeSimpleLayout extends DFSBase {
 		try {
 			start(graph);
 		} catch (ControlFlowGraphException e) {
-			e.printStackTrace(System.err);
+			CorePlugin.log(e);
 		}
 	}
 	

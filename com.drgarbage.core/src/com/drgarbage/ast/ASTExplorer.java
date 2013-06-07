@@ -126,7 +126,7 @@ public class ASTExplorer extends Composite {
 				    	    	try {
 				    				b.start();
 				    			} catch (BundleException e) {
-				    				e.printStackTrace(System.err);
+				    				CorePlugin.log(e);
 				    			}
 				        	}  		
 				    		

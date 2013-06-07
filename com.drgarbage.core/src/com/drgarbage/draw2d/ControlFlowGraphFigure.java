@@ -54,6 +54,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeType;
 import com.drgarbage.core.CoreMessages;
+import com.drgarbage.core.CorePlugin;
 import com.drgarbage.utils.Messages;
 
 /**
@@ -371,7 +372,7 @@ public class ControlFlowGraphFigure extends LayeredPane {
 			byteCodeSimpleLayout = new ByteCodeSimpleLayout(graph, lineHight);
 			byteCodeSimpleLayout.visit();
 		} catch (ControlFlowGraphException e) {
-			e.printStackTrace(System.err);
+			CorePlugin.log(e);
 			return;
 		}
 		
@@ -420,7 +421,7 @@ public class ControlFlowGraphFigure extends LayeredPane {
 		try {
 			basicBlockVisitor.start(graph);
 		} catch (ControlFlowGraphException e) {
-			e.printStackTrace(System.err);
+			CorePlugin.log(e);
 		}
 		
 		IDirectedGraphExt basicBlockGraph = basicBlockVisitor.getBasicBlockGraph();
