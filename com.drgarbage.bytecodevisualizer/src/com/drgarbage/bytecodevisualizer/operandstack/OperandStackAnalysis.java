@@ -712,24 +712,28 @@ public class OperandStackAnalysis {
 							 * instruction.
 							 */
 							if (n.getVertexType() == INodeType.NODE_TYPE_RETURN) {
-								String returnType = "?";
+								ArrayList<String> returnType = new ArrayList<String>();
 								boolean voidReturn = false;
 								switch (instr.getOpcode()) {
 								case Opcodes.OPCODE_ARETURN:
 								case Opcodes.OPCODE_ATHROW:
-									returnType = OperandStack.L_REFERENCE;
+									returnType.add(OperandStack.L_REFERENCE);
 									break;
 								case Opcodes.OPCODE_DRETURN:
-									returnType = OperandStack.D_DOUBLE;
+									returnType.add(OperandStack.D_DOUBLE);
 									break;
 								case Opcodes.OPCODE_FRETURN:
-									returnType = OperandStack.F_FLOAT;
+									returnType.add(OperandStack.F_FLOAT);
 									break;
 								case Opcodes.OPCODE_IRETURN:
-									returnType = OperandStack.I_INT;
+									returnType.add(OperandStack.I_INT);
+									returnType.add(OperandStack.Z_BOOLEAN);
+									returnType.add(OperandStack.B_BYTE);
+									returnType.add(OperandStack.S_SHORT);
+									returnType.add(OperandStack.C_CHAR);
 									break;
 								case Opcodes.OPCODE_LRETURN:
-									returnType = OperandStack.J_LONG;
+									returnType.add(OperandStack.J_LONG);
 									break;
 								case Opcodes.OPCODE_RETURN:
 								case Opcodes.OPCODE_RET:
@@ -744,7 +748,7 @@ public class OperandStackAnalysis {
 									if (se.size() != 0) {
 										String opStackType = se.lastElement()
 												.getVarType();
-										if (!returnType.equals(opStackType)) {
+										if (!returnType.contains(opStackType)) {
 											errorOrWarning = true;
 											buf.append(JavaLexicalConstants.NEWLINE);
 											buf.append(spacesErr(OFFSET_COLWIDTH
@@ -754,7 +758,7 @@ public class OperandStackAnalysis {
 											buf.append(JavaLexicalConstants.SPACE);
 											buf.append(BytecodeVisualizerMessages.OSA_return_type_mismatched);
 											buf.append(BytecodeVisualizerMessages.OSA_expected_type
-													+ returnType);
+													+ returnType.toString());
 											buf.append(BytecodeVisualizerMessages.OSA_type_on_stack
 													+ opStackType);
 											buf.append(JavaLexicalConstants.DOT);
