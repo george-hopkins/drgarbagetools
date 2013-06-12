@@ -26,12 +26,26 @@ public class OperandStack_InvokeType_Test {
 	void test4(){
 		test5(true);
 		test6(false, 10);
+		short s = 10;
+		test7(s);
+		test7(s, s);
+		byte b = 1;
+		test8(s, true, s, false, b, true, b, s);
 	}
 	
 	void test5(boolean b){
 	}
 	
 	void test6(boolean b, int i){
+	}
+
+	void test7(short s){
+	}
+
+	void test7(short s, short s2){
+	}
+	
+	void test8(short s, boolean b, short s2, boolean b2, byte a, boolean b3, byte a2, short s3){
 	}
 	
 	static void _test11(){

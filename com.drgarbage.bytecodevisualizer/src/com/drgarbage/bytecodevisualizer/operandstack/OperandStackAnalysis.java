@@ -501,8 +501,7 @@ public class OperandStackAnalysis {
 
 								/* verify only if the argument list not empty */
 								if (!methodArgumentList.equals("")) {
-									Stack<OperandStackEntry> se = listOfStacksBefore
-											.get(0);
+									Stack<OperandStackEntry> se = listOfStacksBefore.get(0);
 									if (se.size() != 0) {
 
 										/*
@@ -544,6 +543,8 @@ public class OperandStackAnalysis {
 										}
 
 										methodArgumentList = sb.toString();
+										
+										methodArgumentList = replaceInvokeArgumentTypes(methodArgumentList);
 
 										/* get return type from stack */
 										List<String> sttackTypeListReverseOrder = new ArrayList<String>();
@@ -824,6 +825,22 @@ public class OperandStackAnalysis {
 		buf.append(JavaLexicalConstants.NEWLINE);
 		buf.append(JavaLexicalConstants.NEWLINE);
 		return buf.toString();
+	}
+	
+	/**
+	 * Replace the types 'B' (boolean), 'Z' (byte), and 'S' (short) 
+	 * by 'I' (int) according to the Java class file specification.
+	 * @param arg method argument list
+	 * @return the new method argument list
+	 */
+	static private String replaceInvokeArgumentTypes(String arg){
+
+		arg = arg.replace('B', 'I');
+		arg = arg.replace('Z', 'I');
+		arg = arg.replace('S', 'I');
+
+		return  arg;
+
 	}
 
 	/**
