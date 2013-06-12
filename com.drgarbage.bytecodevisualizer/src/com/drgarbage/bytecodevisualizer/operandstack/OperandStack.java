@@ -1509,10 +1509,44 @@ public class OperandStack implements Opcodes{
 		String descriptor = constantNameAndTypeInfo.getDescriptor();
 		ret[1] = descriptor.startsWith(L_REFERENCE) ? L_REFERENCE : descriptor;
 
+		/* 
+		 * The type of every value stored by a putfield or putstatic instruction 
+		 * must be compatible with the descriptor of the field (¤4.3.2) of the class 
+		 * instance or class being stored into. If the descriptor type is boolean, 
+		 * byte, char, short, or int, then the value must be an int. 
+		 * If the descriptor type is float, long, or double, then the value must 
+		 * be a float, long, or double, respectively. 
+		 * If the descriptor type is a reference type, then the value must be of 
+		 * a type that is assignment compatible (¤2.6.7) with the descriptor type.
+		 */
+		ret[1] = replaceTypes(ret[1]);
+		
 		return ret;
 	}
+	
+	/**
+	 * Replace the types 'B' (<code>boolean</code>), 'Z' (<code>byte</code>),
+	 * 'C' (<code>char</code>) and 'S' (<code>short</code>) by 'I' (<code>int<code>) 
+	 * according to the Java class file specification:
+	 * <br>
+	 * An instruction operating on values of type int is also 
+	 * permitted to operate on values of type boolean, byte, char, and short. 
+	 * As noted in ¤3.3.4 and ¤3.11.1 of the Class File specification, 
+	 * the Java virtual machine internally converts values of types 
+	 * boolean, byte, char, and short to type int.
+	 * 
+	 * @param a type list
+	 * @return the new type list
+	 */
+	static public String replaceTypes(String arg){
 
+		arg = arg.replace('B', 'I');
+		arg = arg.replace('Z', 'I');
+		arg = arg.replace('C', 'I');
+		arg = arg.replace('S', 'I');
 
+		return  arg;
+	}
 	/**
 	 * Returns the resolved class name.
 	 * @param i byte code instruction

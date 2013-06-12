@@ -544,7 +544,7 @@ public class OperandStackAnalysis {
 
 										methodArgumentList = sb.toString();
 										
-										methodArgumentList = replaceInvokeArgumentTypes(methodArgumentList);
+										methodArgumentList = OperandStack.replaceTypes(methodArgumentList);
 
 										/* get return type from stack */
 										List<String> sttackTypeListReverseOrder = new ArrayList<String>();
@@ -614,6 +614,15 @@ public class OperandStackAnalysis {
 								case Opcodes.OPCODE_ISTORE_2:
 								case Opcodes.OPCODE_ISTORE_3:
 								case Opcodes.OPCODE_IASTORE:
+									
+									/* As noted in ¤3.3.4 and ¤3.11.1, 
+									 * the Java virtual machine internally 
+									 * converts values of types boolean, 
+									 * byte, char, and short to type int. 
+									 */
+								case Opcodes.OPCODE_BASTORE:
+								case Opcodes.OPCODE_CASTORE:
+								case Opcodes.OPCODE_SASTORE:
 									storeType = OperandStack.I_INT;
 									break;
 
@@ -653,15 +662,6 @@ public class OperandStackAnalysis {
 									storeType = OperandStack.L_REFERENCE;
 									break;
 
-								case Opcodes.OPCODE_BASTORE:
-									storeType = OperandStack.I_INT;
-									break;
-								case Opcodes.OPCODE_CASTORE:
-									storeType = OperandStack.C_CHAR;
-									break;
-								case Opcodes.OPCODE_SASTORE:
-									storeType = OperandStack.S_SHORT;
-									break;
 								default:
 									storeInstruction = false;
 								}
@@ -827,22 +827,6 @@ public class OperandStackAnalysis {
 		return buf.toString();
 	}
 	
-	/**
-	 * Replace the types 'B' (boolean), 'Z' (byte), and 'S' (short) 
-	 * by 'I' (int) according to the Java class file specification.
-	 * @param arg method argument list
-	 * @return the new method argument list
-	 */
-	static private String replaceInvokeArgumentTypes(String arg){
-
-		arg = arg.replace('B', 'I');
-		arg = arg.replace('Z', 'I');
-		arg = arg.replace('S', 'I');
-
-		return  arg;
-
-	}
-
 	/**
 	 * Returns a text representing the content based analysis of the current
 	 * operand stack object.
