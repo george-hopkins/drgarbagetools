@@ -63,6 +63,7 @@ import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
+import com.drgarbage.core.CoreMessages;
 import com.drgarbage.javasrc.JavaLexicalConstants;
 
 /**
@@ -1545,8 +1546,74 @@ public class OperandStack implements Opcodes{
 		arg = arg.replace('C', 'I');
 		arg = arg.replace('S', 'I');
 
+		
+		// TODO: check long L_REFERENCE format
+		StringBuffer sb = new StringBuffer();
+		for (int j = 0; j < arg.length(); j++) {
+			if (arg.charAt(j) == 'L') {
+				sb.append('L');
+				j = arg.indexOf(';', j);
+				if(j == -1){
+					break;
+				}
+			} else {
+				sb.append(arg.charAt(j));
+			}
+		}
+		
+		arg = sb.toString();
+		
+		//TODO: replace [[I array types by L reference
+		//TODO: A better handling has to be implemented		
+		if(arg.contains("[")){
+			arg = replaceArrayTypes(arg, 0);
+		}
+		
+		
 		return  arg;
 	}
+	
+	
+	/**
+	 * TODO: A better handling has to be implemented
+	 * @param s
+	 * @param offset
+	 * @return
+	 */
+	static private String replaceArrayTypes(String s, int offset){
+		StringBuffer buf = new StringBuffer();
+		for(int i = offset; i < s.length(); i++){
+			char c = s.charAt(i);
+			if(c == '['){
+				
+				/* check length to avoid outbound exception */
+				if((i + 1) > s.length()){
+					buf.append(CoreMessages.Error);
+					buf.append(": could not parse the descriptor '");
+					buf.append(s);
+					buf.append("' at the position ");
+					buf.append((i + 1));
+					
+					return buf.toString();
+				}
+				
+				if(s.charAt(i + 1) == '['){
+					buf.append(replaceArrayTypes(s, ++i));
+					i++;
+				}
+				else{
+					buf.append(L_REFERENCE);
+					i++;
+				}
+			}
+			else{
+				buf.append(c);
+			}
+		}
+		
+		return buf.toString();
+	}
+	
 	/**
 	 * Returns the resolved class name.
 	 * @param i byte code instruction
