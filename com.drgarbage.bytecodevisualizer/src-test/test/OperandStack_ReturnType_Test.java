@@ -65,4 +65,27 @@ public class OperandStack_ReturnType_Test {
 	String test8m(){
 		return "10";
 	}
+	
+	static void test10(){
+		String[]  s = test10AS();
+		int[]  i = test10AI();
+		long[]  l = test10AL();
+		boolean[]  b = test10AB();
+	}
+	
+	static String[] test10AS(){
+		return null;
+	}
+	
+	static int[] test10AI(){
+		return null;
+	}
+	
+	static long[] test10AL(){
+		return null;
+	}
+	
+	static boolean[] test10AB(){
+		return null;
+	}
 }
