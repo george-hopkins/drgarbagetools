@@ -42,22 +42,22 @@
 
    <plugin
          id="com.drgarbage.bytecodevisualizer"
-         download-size="200"
-         install-size="200"
-         version="4.2.1.qualifier"
+         download-size="409"
+         install-size="409"
+         version="4.2.2.qualifier"
          unpack="false"/>
 
    <plugin
          id="com.drgarbage.asm"
-         download-size="200"
-         install-size="200"
+         download-size="85"
+         install-size="85"
          version="4.2.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="com.drgarbage.core"
-         download-size="200"
-         install-size="200"
+         download-size="270"
+         install-size="270"
          version="4.2.0.qualifier"
          unpack="false"/>
 

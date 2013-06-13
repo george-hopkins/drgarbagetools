@@ -39,23 +39,23 @@
 
    <plugin
          id="com.drgarbage.controlflowgraphfactory"
-         download-size="200"
-         install-size="200"
-         version="4.2.0.qualifier"
+         download-size="360"
+         install-size="360"
+         version="4.2.1.qualifier"
          unpack="false"/>
 
    <plugin
          id="com.drgarbage.asm"
-         download-size="200"
-         install-size="200"
+         download-size="85"
+         install-size="85"
          version="4.2.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="com.drgarbage.core"
-         download-size="200"
-         install-size="200"
-         version="4.2.0.qualifier"
+         download-size="270"
+         install-size="270"
+         version="4.2.1.qualifier"
          unpack="false"/>
 
 </feature>
