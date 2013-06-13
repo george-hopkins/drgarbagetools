@@ -528,21 +528,21 @@ public class OperandStackAnalysis {
 										}
 										offset = 0;
 
-										// TODO: check long L_REFERENCE format
-										sb = new StringBuffer();
-										for (int j = 0; j < methodArgumentList
-												.length(); j++) {
-											if (methodArgumentList.charAt(j) == 'L') {
-												sb.append('L');
-												j = methodArgumentList.indexOf(
-														';', j);
-											} else {
-												sb.append(methodArgumentList
-														.charAt(j));
-											}
-										}
-
-										methodArgumentList = sb.toString();
+//										// TODO: check long L_REFERENCE format
+//										sb = new StringBuffer();
+//										for (int j = 0; j < methodArgumentList
+//												.length(); j++) {
+//											if (methodArgumentList.charAt(j) == 'L') {
+//												sb.append('L');
+//												j = methodArgumentList.indexOf(
+//														';', j);
+//											} else {
+//												sb.append(methodArgumentList
+//														.charAt(j));
+//											}
+//										}
+//
+//										methodArgumentList = sb.toString();
 										
 										methodArgumentList = OperandStack.replaceTypes(methodArgumentList);
 

@@ -1251,7 +1251,7 @@ public class OperandStack implements Opcodes{
 		case OPCODE_INVOKESTATIC:
 			/* get number of arguments and pop them from the stack */
 			/* get return value an push it onto the stack */
-			String retVal = "?" ;
+			String retType = "?" ;
 			int argi = 0;
 			
 			/* 
@@ -1263,11 +1263,13 @@ public class OperandStack implements Opcodes{
 				
 				/* get return type from the descriptor */
 				int rightParenthesis = descriptor.indexOf(ByteCodeConstants.METHOD_DESCRIPTOR_RIGHT_PARENTHESIS);
-				retVal = descriptor.substring(rightParenthesis + 1);
-				if(retVal.startsWith("L")){ //TODO: implement long format L<object type>
-					retVal = L_REFERENCE;
-				}
+				retType = descriptor.substring(rightParenthesis + 1);
+//				if(retType.startsWith("L")){ //TODO: implement long format L<object type>
+//					retType = L_REFERENCE;
+//				}
 
+				retType = replaceTypes(retType);
+				
 				/*	get argument list from the descriptor */
 				StringBuilder sb = new StringBuilder();
 				int offset = 1;
@@ -1295,11 +1297,11 @@ public class OperandStack implements Opcodes{
 			}
 
 			/* push return value onto the stack */
-			if(!retVal.equals(VOID)){ /* ignore void */
+			if(!retType.equals(VOID)){ /* ignore void */
 				/* double and long have the double length */
 				stack.push(new OperandStackEntry(i, 
-						(retVal.equals(J_LONG) || retVal.equals(D_DOUBLE)) ? 8 : 4, 
-						retVal, RETURN_VALUE));
+						(retType.equals(J_LONG) || retType.equals(D_DOUBLE)) ? 8 : 4, 
+						retType, RETURN_VALUE));
 				
 			}
 			return;
@@ -1540,12 +1542,6 @@ public class OperandStack implements Opcodes{
 	 * @return the new type list
 	 */
 	static public String replaceTypes(String arg){
-
-		arg = arg.replace('B', 'I');
-		arg = arg.replace('Z', 'I');
-		arg = arg.replace('C', 'I');
-		arg = arg.replace('S', 'I');
-
 		
 		// TODO: check long L_REFERENCE format
 		StringBuffer sb = new StringBuffer();
@@ -1569,6 +1565,11 @@ public class OperandStack implements Opcodes{
 			arg = replaceArrayTypes(arg, 0);
 		}
 		
+		
+		arg = arg.replace('B', 'I');
+		arg = arg.replace('Z', 'I');
+		arg = arg.replace('C', 'I');
+		arg = arg.replace('S', 'I');
 		
 		return  arg;
 	}
