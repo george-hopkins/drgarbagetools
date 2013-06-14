@@ -23,16 +23,15 @@
 
    <requires>
       <import plugin="org.eclipse.core.runtime.compatibility" version="3.2.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.debug.ui" version="3.8.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.draw2d" version="3.8.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jdt.core" version="3.8.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.debug.ui" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.core" version="3.7.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.launching" version="3.5.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jdt.ui" version="3.8.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jface.text" version="3.8.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.editors" version="3.8.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.ide" version="3.8.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.ui" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface.text" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.editors" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.7.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.views.properties.tabbed" version="3.5.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.8.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.7.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
