@@ -16,9 +16,11 @@
 
 package com.drgarbage.draw2d;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.AbstractConnectionAnchor;
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.ColorConstants;
@@ -35,6 +37,10 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.graph.Edge;
 import org.eclipse.draw2d.graph.Node;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 
 import com.drgarbage.algorithms.BasicBlockGraphVisitor;
 import com.drgarbage.algorithms.ByteCodeSimpleLayout;
@@ -68,8 +74,8 @@ import com.drgarbage.utils.Messages;
  */
 public class ControlFlowGraphFigure extends LayeredPane {
 
-	private final int WARNING_MAX_GRAPH_NODE_COUNT = 3000;
-	private final int WARNING_MAX_GRAPH_EDGE_COUNT = 1000;
+	protected  int WARNING_MAX_GRAPH_NODE_COUNT = 3000;
+	protected  int WARNING_MAX_GRAPH_EDGE_COUNT = 1000;
 
     /**
      * The height of the line, default 17 pixel.
@@ -95,7 +101,7 @@ public class ControlFlowGraphFigure extends LayeredPane {
 	 * Reference to the Method Object including instruction list
 	 * and other information needed for visualization.
 	 */
-	private IMethodSection methodRef = null;
+	protected IMethodSection methodRef = null;
 
 	/**
 	 * min x coordinate.
@@ -118,13 +124,171 @@ public class ControlFlowGraphFigure extends LayeredPane {
 	 */
 	protected Layer verticesLayer = null;
 	protected Layer routingObjectsLayer = null;
-	protected ConnectionLayer routedConnectionsLayer = null;
+	protected RoutedConnectionsLayer routedConnectionsLayer = null;
 	protected Layer notRoutetConnectionsLayer = null;
 
 	/**
 	 * Connection Router.
 	 */
 	protected ShortestPathConnectionRouter router = null;
+	
+	/**
+	 * The flag is set to <code>true</code> if the complexity of the 
+	 * graph structure is too high for rendering.
+	 */
+	private boolean  hugeGraph = false;
+	
+	/**
+	 * Returns <code>true</code> if the flag {@link #hugeGraph} has been set.
+	 * @return <code>true</code> or  <code>false</code>
+	 */
+	protected  boolean isHugeGraph() {
+		return hugeGraph;
+	}
+
+	/**
+	 * Sets the flag {@link #hugeGraph}.
+	 * @param hugeGraph <code>true</code> or  <code>false</code>
+	 */
+	protected  void setHugeGraph(boolean hugeGraph) {
+		this.hugeGraph = hugeGraph;
+	}
+	
+	/**
+	 * Returns <code>true</code> if the complexity of the 
+	 * graph structure is too high for rendering.
+	 *  
+	 * @param graph the graph to be checked
+	 * @param maxNodeCount the limit of nodes
+	 * @param maxEdgeCount the limit of edges
+	 * @return  <code>true</code> or  <code>false</code>
+	 */
+	protected boolean checkGraphSize(IDirectedGraphExt graph, int maxNodeCount, int maxEdgeCount){
+		/* check the size of the Graph */
+		if(graph.getNodeList().size() > maxNodeCount 
+			|| graph.getEdgeList().size()	> maxEdgeCount){ 
+			
+			StringBuffer buf = new StringBuffer("The Graph");
+			
+			/* get graph name */
+			if(methodRef!= null){
+				buf.append(" '"); 
+				buf.append(methodRef.getName());
+				buf.append("'");
+			}
+			 buf.append(" is very large. It has ");
+			 buf.append(graph.getNodeList().size());
+			 buf.append(" nodes and ");
+			 buf.append(graph.getEdgeList().size());
+			 buf.append(" edges. ");
+			 buf.append(CoreMessages.Bytecodevisualizer_ControlFlowGraphEditorMaxSizeReached);
+			
+			boolean b = Messages.openConfirm(buf.toString());
+			if(!b){
+				/* DO NOT visualize graph */
+				return false;
+			}
+			
+			setHugeGraph(true);
+		}
+		
+		/* visualize graph */
+		return true;
+	}
+	
+	/**
+	 * Validation flag for routed connections layer.
+	 * The flag is set to <code>true</code> after the layer 
+	 * has been created to avoid the validation while the
+	 * view is resized.  
+	 */
+	private boolean validateRoutedConnection = false;
+
+	/**
+	 * Returns <code>true</code> if the flag {@link #validateRoutedConnection} 
+	 * has been set.
+	 * @return <code>true</code> or  <code>false</code>
+	 */
+	protected synchronized boolean isValidateRoutedConnection() {
+		return validateRoutedConnection;
+	}
+
+	/**
+	 * Sets the flag {@link #validateRoutedConnection}.
+	 * @param b <code>true</code> or  <code>false</code>
+	 */
+	protected synchronized void setValidateRoutedConnection(boolean b) {
+		this.validateRoutedConnection = b;
+	}
+
+	/**
+	 * RoutedConnectionsLayer contains objects have to be routed by the 
+	 * {@link ShortestPathConnectionRouter} router.
+	 */
+	protected class RoutedConnectionsLayer extends ConnectionLayer {		
+
+		/**
+		 * This method is called if the flag {@link ControlFlowGraphFigure#hugeGraph} 
+		 * is set.
+		 */
+		public void validateRoutedConnections() {
+
+			layout();
+
+			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			ProgressMonitorDialog dialog = 
+					new ProgressMonitorDialog(shell);
+			try {
+				dialog.run(false, true, new IRunnableWithProgress() {
+					public void run(final IProgressMonitor monitor) throws InvocationTargetException {
+						int size = getChildren().size();
+						
+						if(methodRef == null){
+							monitor.beginTask("Rendering arcs.", size + 10);
+						}
+						else{
+							monitor.beginTask("Rendering arcs for the method '" + methodRef.getName() + "()'.", size + 10);
+						}
+						
+						monitor.subTask("Initializing routing objects.");
+						monitor.worked(10);
+
+						for (int i = 0; i < getChildren().size(); i++){
+							IFigure f = (IFigure) getChildren().get(i);									
+							f.validate();								
+							monitor.worked(1);
+							monitor.subTask("Rendering ...");
+						}
+
+						monitor.done();
+					}
+				});
+			} catch (InvocationTargetException e) {
+				CorePlugin.log(e);
+			} catch (InterruptedException e) {
+				CorePlugin.log(e);
+			}
+
+			return;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.draw2d.Figure#validate()
+		 */
+		public void validate() {
+			
+			if (isValidateRoutedConnection())
+				return;
+			setValidateRoutedConnection(true);
+			
+			if(isHugeGraph()){
+				validateRoutedConnections();
+				return;
+			}
+
+			super.validate();
+		}
+	}
 	
 	/**
 	 * Create control flow graph view.
@@ -169,7 +333,7 @@ public class ControlFlowGraphFigure extends LayeredPane {
 	}
 
 	/**
-	 * De-activates the view and makes it unvisible.
+	 * De-activates the view and makes it invisible.
 	 */
 	public void deactivateView(){
 		setVisible(false);
@@ -202,7 +366,7 @@ public class ControlFlowGraphFigure extends LayeredPane {
 		}
 		
 		documentUpdated();
-	}
+	}	
 	
 	/**
 	 * Redraw graphics.
@@ -213,7 +377,7 @@ public class ControlFlowGraphFigure extends LayeredPane {
 		/* create visual layers */
 		verticesLayer = new Layer();
 		routingObjectsLayer = new Layer();
-		routedConnectionsLayer = new ConnectionLayer();
+		routedConnectionsLayer = new RoutedConnectionsLayer();
 		notRoutetConnectionsLayer = new Layer();
 
 		this.add(verticesLayer);
@@ -268,10 +432,10 @@ public class ControlFlowGraphFigure extends LayeredPane {
 	    router.setSpacing(space);
 
 	    createControlFlowGraphs();
-
 		updateNodePositions();
-		
 		setSize();
+		
+		setValidateRoutedConnection(false);
 	}
 	
 	/**
@@ -332,30 +496,12 @@ public class ControlFlowGraphFigure extends LayeredPane {
 		graph = ControlFlowGraphGenerator.generateSynchronizedControlFlowGraphFrom(instructions);
 
 		/* check the size of the Graph */
-		if(graph.getNodeList().size() > WARNING_MAX_GRAPH_NODE_COUNT 
-			|| graph.getEdgeList().size()	> WARNING_MAX_GRAPH_EDGE_COUNT){ 
-			
-			
-			StringBuffer buf = new StringBuffer("The Graph '");
-			
-			/* get graph name */
-			if(methodRef!= null){
-				buf.append(methodRef.getName()); 
-			}
-			 buf.append("' is very large. It has ");
-			 buf.append(graph.getNodeList().size());
-			 buf.append(" nodes and ");
-			 buf.append(graph.getEdgeList().size());
-			 buf.append(" edges. ");
-			 buf.append(CoreMessages.Bytecodevisualizer_ControlFlowGraphEditorMaxSizeReached);
-
-			
-			boolean b = Messages.openConfirm(buf.toString());
-			if(!b){
-				return;
-			}
+		if(!checkGraphSize(graph, 
+				WARNING_MAX_GRAPH_NODE_COUNT, 
+				WARNING_MAX_GRAPH_EDGE_COUNT))
+		{
+			return;
 		}
-		
 		
 		visualizeGraph(graph);
 	}
@@ -484,13 +630,10 @@ public class ControlFlowGraphFigure extends LayeredPane {
 			
 			IFigure f = FigureFactory.createSimpleBasicBlockVertex(buf.toString(), false);
 			f.setLocation(new Point(bb.getX(), bb.getY()));
-			f.setSize(bb.getWidth(), bb.getHeight());
-			
-			
+			f.setSize(bb.getWidth(), bb.getHeight());			
 			
 			//f.setToolTip(new Label(buf.toString()));
 
-			
 			routingObjectsLayer.add(f);
 		}
 	}

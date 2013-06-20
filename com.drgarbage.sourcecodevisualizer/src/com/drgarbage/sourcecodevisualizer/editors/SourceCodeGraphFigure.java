@@ -60,7 +60,15 @@ public class SourceCodeGraphFigure extends com.drgarbage.draw2d.ControlFlowGraph
 	 * Creates control flow graphs and adds they to the view.
 	 */
 	protected void createControlFlowGraphs() {
-			visualizeGraph(sourcecodegraph);
+		/* check the size of the Graph */
+		if(!checkGraphSize(sourcecodegraph, 
+				WARNING_MAX_GRAPH_NODE_COUNT/8, 
+				WARNING_MAX_GRAPH_EDGE_COUNT/8))
+		{
+			return;
+		}
+
+		visualizeGraph(sourcecodegraph);
 	}
 
 	/**
