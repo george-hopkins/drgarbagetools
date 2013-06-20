@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.osgi.framework.internal.core.AbstractBundle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -57,7 +56,6 @@ import com.drgarbage.utils.WebUtils;
  * @version $Revision$
  * $Id$
  */
-@SuppressWarnings("restriction")
 public class CorePlugin extends AbstractUIPlugin {
 	
 	/**
