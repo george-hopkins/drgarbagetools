@@ -6,8 +6,8 @@ Bundle-Name: %pluginName
 Bundle-Localization: plugin
 Created-By: 1.6.0_03-b05 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: com.drgarbage.asm;bundle-version="[4.2.0,4.2.1)",
- com.drgarbage.core;bundle-version="[4.2.1,4.2.2)",
+Require-Bundle: com.drgarbage.asm;bundle-version="[4.2.0,4.4.0)",
+ com.drgarbage.core;bundle-version="[4.2.1,4.4.0)",
  org.eclipse.core.runtime;bundle-version="[3.7.0,3.10.0)",
  org.eclipse.debug.ui;bundle-version="[3.7.0,3.10.0)",
  org.eclipse.draw2d;bundle-version="[3.7.0,3.10.0)",
@@ -25,7 +25,7 @@ Require-Bundle: com.drgarbage.asm;bundle-version="[4.2.0,4.2.1)",
  org.eclipse.compare;bundle-version="[3.5.0,3.6.0)"
 Bundle-Vendor: %providerName
 Ant-Version: Apache Ant 1.7.0
-Bundle-Version: 4.2.2.qualifier
+Bundle-Version: 4.3.0.qualifier
 Bundle-Activator: com.drgarbage.bytecodevisualizer.BytecodeVisualizerP
  lugin
 Bundle-ManifestVersion: 2
