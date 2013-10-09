@@ -37,6 +37,7 @@ public class CoreImg {
 	/* copied from control ControlFlowFactoryResource */
 	public static final ImageDescriptor outline_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "outline_16x16.gif");
 	public static final ImageDescriptor bytecodeViewer_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "bytecode-viewer-16x16.png");
+	public static final ImageDescriptor bytecodeViewer_New_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "bytecode-viewer-new-16x16.png");
 	
 	/* source code visualizer icons */
 	public static final ImageDescriptor hideConstructorAction_16x16 = ImageDescriptor.createFromFile(CoreImg.class, "hide_constructor_action-16x16.png");
