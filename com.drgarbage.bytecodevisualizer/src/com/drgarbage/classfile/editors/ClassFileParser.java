@@ -58,9 +58,10 @@ public class ClassFileParser {
 	 */
 	public String parseClassFile(byte[] bytes) throws ParseException {
 		this.bytes = bytes;
-
-		ClassReader cr = new ClassReader(bytes, 0 , bytes.length, new ConstantPoolVisitor());
-		/*
+		StringBuffer buf = new StringBuffer();
+		try{
+			ClassReader cr = new ClassReader(bytes, 0 , bytes.length, new ConstantPoolVisitor());
+			/*
  			ClassFile {
     		u4             magic;
     		u2             minor_version;
@@ -79,109 +80,108 @@ public class ClassFileParser {
 		    u2             attributes_count;
 		    attribute_info attributes[attributes_count];
 		 }
-		 */
-		offset = 0;
+			 */
+			offset = 0;
 
-		StringBuffer buf = new StringBuffer();
-		buf.append(appendBytes(offset, offset + 4));
-		offset = offset + 4;
-		buf.append(_12_BYTES);
-		buf.append("/* u4 magic */");
-		buf.append('\n');
+			buf.append(appendBytes(offset, offset + 4));
+			offset = offset + 4;
+			buf.append(_12_BYTES);
+			buf.append("/* u4 magic */");
+			buf.append('\n');
 
-		buf.append(appendBytes(offset, offset + 2));
-		int minor = cr.readUnsignedShort(offset);
-		offset = offset + 2;		
-		buf.append(_14_BYTES);		
-		buf.append("/* u2 minor_version=");
-		buf.append(minor);
-		buf.append(" */");
-		buf.append('\n');
+			buf.append(appendBytes(offset, offset + 2));
+			int minor = cr.readUnsignedShort(offset);
+			offset = offset + 2;		
+			buf.append(_14_BYTES);		
+			buf.append("/* u2 minor_version=");
+			buf.append(minor);
+			buf.append(" */");
+			buf.append('\n');
 
-		buf.append(appendBytes(offset, offset + 2));
-		int major = cr.readUnsignedShort(offset);
-		offset = offset + 2;
-		buf.append(_14_BYTES);		
-		buf.append("/* u2 major_version=");
-		buf.append(major);
-		buf.append(" */");
-		buf.append('\n');
-		
-		buf.append(_16_BYTES);
-		buf.append("/* java ");
-		buf.append(BytecodeUtils.getLowestJavaPlatformVersion(major, minor));
-		buf.append(" */");
-		buf.append('\n');
-		buf.append('\n');
+			buf.append(appendBytes(offset, offset + 2));
+			int major = cr.readUnsignedShort(offset);
+			offset = offset + 2;
+			buf.append(_14_BYTES);		
+			buf.append("/* u2 major_version=");
+			buf.append(major);
+			buf.append(" */");
+			buf.append('\n');
 
-		buf.append(appendBytes(offset, offset + 2));
-		offset = offset + 2;
-		buf.append(_14_BYTES);
-		buf.append("/* u2 constant_pool_count=");
-		buf.append(cr.getItemCount());
-		buf.append(" */");
-		buf.append('\n');
+			buf.append(_16_BYTES);
+			buf.append("/* java ");
+			buf.append(BytecodeUtils.getLowestJavaPlatformVersion(major, minor));
+			buf.append(" */");
+			buf.append('\n');
+			buf.append('\n');
 
-		buf.append(constantPoolToString());
-		buf.append('\n');
+			buf.append(appendBytes(offset, offset + 2));
+			offset = offset + 2;
+			buf.append(_14_BYTES);
+			buf.append("/* u2 constant_pool_count=");
+			buf.append(cr.getItemCount());
+			buf.append(" */");
+			buf.append('\n');
 
-		buf.append(appendBytes(offset, offset + 2));
-		offset = offset + 2;
-		buf.append(_14_BYTES);
-		buf.append("/* u2 access_flags: ");
-		buf.append(cr.getAccess());
-		buf.append(" */");
-		buf.append('\n');
+			buf.append(constantPoolToString());
+			buf.append('\n');
 
-		buf.append(appendBytes(offset, offset + 2));
-		offset = offset + 2;
-		buf.append(_14_BYTES);
-		buf.append("/* u2 this_class: ");
-		buf.append(cr.getClassName());
-		buf.append(" */"); 
-		buf.append('\n');
+			buf.append(appendBytes(offset, offset + 2));
+			offset = offset + 2;
+			buf.append(_14_BYTES);
+			buf.append("/* u2 access_flags: ");
+			buf.append(cr.getAccess());
+			buf.append(" */");
+			buf.append('\n');
 
-		buf.append(appendBytes(offset, offset + 2));
-		offset = offset + 2;
-		buf.append(_14_BYTES);
-		buf.append("/* u2 super_class: ");
-		buf.append(cr.getSuperName());
-		buf.append(" */");
-		buf.append('\n');
+			buf.append(appendBytes(offset, offset + 2));
+			offset = offset + 2;
+			buf.append(_14_BYTES);
+			buf.append("/* u2 this_class: ");
+			buf.append(cr.getClassName());
+			buf.append(" */"); 
+			buf.append('\n');
 
-		/* interfaces */
-		buf.append('\n');
-		buf.append(_16_BYTES);
-		buf.append("/* Interfaces: */");
-		buf.append('\n');
+			buf.append(appendBytes(offset, offset + 2));
+			offset = offset + 2;
+			buf.append(_14_BYTES);
+			buf.append("/* u2 super_class: ");
+			buf.append(cr.getSuperName());
+			buf.append(" */");
+			buf.append('\n');
 
-		buf.append(appendBytes(offset, offset + 2));
-		offset = offset + 2;
-		buf.append(_14_BYTES);
-		buf.append("/* u2 interfaces_count=");
-		buf.append(cr.getInterfaces().length);
-		buf.append(" */");
-		buf.append('\n');
+			/* interfaces */
+			buf.append('\n');
+			buf.append(_16_BYTES);
+			buf.append("/* Interfaces: */");
+			buf.append('\n');
 
-		buf.append(appendInterfaces(cr.getInterfaces()));
-		buf.append('\n');
-		buf.append('\n');
+			buf.append(appendBytes(offset, offset + 2));
+			offset = offset + 2;
+			buf.append(_14_BYTES);
+			buf.append("/* u2 interfaces_count=");
+			buf.append(cr.getInterfaces().length);
+			buf.append(" */");
+			buf.append('\n');
 
-		/* fields */
-		buf.append(_16_BYTES);
-		buf.append("/* Fields: */");
-		buf.append('\n');
+			buf.append(appendInterfaces(cr.getInterfaces()));
+			buf.append('\n');
+			buf.append('\n');
 
-		buf.append(appendBytes(offset, offset + 2));
-		int count = cr.readUnsignedShort(offset);
-		offset = offset + 2;
-		buf.append(_14_BYTES);
-		buf.append("/* u2 fields_count=");
-		buf.append(count);
-		buf.append(" */");
-		buf.append('\n');
+			/* fields */
+			buf.append(_16_BYTES);
+			buf.append("/* Fields: */");
+			buf.append('\n');
 
-		/*
+			buf.append(appendBytes(offset, offset + 2));
+			int count = cr.readUnsignedShort(offset);
+			offset = offset + 2;
+			buf.append(_14_BYTES);
+			buf.append("/* u2 fields_count=");
+			buf.append(count);
+			buf.append(" */");
+			buf.append('\n');
+
+			/*
 		field_info {
 			u2             access_flags;
 			u2             name_index;
@@ -189,64 +189,387 @@ public class ClassFileParser {
 			u2             attributes_count;
 			attribute_info attributes[attributes_count];
 		}
-		 */
+			 */
 
-		for(int i = 0; i < count; i++){
-			buf.append(_16_BYTES);
-			buf.append("/* Field[");
-			buf.append(i);
-			buf.append(']');
-			buf.append(" */");
-			buf.append('\n');
+			for(int i = 0; i < count; i++){
+				buf.append(_16_BYTES);
+				buf.append("/* Field[");
+				buf.append(i);
+				buf.append(']');
+				buf.append(" */");
+				buf.append('\n');
 
-			buf.append(appendBytes(offset, offset + 2));
-			int access_flags = cr.readUnsignedShort(offset);
-			offset += 2;
-			buf.append(_14_BYTES);
-			buf.append("/* u2 access_flags=");
-			buf.append(access_flags);
-			buf.append(" */");
-			buf.append('\n');
+				buf.append(appendBytes(offset, offset + 2));
+				int access_flags = cr.readUnsignedShort(offset);
+				offset += 2;
+				buf.append(_14_BYTES);
+				buf.append("/* u2 access_flags=");
+				buf.append(access_flags);
+				buf.append(" */");
+				buf.append('\n');
 
-			buf.append(appendBytes(offset, offset + 2));
-			int name_index = cr.readUnsignedShort(offset);
-			offset += 2;
-			buf.append(_14_BYTES);
-			buf.append("/* u2 name_index=");
-			buf.append(name_index);
-			buf.append(", ");
-			buf.append(constantPool[name_index].getInfo());
-			buf.append(" */");
-			buf.append('\n');
+				buf.append(appendBytes(offset, offset + 2));
+				int name_index = cr.readUnsignedShort(offset);
+				offset += 2;
+				buf.append(_14_BYTES);
+				buf.append("/* u2 name_index=");
+				buf.append(name_index);
+				buf.append(", ");
+				buf.append(constantPool[name_index].getInfo());
+				buf.append(" */");
+				buf.append('\n');
 
-			buf.append(appendBytes(offset, offset + 2));
-			int descriptor_index = cr.readUnsignedShort(offset);
-			offset += 2;
-			buf.append(_14_BYTES);
-			buf.append("/* u2 descriptor_index=");
-			buf.append(descriptor_index);
-			buf.append(", ");
-			buf.append(constantPool[descriptor_index].getInfo());
-			buf.append(" */");
-			buf.append('\n');
+				buf.append(appendBytes(offset, offset + 2));
+				int descriptor_index = cr.readUnsignedShort(offset);
+				offset += 2;
+				buf.append(_14_BYTES);
+				buf.append("/* u2 descriptor_index=");
+				buf.append(descriptor_index);
+				buf.append(", ");
+				buf.append(constantPool[descriptor_index].getInfo());
+				buf.append(" */");
+				buf.append('\n');
 
-			buf.append(appendBytes(offset, offset + 2));
-			int attributes_count = cr.readUnsignedShort(offset);
-			offset += 2;
-			buf.append(_14_BYTES);
-			buf.append("/* u2 attributes_count=");
-			buf.append(attributes_count);
-			buf.append(" */");
-			buf.append('\n');
+				buf.append(appendBytes(offset, offset + 2));
+				int attributes_count = cr.readUnsignedShort(offset);
+				offset += 2;
+				buf.append(_14_BYTES);
+				buf.append("/* u2 attributes_count=");
+				buf.append(attributes_count);
+				buf.append(" */");
+				buf.append('\n');
 
-			/*
+				/*
           attribute_info {
               u2 attribute_name_index;
               u4 attribute_length;
               u1 info[attribute_length];
           }
+				 */
+				for(int j = 0; j < attributes_count; j++){
+					buf.append(appendBytes(offset, offset + 2));
+					int attribute_name_index = cr.readUnsignedShort(offset);
+					offset += 2;
+					buf.append(_14_BYTES);
+					buf.append("/* u2 attribute_name_index=");
+					buf.append(attribute_name_index);
+					buf.append(", ");
+					buf.append(constantPool[attribute_name_index].getInfo());
+					buf.append(" */");
+					buf.append('\n');
+
+					buf.append(appendBytes(offset, offset + 4));
+					int attribute_length = cr.readInt(offset);
+					offset += 4;
+					buf.append(_12_BYTES);
+					buf.append("/* u4 attribute_length=");
+					buf.append(attribute_length);
+					buf.append(" */");
+					buf.append('\n');
+
+					buf.append(_16_BYTES);
+					buf.append("/* Attribute bytes: */");
+					buf.append('\n');
+					buf.append(appendBytes(offset, offset + attribute_length));
+					offset += attribute_length;
+					buf.append('\n');
+				}
+			}
+			buf.append('\n');
+
+			/* methods */
+			buf.append(_16_BYTES);
+			buf.append("/* Methods: */");
+			buf.append('\n');
+
+			buf.append(appendBytes(offset, offset + 2));
+			int methods_count = cr.readUnsignedShort(offset);
+			offset = offset + 2;
+			buf.append(_14_BYTES);
+			buf.append("/* u2 methods_count=");
+			buf.append(methods_count);
+			buf.append(" */");
+			buf.append('\n');
+
+			/*
+		method_info {
+		    u2             access_flags;
+		    u2             name_index;
+		    u2             descriptor_index;
+		    u2             attributes_count;
+		    attribute_info attributes[attributes_count];
+		}
 			 */
-			for(int j = 0; j < attributes_count; j++){
+
+			for(int i = 0; i < methods_count; i++){
+				buf.append(_16_BYTES);
+				buf.append("/* Method[");
+				buf.append(i);
+				buf.append(']');
+				buf.append(" */");
+				buf.append('\n');
+
+				buf.append(appendBytes(offset, offset + 2));
+				int access_flags = cr.readUnsignedShort(offset);
+				offset += 2;
+				buf.append(_14_BYTES);
+				buf.append("/* u2 access_flags=");
+				buf.append(access_flags);
+				buf.append(" */");
+				buf.append('\n');
+
+				buf.append(appendBytes(offset, offset + 2));
+				int name_index = cr.readUnsignedShort(offset);
+				offset += 2;
+				buf.append(_14_BYTES);
+				buf.append("/* u2 name_index=");
+				buf.append(name_index);
+				buf.append(", ");
+				buf.append(constantPool[name_index].getInfo());
+				buf.append(" */");
+				buf.append('\n');
+
+				buf.append(appendBytes(offset, offset + 2));
+				int descriptor_index = cr.readUnsignedShort(offset);
+				offset += 2;
+				buf.append(_14_BYTES);
+				buf.append("/* u2 descriptor_index=");
+				buf.append(descriptor_index);
+				buf.append(", ");
+				buf.append(constantPool[descriptor_index].getInfo());
+				buf.append(" */");
+				buf.append('\n');
+
+				buf.append(appendBytes(offset, offset + 2));
+				int attributes_count = cr.readUnsignedShort(offset);
+				offset += 2;
+				buf.append(_14_BYTES);
+				buf.append("/* u2 attributes_count=");
+				buf.append(attributes_count);
+				buf.append(" */");
+				buf.append('\n');
+
+				/*
+          attribute_info {
+              u2 attribute_name_index;
+              u4 attribute_length;
+              u1 info[attribute_length];
+          }
+				 */
+				for(int j = 0; j < attributes_count; j++){
+					buf.append(_16_BYTES);
+					buf.append("/* Attribute[");
+					buf.append(j);
+					buf.append(']');
+					buf.append(" */");
+					buf.append('\n');
+
+					buf.append(appendBytes(offset, offset + 2));
+					int attribute_name_index = cr.readUnsignedShort(offset);
+					offset += 2;
+					buf.append(_14_BYTES);
+					buf.append("/* u2 attribute_name_index=");
+					buf.append(attribute_name_index);
+					buf.append(", ");
+					boolean codeAttribute = false;
+					if(constantPool[attribute_name_index] instanceof ConstantUtf8Info){
+						String utf8String = ((ConstantUtf8Info) constantPool[attribute_name_index]).getString();
+						if(utf8String.equals("Code")){
+							codeAttribute = true;
+						}
+					}
+					buf.append(constantPool[attribute_name_index].getInfo());
+					buf.append(" */");
+					buf.append('\n');
+
+					buf.append(appendBytes(offset, offset + 4));
+					int attribute_length = cr.readInt(offset);
+					offset += 4;
+					buf.append(_12_BYTES);
+					buf.append("/* u4 attribute_length=");
+					buf.append(attribute_length);
+					buf.append(" */");
+					buf.append('\n');
+					buf.append(_16_BYTES);
+					buf.append("/* Attribute bytes: */");
+					buf.append('\n');
+
+					if(codeAttribute){	
+						/*
+					  Code_attribute {
+					    u2 attribute_name_index;
+					    u4 attribute_length;
+					    u2 max_stack;
+					    u2 max_locals;
+					    u4 code_length;
+					    u1 code[code_length];
+					    u2 exception_table_length;
+					    {   u2 start_pc;
+					        u2 end_pc;
+					        u2 handler_pc;
+					        u2 catch_type;
+					    } exception_table[exception_table_length];
+					    u2 attributes_count;
+					    attribute_info attributes[attributes_count];
+					}
+						 */
+						buf.append(_16_BYTES);
+						buf.append("/* Code_attribute: */");
+						buf.append('\n');
+
+						buf.append(appendBytes(offset, offset + 2));
+						int max_stack = cr.readUnsignedShort(offset);
+						offset += 2;
+						buf.append(_14_BYTES);
+						buf.append("/* u2 max_stack=");
+						buf.append(max_stack);
+						buf.append(" */");
+						buf.append('\n');
+
+						buf.append(appendBytes(offset, offset + 2));
+						int max_locals = cr.readUnsignedShort(offset);
+						offset += 2;
+						buf.append(_14_BYTES);
+						buf.append("/* u2 max_locals=");
+						buf.append(max_locals);
+						buf.append(" */");
+						buf.append('\n');
+
+						buf.append(appendBytes(offset, offset + 4));
+						int code_length = cr.readInt(offset);
+						offset += 4;
+						buf.append(_12_BYTES);
+						buf.append("/* u4 code_length=");
+						buf.append(code_length);
+						buf.append(" */");
+						buf.append('\n');
+
+						buf.append(_16_BYTES);
+						buf.append("/* Code instructions: */");
+						buf.append('\n');
+
+						buf.append(appendBytes(offset, offset + code_length));
+						offset += code_length;
+						buf.append('\n');
+
+						/* exception_table */
+						buf.append(appendBytes(offset, offset + 2));
+						int exception_table_length = cr.readUnsignedShort(offset);
+						offset += 2;
+						buf.append(_14_BYTES);
+						buf.append("/* u2 exception_table_length=");
+						buf.append(exception_table_length);
+						buf.append(" */");
+						buf.append('\n');
+
+						for(int e = 0; e < exception_table_length; e++){
+							/*
+						u2 start_pc;
+				        u2 end_pc;
+				        u2 handler_pc;
+				        u2 catch_type;
+							 */
+							buf.append(appendBytes(offset, offset + 4));
+							int start_pc = cr.readUnsignedShort(offset);
+							offset += 2;
+							int end_pc = cr.readUnsignedShort(offset);
+							offset += 2;
+							buf.append(_12_BYTES);
+							buf.append("/* u2 start_pc=");
+							buf.append(start_pc);
+							buf.append(" u2 end_pc=");
+							buf.append(end_pc);
+							buf.append(" */");
+							buf.append('\n');
+
+							buf.append(appendBytes(offset, offset + 4));
+							int handler_pc = cr.readUnsignedShort(offset);
+							offset += 2;
+							int catch_type = cr.readUnsignedShort(offset);
+							offset += 2;
+							buf.append(_12_BYTES);
+							buf.append("/* u2 handler_pc=");
+							buf.append(handler_pc);
+							buf.append(" u2 catch_type=");
+							buf.append(catch_type);
+							buf.append(" */");
+							buf.append('\n');
+						}
+
+						buf.append(appendBytes(offset, offset + 2));
+						int code_attributes_count = cr.readUnsignedShort(offset);
+						offset += 2;
+						buf.append(_14_BYTES);
+						buf.append("/* u2 attributes_count=");
+						buf.append(code_attributes_count);
+						buf.append(" */");
+						buf.append('\n');
+
+						/*
+			        attribute_info {
+			            u2 attribute_name_index;
+			            u4 attribute_length;
+			            u1 info[attribute_length];
+			        }
+						 */
+						for(int cj = 0; cj < code_attributes_count; cj++){
+							buf.append(appendBytes(offset, offset + 2));
+							int code_attribute_name_index = cr.readUnsignedShort(offset);
+							offset += 2;
+							buf.append(_14_BYTES);
+							buf.append("/* u2 attribute_name_index=");
+							buf.append(code_attribute_name_index);
+							buf.append(", ");
+							buf.append(constantPool[code_attribute_name_index].getInfo());
+							buf.append(" */");
+							buf.append('\n');
+
+							buf.append(appendBytes(offset, offset + 4));
+							int code_attribute_length = cr.readInt(offset);
+							offset += 4;
+							buf.append(_12_BYTES);
+							buf.append("/* u4 attribute_length=");
+							buf.append(code_attribute_length);
+							buf.append(" */");
+							buf.append('\n');
+
+							buf.append(_16_BYTES);
+							buf.append("/* Attribute bytes: */");
+							buf.append('\n');
+							buf.append(appendBytes(offset, offset + code_attribute_length));
+							offset += code_attribute_length;
+							buf.append('\n');
+						}
+						codeAttribute = false;
+					}
+					else{
+						buf.append(appendBytes(offset, offset + attribute_length));
+						offset += attribute_length;
+					}
+					buf.append('\n');
+				}
+			}
+			buf.append('\n');
+
+
+			/* class attrinutes */
+			buf.append(appendBytes(offset, offset + 2));
+			int class_attributes_count = cr.readUnsignedShort(offset);
+			offset += 2;
+			buf.append(_14_BYTES);
+			buf.append("/* u2 attributes_count=");
+			buf.append(class_attributes_count);
+			buf.append(" */");
+			buf.append('\n');
+
+			/*
+        attribute_info {
+            u2 attribute_name_index;
+            u4 attribute_length;
+            u1 info[attribute_length];
+        }
+			 */
+			for(int j = 0; j < class_attributes_count; j++){
 				buf.append(appendBytes(offset, offset + 2));
 				int attribute_name_index = cr.readUnsignedShort(offset);
 				offset += 2;
@@ -274,334 +597,23 @@ public class ClassFileParser {
 				offset += attribute_length;
 				buf.append('\n');
 			}
+
+			buf.append("/* end of the class file */");
+
+			/*rest - should always be empty */
+			buf.append(appendBytes(offset, bytes.length));		
 		}
-		buf.append('\n');
-
-		/* methods */
-		buf.append(_16_BYTES);
-		buf.append("/* Methods: */");
-		buf.append('\n');
-
-		buf.append(appendBytes(offset, offset + 2));
-		int methods_count = cr.readUnsignedShort(offset);
-		offset = offset + 2;
-		buf.append(_14_BYTES);
-		buf.append("/* u2 methods_count=");
-		buf.append(methods_count);
-		buf.append(" */");
-		buf.append('\n');
-
-		/*
-		method_info {
-		    u2             access_flags;
-		    u2             name_index;
-		    u2             descriptor_index;
-		    u2             attributes_count;
-		    attribute_info attributes[attributes_count];
-		}
-		 */
-
-		for(int i = 0; i < methods_count; i++){
-			buf.append(_16_BYTES);
-			buf.append("/* Method[");
-			buf.append(i);
-			buf.append(']');
-			buf.append(" */");
+		catch(ArrayIndexOutOfBoundsException e){
 			buf.append('\n');
-
-			buf.append(appendBytes(offset, offset + 2));
-			int access_flags = cr.readUnsignedShort(offset);
-			offset += 2;
-			buf.append(_14_BYTES);
-			buf.append("/* u2 access_flags=");
-			buf.append(access_flags);
-			buf.append(" */");
+			buf.append(e);
 			buf.append('\n');
-
-			buf.append(appendBytes(offset, offset + 2));
-			int name_index = cr.readUnsignedShort(offset);
-			offset += 2;
-			buf.append(_14_BYTES);
-			buf.append("/* u2 name_index=");
-			buf.append(name_index);
-			buf.append(", ");
-			buf.append(constantPool[name_index].getInfo());
-			buf.append(" */");
-			buf.append('\n');
-
-			buf.append(appendBytes(offset, offset + 2));
-			int descriptor_index = cr.readUnsignedShort(offset);
-			offset += 2;
-			buf.append(_14_BYTES);
-			buf.append("/* u2 descriptor_index=");
-			buf.append(descriptor_index);
-			buf.append(", ");
-			buf.append(constantPool[descriptor_index].getInfo());
-			buf.append(" */");
-			buf.append('\n');
-
-			buf.append(appendBytes(offset, offset + 2));
-			int attributes_count = cr.readUnsignedShort(offset);
-			offset += 2;
-			buf.append(_14_BYTES);
-			buf.append("/* u2 attributes_count=");
-			buf.append(attributes_count);
-			buf.append(" */");
-			buf.append('\n');
-
-			/*
-          attribute_info {
-              u2 attribute_name_index;
-              u4 attribute_length;
-              u1 info[attribute_length];
-          }
-			 */
-			for(int j = 0; j < attributes_count; j++){
-				buf.append(_16_BYTES);
-				buf.append("/* Attribute[");
-				buf.append(j);
-				buf.append(']');
-				buf.append(" */");
-				buf.append('\n');
-				
-				buf.append(appendBytes(offset, offset + 2));
-				int attribute_name_index = cr.readUnsignedShort(offset);
-				offset += 2;
-				buf.append(_14_BYTES);
-				buf.append("/* u2 attribute_name_index=");
-				buf.append(attribute_name_index);
-				buf.append(", ");
-				boolean codeAttribute = false;
-				if(constantPool[attribute_name_index] instanceof ConstantUtf8Info){
-					String utf8String = ((ConstantUtf8Info) constantPool[attribute_name_index]).getString();
-					if(utf8String.equals("Code")){
-						codeAttribute = true;
-					}
-				}
-				buf.append(constantPool[attribute_name_index].getInfo());
-				buf.append(" */");
-				buf.append('\n');
-
-				buf.append(appendBytes(offset, offset + 4));
-				int attribute_length = cr.readInt(offset);
-				offset += 4;
-				buf.append(_12_BYTES);
-				buf.append("/* u4 attribute_length=");
-				buf.append(attribute_length);
-				buf.append(" */");
-				buf.append('\n');
-				buf.append(_16_BYTES);
-				buf.append("/* Attribute bytes: */");
-				buf.append('\n');
-				
-				if(codeAttribute){	
-					/*
-					  Code_attribute {
-					    u2 attribute_name_index;
-					    u4 attribute_length;
-					    u2 max_stack;
-					    u2 max_locals;
-					    u4 code_length;
-					    u1 code[code_length];
-					    u2 exception_table_length;
-					    {   u2 start_pc;
-					        u2 end_pc;
-					        u2 handler_pc;
-					        u2 catch_type;
-					    } exception_table[exception_table_length];
-					    u2 attributes_count;
-					    attribute_info attributes[attributes_count];
-					}
-					 */
-					buf.append(_16_BYTES);
-					buf.append("/* Code_attribute: */");
-					buf.append('\n');
-					
-					buf.append(appendBytes(offset, offset + 2));
-					int max_stack = cr.readUnsignedShort(offset);
-					offset += 2;
-					buf.append(_14_BYTES);
-					buf.append("/* u2 max_stack=");
-					buf.append(max_stack);
-					buf.append(" */");
-					buf.append('\n');
-				
-					buf.append(appendBytes(offset, offset + 2));
-					int max_locals = cr.readUnsignedShort(offset);
-					offset += 2;
-					buf.append(_14_BYTES);
-					buf.append("/* u2 max_locals=");
-					buf.append(max_locals);
-					buf.append(" */");
-					buf.append('\n');
-					
-					buf.append(appendBytes(offset, offset + 4));
-					int code_length = cr.readInt(offset);
-					offset += 4;
-					buf.append(_12_BYTES);
-					buf.append("/* u4 code_length=");
-					buf.append(code_length);
-					buf.append(" */");
-					buf.append('\n');
-					
-					buf.append(_16_BYTES);
-					buf.append("/* Code instructions: */");
-					buf.append('\n');
-					
-					buf.append(appendBytes(offset, offset + code_length));
-					offset += code_length;
-					buf.append('\n');
-					
-					/* exception_table */
-					buf.append(appendBytes(offset, offset + 2));
-					int exception_table_length = cr.readUnsignedShort(offset);
-					offset += 2;
-					buf.append(_14_BYTES);
-					buf.append("/* u2 exception_table_length=");
-					buf.append(exception_table_length);
-					buf.append(" */");
-					buf.append('\n');
-					
-					for(int e = 0; e < exception_table_length; e++){
-						/*
-						u2 start_pc;
-				        u2 end_pc;
-				        u2 handler_pc;
-				        u2 catch_type;
-				        */
-						buf.append(appendBytes(offset, offset + 4));
-						int start_pc = cr.readUnsignedShort(offset);
-						offset += 2;
-						int end_pc = cr.readUnsignedShort(offset);
-						offset += 2;
-						buf.append(_12_BYTES);
-						buf.append("/* u2 start_pc=");
-						buf.append(start_pc);
-						buf.append(" u2 end_pc=");
-						buf.append(end_pc);
-						buf.append(" */");
-						buf.append('\n');
-						
-						buf.append(appendBytes(offset, offset + 4));
-						int handler_pc = cr.readUnsignedShort(offset);
-						offset += 2;
-						int catch_type = cr.readUnsignedShort(offset);
-						offset += 2;
-						buf.append(_12_BYTES);
-						buf.append("/* u2 handler_pc=");
-						buf.append(handler_pc);
-						buf.append(" u2 catch_type=");
-						buf.append(catch_type);
-						buf.append(" */");
-						buf.append('\n');
-					}
-					
-					buf.append(appendBytes(offset, offset + 2));
-					int code_attributes_count = cr.readUnsignedShort(offset);
-					offset += 2;
-					buf.append(_14_BYTES);
-					buf.append("/* u2 attributes_count=");
-					buf.append(code_attributes_count);
-					buf.append(" */");
-					buf.append('\n');
-					
-					/*
-			        attribute_info {
-			            u2 attribute_name_index;
-			            u4 attribute_length;
-			            u1 info[attribute_length];
-			        }
-					 */
-					for(int cj = 0; cj < code_attributes_count; cj++){
-						buf.append(appendBytes(offset, offset + 2));
-						int code_attribute_name_index = cr.readUnsignedShort(offset);
-						offset += 2;
-						buf.append(_14_BYTES);
-						buf.append("/* u2 attribute_name_index=");
-						buf.append(code_attribute_name_index);
-						buf.append(", ");
-						buf.append(constantPool[code_attribute_name_index].getInfo());
-						buf.append(" */");
-						buf.append('\n');
-
-						buf.append(appendBytes(offset, offset + 4));
-						int code_attribute_length = cr.readInt(offset);
-						offset += 4;
-						buf.append(_12_BYTES);
-						buf.append("/* u4 attribute_length=");
-						buf.append(code_attribute_length);
-						buf.append(" */");
-						buf.append('\n');
-
-						buf.append(_16_BYTES);
-						buf.append("/* Attribute bytes: */");
-						buf.append('\n');
-						buf.append(appendBytes(offset, offset + code_attribute_length));
-						offset += code_attribute_length;
-						buf.append('\n');
-					}
-					codeAttribute = false;
-				}
-				else{
-					buf.append(appendBytes(offset, offset + attribute_length));
-					offset += attribute_length;
-				}
+			StackTraceElement[] stackTraceElement = e.getStackTrace();
+			for(StackTraceElement ste: stackTraceElement){
+				buf.append(ste);
 				buf.append('\n');
 			}
-		}
-		buf.append('\n');
-
-
-		/* class attrinutes */
-		buf.append(appendBytes(offset, offset + 2));
-		int class_attributes_count = cr.readUnsignedShort(offset);
-		offset += 2;
-		buf.append(_14_BYTES);
-		buf.append("/* u2 attributes_count=");
-		buf.append(class_attributes_count);
-		buf.append(" */");
-		buf.append('\n');
-
-		/*
-        attribute_info {
-            u2 attribute_name_index;
-            u4 attribute_length;
-            u1 info[attribute_length];
-        }
-		 */
-		for(int j = 0; j < class_attributes_count; j++){
-			buf.append(appendBytes(offset, offset + 2));
-			int attribute_name_index = cr.readUnsignedShort(offset);
-			offset += 2;
-			buf.append(_14_BYTES);
-			buf.append("/* u2 attribute_name_index=");
-			buf.append(attribute_name_index);
-			buf.append(", ");
-			buf.append(constantPool[attribute_name_index].getInfo());
-			buf.append(" */");
-			buf.append('\n');
-
-			buf.append(appendBytes(offset, offset + 4));
-			int attribute_length = cr.readInt(offset);
-			offset += 4;
-			buf.append(_12_BYTES);
-			buf.append("/* u4 attribute_length=");
-			buf.append(attribute_length);
-			buf.append(" */");
-			buf.append('\n');
-
-			buf.append(_16_BYTES);
-			buf.append("/* Attribute bytes: */");
-			buf.append('\n');
-			buf.append(appendBytes(offset, offset + attribute_length));
-			offset += attribute_length;
 			buf.append('\n');
 		}
-
-		buf.append("/* end of the class file */");
-
-		/*rest - should always be empty */
-		buf.append(appendBytes(offset, bytes.length));		
 
 		return buf.toString();
 	}

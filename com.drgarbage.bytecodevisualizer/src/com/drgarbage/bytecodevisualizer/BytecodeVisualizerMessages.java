@@ -29,7 +29,6 @@ import org.eclipse.osgi.util.NLS;
  */
 public class BytecodeVisualizerMessages extends NLS {
 	private static final String BUNDLE_NAME= BytecodeVisualizerMessages.class.getName();
-
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, BytecodeVisualizerMessages.class);
@@ -109,6 +108,7 @@ public class BytecodeVisualizerMessages extends NLS {
 
 	public static String StepOverSingleInstructionAction_text;
 	public static String StepIntoBytecodeAction_text;
+	public static String Read_Classes_From_JVM_text;
 
 	public static String ToggleBreakpointAction_text;
 	public static String ToggleBreakpointAction_tooltipText_Debug_functionality_is_unavailable_in_this_context_;
@@ -194,6 +194,20 @@ public class BytecodeVisualizerMessages extends NLS {
 	public static String OSA_expected_type;
 	public static String OSA_return_type_mismatched;
 	
+	/* FilteredList for Class file */
+	public static String JDI_Export_Dialog_hint_text;
+	public static String JDI_Export_Dialog_Define_Class_Folder;
+	public static String JDI_Export_Dialog_tooltip_browse_folder;
+	public static String JDI_Export_Dialog_browse_btn_label;
+	public static String JDI_Export_Dialog_copy_to_btn_text;
+	public static String JDI_Export_Dialog_close_text;
+	public static String JDI_Export_Dialog_Export_Selected_Classes;
+	public static String JDI_Export_Dialog_Select_All;
+	public static String JDI_Export_Dialog_Deselect_All;
+	
+	public static String Buildpath_Dialog_Abr;
+	public static String Buildpath_Dialog_Title;
+	public static String Buildpath_Dialog_Message;
 	
 	
 }

@@ -70,6 +70,11 @@ public class DynamicPartsManager {
         		BytecodeVisualizerConstants.BYTECODE_VISUALIZER_GROUP, 
         		new DebugActionContributionItem(new StepOverSingleInstructionAction(viewPart)));
         viewPart.getViewSite().getActionBars().updateActionBars();
+        
+        tbm.appendToGroup(
+        		BytecodeVisualizerConstants.BYTECODE_VISUALIZER_GROUP, 
+        		new DebugActionContributionItem(new GetClassesFromJVMAction(viewPart)));
+        viewPart.getViewSite().getActionBars().updateActionBars();
 
 	}
 	
@@ -78,6 +83,7 @@ public class DynamicPartsManager {
 		IToolBarManager tbm = viewPart.getViewSite().getActionBars().getToolBarManager();
 		tbm.remove(CoreConstants.ACTION_STEP_OVER_SINGLE_INSTRUCTION);
         tbm.remove(CoreConstants.ACTION_STEP_INTO_BYTECODE);
+        tbm.remove(GetClassesFromJVMAction.ACTION_READ_CLASSES_FROM_JVM);
 //		tbm.remove(id)
 //		(new Separator(BytecodeVisualizerCommonConstants.BYTECODE_VISUALIZER_GROUP));
 //        tbm.appendToGroup(BytecodeVisualizerCommonConstants.BYTECODE_VISUALIZER_GROUP, new RefreshAction(viewPart.getSite().getWorkbenchWindow()));

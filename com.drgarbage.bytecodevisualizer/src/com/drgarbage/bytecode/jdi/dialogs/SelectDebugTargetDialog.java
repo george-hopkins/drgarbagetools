@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2012, Dr. Garbage Community
+ * Copyright (c) 2008-2013, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package com.drgarbage.bytecode.jdi;
+package com.drgarbage.bytecode.jdi.dialogs;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugException;
-import org.eclipse.jdt.debug.core.IJavaObject;
+import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.internal.ui.DebugPluginImages;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jdt.debug.core.IJavaType;
-import org.eclipse.jdt.internal.debug.core.model.JDIReferenceType;
-import org.eclipse.jdt.ui.ISharedImages;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -45,44 +50,56 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 
-import com.drgarbage.bytecode.ByteCodeConstants;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
-import com.drgarbage.javasrc.JavaLexicalConstants;
+import com.drgarbage.bytecodevisualizer.preferences.BytecodeVisualizerPreferenceConstats;
 
 /**
- * TODO: add Dr. Garbage icons
+ * The message dialog for selecting the debug target.
+ * 
+ * @author Peter Palaga
+ * @version $Revision$
+ * $Id$
  */
-public class SelectJavaTypeDialog extends MessageDialog {
+public class SelectDebugTargetDialog extends MessageDialog {
 
     private static final String DIALOG_HEIGHT = "DIALOG_HEIGHT"; //$NON-NLS-1$
     private static final String DIALOG_ORIGIN_X = "DIALOG_X_ORIGIN"; //$NON-NLS-1$
     private static final String DIALOG_ORIGIN_Y = "DIALOG_Y_ORIGIN"; //$NON-NLS-1$
-    private static final String DIALOG_SETTINGS_SECTION = "SelectJavaTypeDialogSettings"; //$NON-NLS-1$
+    private static final String DIALOG_SETTINGS_SECTION = "SelectDebugTargetDialogSettings"; //$NON-NLS-1$
     private static final String DIALOG_WIDTH = "DIALOG_WIDTH"; //$NON-NLS-1$
     
     public static final int INVALID_INDEX = -1;
 
-    private IJavaType[] displayCandidates;
-    private IJavaType selection;
+    private ArrayList<IJavaType[]> displayCandidates;
+    
+    private IJavaType[] selection;
     
     private TableViewer tableViewer;
     
 	/**
+     * Creates a new clean dialog.
+     * 
+     * @param window the window to create it in
+     * @param selection the currently selected projects (may be empty)
      */
-    public SelectJavaTypeDialog(String className, String debugTargetName, IJavaType[] displayCandidates) {
+    public SelectDebugTargetDialog(String className, ArrayList<IJavaType[]> displayCandidates) {
         super(
                 null,
-                BytecodeVisualizerMessages.SelectJavaTypeDialog_title, 
+                BytecodeVisualizerMessages.SelectDebugTargetDialog_title, 
                 null, 
-                MessageFormat.format(BytecodeVisualizerMessages.SelectJavaTypeDialog_text, new Object[]{className, debugTargetName}), 
+                MessageFormat.format(BytecodeVisualizerMessages.SelectDebugTargetDialog_text, new Object[]{className}), 
                 NONE, 
                 new String[] {
-                	IDialogConstants.OK_LABEL
+                	IDialogConstants.OK_LABEL, 
+                	BytecodeVisualizerMessages.SelectDebugTargetDialog_act_Filesystem
                 },
                 0);
         this.displayCandidates = displayCandidates;
@@ -110,21 +127,41 @@ public class SelectJavaTypeDialog extends MessageDialog {
 
         //second row
         createDebugTargetSelectionTable(area);
+        
+        
+        //third row
+        //only prompt for immediate build if autobuild is off
+        
+        Label lbl = new Label(area, SWT.NONE);
+        lbl.setText(
+        		MessageFormat.format(
+        				BytecodeVisualizerMessages.SelectDebugTargetDialog_text_fileSystemFallback,
+        				new Object[] {BytecodeVisualizerMessages.SelectDebugTargetDialog_act_Filesystem}
+    				)
+    				);
+        GridData data = new GridData(GridData.FILL_BOTH);
+        data.horizontalSpan = 2;
+        lbl.setLayoutData(data);
+
+        Link link = new Link(area, SWT.NONE);
+        link.setText(BytecodeVisualizerMessages.SelectDebugTargetDialog_link_adjustPreferences);
+        data = new GridData(GridData.FILL_BOTH);
+        data.horizontalSpan = 2;
+        link.setLayoutData(data);
+        link.addListener(SWT.Selection, new Listener() {
+
+			public void handleEvent(Event event) {
+				PreferenceDialog prefs = PreferencesUtil.createPreferenceDialogOn(null, BytecodeVisualizerPreferenceConstats.BYTECODE_VISUALIZER_GENERAL_PREFERENCE_PAGE_ID, null, null);
+				prefs.open();
+			}
+        	
+        });
+
         return area;
     }
 
     private void createDebugTargetSelectionTable(Composite parent) {
         tableViewer = new TableViewer(parent, SWT.BORDER);
-        
-        Table t = tableViewer.getTable();
-        t.setHeaderVisible(true);
-        
-        TableColumn tc1 = new TableColumn(t, SWT.NONE);
-        tc1.setText(BytecodeVisualizerMessages.SelectJavaTypeDialog_column_Type);
-        TableColumn tc2 = new TableColumn(t, SWT.NONE);
-        tc2.setText(BytecodeVisualizerMessages.SelectJavaTypeDialog_column_Class_Loader);
-        
-        
         tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 
 			public void doubleClick(DoubleClickEvent event) {
@@ -151,29 +188,55 @@ public class SelectJavaTypeDialog extends MessageDialog {
 			}
 			
 			public Image getColumnImage(Object element, int columnIndex) {
-				if (columnIndex == 0) {
-					return JavaUI.getSharedImages().getImage(ISharedImages.IMG_OBJS_CLASS);
+				if (columnIndex == 0 && element instanceof IJavaType[]) {
+					IJavaType[] jts = (IJavaType[]) element;
+					if (jts.length > 0) {
+						IJavaType firstType = jts[0];
+						// determine the image from the launch config type
+						String imageKey = getImageKey(firstType.getDebugTarget().getLaunch());
+						
+						if (imageKey != null) {
+							return DebugPluginImages.getImage(imageKey);
+						}
+					}
 				}
+
 				return null;
 			}
 
 			public String getColumnText(Object element, int columnIndex) {
 				
-				if (element instanceof JDIReferenceType) {
-					try {
-						JDIReferenceType jt = (JDIReferenceType) element;
-						
-						if (columnIndex == 0) {
-							return jt.getName();
+				if (element instanceof IJavaType[]) {
+					IJavaType[] jts = (IJavaType[]) element;
+					if (jts.length > 0) {
+						IJavaType firstType = jts[0];
+						try {
+							return firstType.getDebugTarget().getName();
+						} catch (DebugException e) {
 						}
-						else if (columnIndex == 1) {
-							IJavaObject o = jt.getClassLoaderObject();
-							return o.getJavaType().getName() + JavaLexicalConstants.SPACE + JavaLexicalConstants.LEFT_PARENTHESIS + ByteCodeConstants.ID + JavaLexicalConstants.EQUALS+ o.getUniqueId() + JavaLexicalConstants.RIGHT_PARENTHESIS;
-						}
-					} catch (DebugException ignore) {
 					}
 				}
 				return null;
+			}
+
+			private String getImageKey(ILaunch launch) {
+				ILaunchConfiguration configuration = launch.getLaunchConfiguration();
+				if (configuration != null) {
+					try {
+						return configuration.getType().getIdentifier();
+					} catch (CoreException e) {
+						BytecodeVisualizerPlugin.log(e);
+						return null;
+					}
+				}
+				// if no config, use the old "mode" way
+				if (launch.getLaunchMode().equals(ILaunchManager.DEBUG_MODE)) {
+					return IDebugUIConstants.IMG_OBJS_LAUNCH_DEBUG;
+				} else if (launch.isTerminated()) {
+					return IDebugUIConstants.IMG_OBJS_LAUNCH_RUN_TERMINATED;
+				} else {
+					return IDebugUIConstants.IMG_OBJS_LAUNCH_RUN;
+				}	
 			}
 
 			public boolean isLabelProperty(Object element, String property) {
@@ -194,10 +257,7 @@ public class SelectJavaTypeDialog extends MessageDialog {
         data.horizontalSpan = 2;
         data.widthHint = IDialogConstants.ENTRY_FIELD_WIDTH;
         data.heightHint = IDialogConstants.ENTRY_FIELD_WIDTH;
-        t.setLayoutData(data);
-        
-        tc1.pack();
-        tc2.pack();
+        tableViewer.getTable().setLayoutData(data);
         
     }
     
@@ -265,7 +325,7 @@ public class SelectJavaTypeDialog extends MessageDialog {
         }
         return initialSize;
     }
-    public IJavaType getSelection() {
+    public IJavaType[] getSelection() {
     	return selection;
     }
 
@@ -292,7 +352,7 @@ public class SelectJavaTypeDialog extends MessageDialog {
         settings.put(DIALOG_ORIGIN_Y, shellLocation.y);
         settings.put(DIALOG_WIDTH, shellSize.x);
         settings.put(DIALOG_HEIGHT, shellSize.y);
-        
+
     }
     
     /**
@@ -311,8 +371,8 @@ public class SelectJavaTypeDialog extends MessageDialog {
     		}
     	}
     	
-    	if (newSel instanceof IJavaType) {
-    		selection = (IJavaType) newSel;
+    	if (newSel instanceof IJavaType[]) {
+    		selection = (IJavaType[]) newSel;
     	}
     	else {
     		selection = null;
