@@ -136,7 +136,7 @@ public class JDIUtils {
 	    method_info    methods[methods_count];
 	*/
 		MethodVisitor mv;
-		List<Method> methods = ref.allMethods();
+		List<Method> methods = ref.methods();
 		for(Method m: methods){
 			mv = cw.visitMethod(
 					m.modifiers(), 
