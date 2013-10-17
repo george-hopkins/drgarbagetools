@@ -204,6 +204,7 @@ public class BytecodeVisualizerMessages extends NLS {
 	public static String JDI_Export_Dialog_Export_Selected_Classes;
 	public static String JDI_Export_Dialog_Select_All;
 	public static String JDI_Export_Dialog_Deselect_All;
+	public static String JDI_Export_Message_Activate_Retrieving_via_JDI;
 	
 	public static String Buildpath_Dialog_Abr;
 	public static String Buildpath_Dialog_Title;

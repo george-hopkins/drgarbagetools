@@ -25,7 +25,9 @@ import com.drgarbage.bytecode.jdi.dialogs.JDIExportFromJvmDialog;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerConstants;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
+import com.drgarbage.bytecodevisualizer.preferences.BytecodeVisualizerPreferenceConstats;
 import com.drgarbage.core.img.CoreImg;
+import com.drgarbage.utils.Messages;
 
 /**
  * An action for reading classes from the JVM. 
@@ -53,6 +55,14 @@ public class GetClassesFromJVMAction extends DebugViewAction {
 	 */
 	@Override
 	public void run() {
+		
+		String retrieveFromJVM = BytecodeVisualizerPlugin.getDefault().getPreferenceStore()
+				.getString(BytecodeVisualizerPreferenceConstats.RETRIEVE_CLASS_FROM);
+		if (!BytecodeVisualizerPreferenceConstats.RETRIEVE_CLASS_FROM_JVM_JDI.equals(retrieveFromJVM)) {
+			/* Retrieving classes via JDI not activated */
+			Messages.info(BytecodeVisualizerMessages.JDI_Export_Message_Activate_Retrieving_via_JDI);
+		}
+
 		new JDIExportFromJvmDialog().open();
 	}
 
