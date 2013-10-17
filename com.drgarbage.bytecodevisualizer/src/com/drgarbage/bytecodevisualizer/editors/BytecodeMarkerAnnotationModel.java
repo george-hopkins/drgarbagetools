@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2012, Dr. Garbage Community
+ * Copyright (c) 2008-2013, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,6 @@ import com.drgarbage.bytecode.ByteCodeConstants;
 import com.drgarbage.bytecode.BytecodeUtils;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.core.CoreConstants;
-import com.drgarbage.core.CorePlugin;
 import com.drgarbage.utils.ClassFileDocumentsUtils;
 import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.Location;
@@ -65,18 +64,18 @@ import com.sun.jdi.StackFrame;
  * debugging and to show breakpoint marker.
  * 
  * @author Sergej Alekseev
- * @version $Revision$ $Id: BytecodeMarkerAnnotationModel.java 1265
- *          2009-07-27 19:17:51Z Peter Palaga $
+ * @version $Revision$ 
+ * $Id$
  */
 @SuppressWarnings("restriction")
 public class BytecodeMarkerAnnotationModel extends
 		ClassFileMarkerAnnotationModel {
 
 	/**
-	 * Return the index of selected frame.
+	 * Returns the index of the selected frame.
 	 * 
-	 * @param selectedFrame
-	 * @return index
+	 * @param selectedFrame the currently selected frame
+	 * @return index the index of the frame
 	 * @throws DebugException
 	 */
 	private static int findFrameIndex(IStackFrame selectedFrame) {
@@ -97,11 +96,16 @@ public class BytecodeMarkerAnnotationModel extends
 	}
 
 	/**
-	 * Returns the bytecode porsition of the current frame.
+	 * Returns the bytecode position of the current frame.
+	 * The parameter <code>classFileDocument</code> could be 
+	 * equal to the parameter <code>document</code> or 
+	 * different in case of a nested class.
 	 * 
-	 * @param stackFrame
-	 * @param classFileDocument
-	 * @param document
+	 * @param stackFrame the currently selected frame 
+	 * @param classFileDocument the class file document 
+	 *        loaded by the bytecode editor. 
+	 * @param document the document associated with
+	 *        the corresponding resource of the frame 
 	 * @return bytecode position
 	 * @throws DebugException
 	 * @throws IncompatibleThreadStateException
@@ -148,6 +152,11 @@ public class BytecodeMarkerAnnotationModel extends
 		return newPos;
 	}
 
+	/**
+	 * Returns the underling JDI frame object.
+	 * @param frame
+	 * @return the stack frame object
+	 */
 	private static StackFrame getStackFrame(IStackFrame frame) {
 		try {
 			IThread thread = frame.getThread();
@@ -164,6 +173,11 @@ public class BytecodeMarkerAnnotationModel extends
 		return null;
 	}
 
+	/**
+	 * Returns the corresponding stack frame object of the instruction pointer. 
+	 * @param a the instruction pointer
+	 * @return the stack frame
+	 */
 	private static IStackFrame getStackFrame(DynamicInstructionPointerAnnotation a) {
 		IStackFrame result = null;
 		try {
@@ -200,8 +214,14 @@ public class BytecodeMarkerAnnotationModel extends
 		return result;
 	}
 	
+	/**
+	 * Reference to the class file document of the current editor.
+	 */
 	private IClassFileDocument classFileDocument;
-
+	
+	/**
+	 * Reference to the current class file editor.
+	 */
 	private BytecodeEditor fClassFileEditor;
 
 	/**
@@ -407,7 +427,7 @@ public class BytecodeMarkerAnnotationModel extends
 		try {
 			markerType = marker.getType();
 		} catch (CoreException e1) {
-			CorePlugin.getDefault().getLog().log(
+			BytecodeVisualizerPlugin.log(
 					new Status(IStatus.ERROR,
 							CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e1
 									.getMessage(), e1));
@@ -477,10 +497,7 @@ public class BytecodeMarkerAnnotationModel extends
 					}
 
 				} catch (JavaModelException e) {
-					CorePlugin
-							.getDefault()
-							.getLog()
-							.log(
+					BytecodeVisualizerPlugin.log(
 									new Status(
 											IStatus.ERROR,
 											CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID,
