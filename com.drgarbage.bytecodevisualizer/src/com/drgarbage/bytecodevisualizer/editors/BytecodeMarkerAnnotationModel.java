@@ -17,7 +17,6 @@
 package com.drgarbage.bytecodevisualizer.editors;
 
 import java.lang.reflect.Field;
-import java.text.MessageFormat;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IMarkerDelta;
@@ -43,7 +42,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
-import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 
 import com.drgarbage.asm.render.intf.IClassFileDocument;
@@ -52,7 +51,6 @@ import com.drgarbage.asm.render.intf.IInstructionLine;
 import com.drgarbage.asm.render.intf.IMethodSection;
 import com.drgarbage.bytecode.ByteCodeConstants;
 import com.drgarbage.bytecode.BytecodeUtils;
-import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.core.CoreConstants;
 import com.drgarbage.core.CorePlugin;
@@ -166,6 +164,42 @@ public class BytecodeMarkerAnnotationModel extends
 		return null;
 	}
 
+	private static IStackFrame getStackFrame(DynamicInstructionPointerAnnotation a) {
+		IStackFrame result = null;
+		try {
+			Class<?> cl = a.getClass();
+			Field f = null;
+
+			if (cl.equals(InstructionPointerAnnotation.class)) {
+				cl = cl.getSuperclass();
+			} else if (cl.equals(DynamicInstructionPointerAnnotation.class)) {
+				/* nothing to do */
+			} else {
+				throw new RuntimeException("Unexpected annotattion type '"
+						+ a.getClass().getName() + "'");
+			}
+			f = cl.getDeclaredField("fStackFrame");
+			// set accessible true
+			f.setAccessible(true);
+			result = (IStackFrame) f.get(a);
+			f.setAccessible(false);
+		} catch (Throwable e) {
+			BytecodeVisualizerPlugin.log(e);
+		}
+
+		if (result == null) {
+			/*
+			 * IStackFrame not found yet - fallback to DebugContext
+			 */
+			Object o = DebugUITools.getDebugContext();
+			if (o instanceof IStackFrame) {
+				result = (IStackFrame) o;
+			}
+		}
+
+		return result;
+	}
+	
 	private IClassFileDocument classFileDocument;
 
 	private BytecodeEditor fClassFileEditor;
@@ -180,8 +214,27 @@ public class BytecodeMarkerAnnotationModel extends
 		super(markerResource);
 		this.fClassFileEditor = part;
 	}
-	/*
-	 * @see AbstractMarkerAnnotationModel#isAcceptable(IMarker)
+	
+	/**
+	 * Returns the reference to the class file document.
+	 * 
+	 * @return class file document
+	 */
+	public IClassFileDocument getClassFileDocument() {
+		return classFileDocument;
+	}
+
+	/**
+	 * Set the reference to the class file document.
+	 * 
+	 * @param classFileDocument
+	 */
+	public void setClassFileDocument(IClassFileDocument classFileDocument) {
+		this.classFileDocument = classFileDocument;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.ClassFileMarkerAnnotationModel#isAcceptable(org.eclipse.core.resources.IMarker)
 	 */
 	protected boolean isAcceptable(IMarker marker) {
 		boolean result = super.isAcceptable(marker);
@@ -196,6 +249,9 @@ public class BytecodeMarkerAnnotationModel extends
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.ClassFileMarkerAnnotationModel#isAffected(org.eclipse.core.resources.IMarkerDelta)
+	 */
 	protected boolean isAffected(IMarkerDelta markerDelta) {
 		boolean result = super.isAffected(markerDelta);
 		if (result) {
@@ -219,20 +275,12 @@ public class BytecodeMarkerAnnotationModel extends
 	public void addAnnotation(Annotation annotation, Position position) {
 
 		if (annotation instanceof DynamicInstructionPointerAnnotation
-		/* the following should help when the license is invalid */
-		&& fDocument != null) {
+				&& fDocument != null) {
 
 			DynamicInstructionPointerAnnotation instructionPointerAnnotation = (DynamicInstructionPointerAnnotation) annotation;
 			IStackFrame frame = getStackFrame(instructionPointerAnnotation);
 			if (frame instanceof IJavaStackFrame) {
 				IJavaStackFrame stackFrame = (IJavaStackFrame) frame;
-
-				int line = ByteCodeConstants.INVALID_LINE;
-				try {
-					line = stackFrame.getLineNumber();
-				} catch (DebugException ignore) {
-				}
-					
 				try {
 					String typeName = classFileDocument.getClassName();
 					String declaringTypeName = null;
@@ -274,12 +322,9 @@ public class BytecodeMarkerAnnotationModel extends
 									}
 								}
 
-								/* reval new part */
+								/* reevaluate new part */
 								newClassFileEditor.selectAndRevealBytecode(newPos.offset, 0);
 							}
-						}
-						else {
-							//TODO: check what this position actually means
 						}
 					}
 					else {
@@ -287,19 +332,65 @@ public class BytecodeMarkerAnnotationModel extends
 						Position newPosition = getBytecodePosition(stackFrame, classFileDocument, fDocument);
 						super.addAnnotation(annotation, newPosition);
 
-						/* revaluate in editor */
+						/* reevaluate in editor */
 						fClassFileEditor.selectAndRevealBytecode(newPosition.offset, 0);
 					}
 				} catch (DebugException e) {
 					BytecodeVisualizerPlugin.log(e);
 				}
 			}
+
+			/* FIX: Synchronization the debugging instruction */
+			/* pointer in the bytecode and source code view.  */
+			if( fClassFileEditor.getSourceCodeViewer() != null 
+					&& fClassFileEditor.isSourceCodeLoaded()){
+				IDocumentProvider dp = fClassFileEditor.getSourceCodeViewer().getDocumentProvider();
+				Position p = null;				
+					try {
+						int line = frame.getLineNumber();
+						IDocument doc = dp.getDocument(fClassFileEditor.getSourceCodeViewerInput());
+						IRegion region =  doc.getLineInformation(line - 1);
+						int offset = region.getOffset();
+						int length = region.getLength();
+						p = new Position(offset, length);
+					} 
+					catch (DebugException e) {
+						BytecodeVisualizerPlugin.log(new Status(
+								IStatus.WARNING,
+								CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID,
+								"Could not get the line number from the frame object."));
+						p = new Position(0, 0);
+					} 
+					catch (BadLocationException e) {
+						/* ignore */
+						p = new Position(0, 0);
+					}
+
+				IAnnotationModel annModel = dp.getAnnotationModel(fClassFileEditor.getSourceCodeViewerInput());
+				annModel.addAnnotation(annotation, p);
+				fClassFileEditor.getSourceCodeViewer().selectAndReveal(p.getOffset(), 0);
+			}
 		} else {
 			/* default handling */
 			super.addAnnotation(annotation, position);
 		}
+		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.text.source.AnnotationModel#removeAnnotation(org.eclipse.jface.text.source.Annotation)
+	 */
+	public void removeAnnotation(Annotation annotation) {
+		super.removeAnnotation(annotation);
+		
+		/* remove annotation from the source code viewer annotation model*/
+		IDocumentProvider dp = fClassFileEditor.getSourceCodeViewer().getDocumentProvider();
+		IAnnotationModel annModel = dp.getAnnotationModel(fClassFileEditor.getSourceCodeViewerInput());
+		if(annModel != null){
+			annModel.removeAnnotation(annotation);
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -405,59 +496,5 @@ public class BytecodeMarkerAnnotationModel extends
 			start = 0;
 		}
 		return new Position(start, 0);
-	}
-	
-	/**
-	 * Returns the reference to the class file document.
-	 * 
-	 * @return class file document
-	 */
-	public IClassFileDocument getClassFileDocument() {
-		return classFileDocument;
-	}
-	
-	private IStackFrame getStackFrame(DynamicInstructionPointerAnnotation a) {
-		IStackFrame result = null;
-		try {
-			Class<?> cl = a.getClass();
-			Field f = null;
-
-			if (cl.equals(InstructionPointerAnnotation.class)) {
-				cl = cl.getSuperclass();
-			} else if (cl.equals(DynamicInstructionPointerAnnotation.class)) {
-				/* nothing to do */
-			} else {
-				throw new RuntimeException("Unexpected annotattion type '"
-						+ a.getClass().getName() + "'");
-			}
-			f = cl.getDeclaredField("fStackFrame");
-			// set accessible true
-			f.setAccessible(true);
-			result = (IStackFrame) f.get(a);
-			f.setAccessible(false);
-		} catch (Throwable e) {
-			BytecodeVisualizerPlugin.log(e);
-		}
-
-		if (result == null) {
-			/*
-			 * IStackFrame not found yet - fallback to DebugContext
-			 */
-			Object o = DebugUITools.getDebugContext();
-			if (o instanceof IStackFrame) {
-				result = (IStackFrame) o;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Set the reference to the class file document.
-	 * 
-	 * @param classFileDocument
-	 */
-	public void setClassFileDocument(IClassFileDocument classFileDocument) {
-		this.classFileDocument = classFileDocument;
 	}
 }
