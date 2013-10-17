@@ -73,6 +73,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.projection.IProjectionListener;
@@ -200,12 +201,12 @@ public class BytecodeEditor extends JavaEditor
 		BytecodeVisualizerPreferenceConstats
 	{
 
-	/* bug#91 NullPointerException if license has been expired. */
-	class StructuredSelection2 extends StructuredSelection {
-		public Object getFirstElement() {
-			return new JavaEditorBreadcrumb(getEditor());
-		}
-	}
+//	/* bug#91 NullPointerException if license has been expired. */
+//	class StructuredSelection2 extends StructuredSelection {
+//		public Object getFirstElement() {
+//			return new JavaEditorBreadcrumb(getEditor());
+//		}
+//	}
 	
 	/** Key constants */
 	private static final int ARROW_DOWN = SWT.KEYCODE_BIT + 2; 	//keyCode=16777218 (KeyEvent KeyDown)
@@ -276,11 +277,11 @@ public class BytecodeEditor extends JavaEditor
 	 */
 	private MenuManager cmProvider;
 	
-	/**
-	 * The canonical empty selection. This selection should be used 
-	 * for bug correction bug#91 NullPointerException if license has been expired.
-	 */
-	public final StructuredSelection EMPTY = new StructuredSelection2();
+//	/**
+//	 * The canonical empty selection. This selection should be used 
+//	 * for bug correction bug#91 NullPointerException if license has been expired.
+//	 */
+//	public final StructuredSelection EMPTY = new StructuredSelection2();
 
 	/**
 	 * Outline page of the class file editor.
@@ -295,7 +296,7 @@ public class BytecodeEditor extends JavaEditor
 	/**
 	 * Used to generate annotations for stack frames
 	 */
-	protected IInstructionPointerPresentation fPresentation = (IInstructionPointerPresentation) DebugUITools.newDebugModelPresentation();	
+//	protected IInstructionPointerPresentation fPresentation = (IInstructionPointerPresentation) DebugUITools.newDebugModelPresentation();	
 
 	/**
      * Whether to re-use editors when displaying source during debugging.
