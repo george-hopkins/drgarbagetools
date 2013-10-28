@@ -2029,8 +2029,9 @@ public class BytecodeEditor extends JavaEditor
 					try {
 						line = stackFrame.getLineNumber() - 1;
 					} catch (DebugException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
+						BytecodeVisualizerPlugin.log(e);
 					}
 					sourceCodeViewer.selectSourceCodeLine(line, false); /* adapted to 0-based */
 				}

@@ -23,6 +23,8 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.ISourceViewer;
 
+import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
+
 
 /**
  * Collection of util method.
@@ -66,11 +68,13 @@ public class BytecodeVisualizerUtils {
 				}
 
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
+				BytecodeVisualizerPlugin.log(e);
 			} catch (JavaModelException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
+				BytecodeVisualizerPlugin.log(e);
 			}
 
 			return line;
