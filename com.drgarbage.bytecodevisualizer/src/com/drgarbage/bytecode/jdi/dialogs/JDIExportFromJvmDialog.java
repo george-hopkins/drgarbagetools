@@ -180,7 +180,6 @@ public class JDIExportFromJvmDialog {
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
 			 */
-			@Override
 			@SuppressWarnings("deprecation")
 			public void handleEvent(Event event) {
 				viewer.setAllChecked(true);
@@ -194,7 +193,6 @@ public class JDIExportFromJvmDialog {
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
 			 */
-			@Override
 			@SuppressWarnings("deprecation")
 			public void handleEvent(Event event) {
 				viewer.setAllChecked(false);
@@ -221,7 +219,6 @@ public class JDIExportFromJvmDialog {
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
 			 */
-			@Override
 			public void handleEvent(Event event) {
 				
 				Object o = DebugUITools.getDebugContext();
@@ -261,7 +258,6 @@ public class JDIExportFromJvmDialog {
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 			 */
-			@Override
 			public void widgetSelected(SelectionEvent e) {
 				
 				final Object[] selection = viewer.getCheckedElements();
@@ -377,7 +373,6 @@ public class JDIExportFromJvmDialog {
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
 			 */
-			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
@@ -389,14 +384,12 @@ public class JDIExportFromJvmDialog {
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 			 */
-			@Override
 			public void widgetSelected(SelectionEvent e) {
 				shell.close();
 			}
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
 			 */
-			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});	
@@ -408,7 +401,6 @@ public class JDIExportFromJvmDialog {
 					/* (non-Javadoc)
 					 * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
 					 */
-					@Override
 					public void modifyText(ModifyEvent e) {
 						/* Default text: <Define a folder to class export> */
 						if(!pathText.getText().startsWith("<")){
@@ -517,7 +509,6 @@ public class JDIExportFromJvmDialog {
 		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
 		 */
-		@Override
 		public Object[] getChildren(Object arg0) {
 			return null;
 		}
@@ -525,7 +516,6 @@ public class JDIExportFromJvmDialog {
 		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
 		 */
-		@Override
 		public Object getParent(Object arg0) {
 			return null;
 		}
@@ -533,7 +523,6 @@ public class JDIExportFromJvmDialog {
 		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
 		 */
-		@Override
 		public boolean hasChildren(Object arg0) {
 			return false;
 		}
@@ -541,7 +530,6 @@ public class JDIExportFromJvmDialog {
 		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ITreeContentProvider#getElements(java.lang.Object)
 		 */
-		@Override
 		public Object[] getElements(Object arg0) {
 			if(arg0 != null){
 				return (Object[])arg0;
@@ -552,14 +540,12 @@ public class JDIExportFromJvmDialog {
 		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 		 */
-		@Override
 		public void dispose() {
 		}
 
 		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
 		 */
-		@Override
 		public void inputChanged(Viewer arg0, Object arg1, Object arg2) {
 		}
 
