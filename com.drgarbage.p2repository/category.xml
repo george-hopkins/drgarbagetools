@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.drgarbage.bytecodevisualizer_4.3.2.qualifier.jar" id="com.drgarbage.bytecodevisualizer" version="4.3.2.qualifier">
+      <category name="com.drgarbage.bytecodevisualizer"/>
+   </feature>
+   <feature url="features/com.drgarbage.controlflowgraphfactory_4.3.0.qualifier.jar" id="com.drgarbage.controlflowgraphfactory" version="4.3.0.qualifier">
+      <category name="com.drgarbage.controlflowgraphfactory"/>
+   </feature>
+   <feature url="features/com.drgarbage.sourcecodevisualizer_4.3.0.qualifier.jar" id="com.drgarbage.sourcecodevisualizer" version="4.3.0.qualifier">
+      <category name="com.drgarbage.sourcecodevisualizer"/>
+   </feature>
+   <category-def name="com.drgarbage.bytecodevisualizer" label="Bytecode Visualizer">
+      <description>
+         Please visit http://www.drgarbage.com/bytecode-visualizer.html for a detailed description.
+      </description>
+   </category-def>
+   <category-def name="com.drgarbage.controlflowgraphfactory" label="Controlflow Graph Factory">
+      <description>
+         Please visit http://www.drgarbage.com/control-flow-graph-factory.html for a detailed description.
+      </description>
+   </category-def>
+   <category-def name="com.drgarbage.sourcecodevisualizer" label="Sourcecode Visualizer">
+      <description>
+         Please visit http://www.drgarbage.com/sourcecode-visualizer.html for a detailed description.
+      </description>
+   </category-def>
+</site>

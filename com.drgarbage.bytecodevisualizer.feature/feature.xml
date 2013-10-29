@@ -2,7 +2,7 @@
 <feature
       id="com.drgarbage.bytecodevisualizer"
       label="%featureName"
-      version="4.3.0.qualifier"
+      version="4.3.2.qualifier"
       provider-name="%providerName"
       plugin="com.drgarbage.bytecodevisualizer">
    <install-handler/>
@@ -41,24 +41,24 @@
    </requires>
 
    <plugin
-         id="com.drgarbage.bytecodevisualizer"
-         download-size="409"
-         install-size="409"
-         version="4.3.0.qualifier"
-         unpack="false"/>
-
-   <plugin
          id="com.drgarbage.asm"
          download-size="85"
          install-size="85"
-         version="4.2.0.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="com.drgarbage.core"
-         download-size="270"
-         install-size="270"
-         version="4.3.0.qualifier"
+         id="com.drgarbage.bytecodevisualizer.plugin"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.drgarbage.core.plugin"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>

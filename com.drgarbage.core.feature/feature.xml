@@ -2,7 +2,7 @@
 <feature
       id="com.drgarbage.core"
       label="%featureName"
-      version="4.2.0.qualifier"
+      version="4.3.0.qualifier"
       provider-name="%providerName">
 
    <description url="%productPageUrl">
@@ -38,10 +38,10 @@
    </requires>
 
    <plugin
-         id="com.drgarbage.core"
-         download-size="200"
-         install-size="200"
-         version="4.2.0.qualifier"
+         id="com.drgarbage.core.plugin"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>

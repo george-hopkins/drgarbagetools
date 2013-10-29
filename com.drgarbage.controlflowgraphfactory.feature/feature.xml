@@ -38,24 +38,24 @@
    </requires>
 
    <plugin
-         id="com.drgarbage.controlflowgraphfactory"
-         download-size="360"
-         install-size="360"
-         version="4.3.0.qualifier"
+         id="com.drgarbage.controlflowgraphfactory.plugin"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="com.drgarbage.asm"
-         download-size="85"
-         install-size="85"
-         version="4.2.0.qualifier"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="com.drgarbage.core"
-         download-size="270"
-         install-size="270"
-         version="4.3.0.qualifier"
+         id="com.drgarbage.core.plugin"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
