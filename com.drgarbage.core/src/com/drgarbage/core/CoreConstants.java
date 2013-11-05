@@ -27,10 +27,11 @@ public interface CoreConstants {
 	 * Unique identifier constant (value <code>"com.drgarbage.bytecodevisualizer"</code>)
 	 * for the standard Bytecode Visualizer Plugin.
 	 */
-	public static final String BYTECODE_VISUALIZER_PLUGIN_ID = "com.drgarbage.bytecodevisualizer";
+	/* modified for maven build process. the id corresponds to the artifact id */
+	public static final String BYTECODE_VISUALIZER_PLUGIN_ID = "com.drgarbage.bytecodevisualizer.plugin";
 	
 	/* constant */
-	public static final String BYTECODE_VISUALIZER_CONTEXT_MENU_ID  = BYTECODE_VISUALIZER_PLUGIN_ID + ".context";
+	public static final String BYTECODE_VISUALIZER_CONTEXT_MENU_ID  = "com.drgarbage.bytecodevisualizer.context";
 	
 	/* Editor IDs have to be restarted. No other way to access the ID. */
 	public final static String BYTECODE_VISUALIZER_EDITOR_ID = "com.drgarbage.bytecodevisualizer.editor";
