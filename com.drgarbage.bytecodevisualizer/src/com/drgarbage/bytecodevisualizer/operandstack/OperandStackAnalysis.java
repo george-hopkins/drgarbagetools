@@ -33,6 +33,7 @@ import com.drgarbage.bytecode.BytecodeUtils;
 import com.drgarbage.bytecode.instructions.AbstractInstruction;
 import com.drgarbage.bytecode.instructions.Opcodes;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
+import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.bytecodevisualizer.operandstack.OperandStack.NodeStackProperty;
 import com.drgarbage.bytecodevisualizer.operandstack.OperandStack.OperandStackEntry;
 import com.drgarbage.bytecodevisualizer.operandstack.OperandStack.OperandStackPropertyConstants;
@@ -520,9 +521,7 @@ public class OperandStackAnalysis {
 																methodArgumentList,
 																offset, sb);
 											} catch (IOException e) {
-												// TODO Auto-generated catch
-												// block
-												e.printStackTrace();
+												BytecodeVisualizerPlugin.log(e);
 											}
 											argi++;
 										}
@@ -615,7 +614,7 @@ public class OperandStackAnalysis {
 								case Opcodes.OPCODE_ISTORE_3:
 								case Opcodes.OPCODE_IASTORE:
 									
-									/* As noted in ¤3.3.4 and ¤3.11.1, 
+									/* As noted in ï¿½3.3.4 and ï¿½3.11.1, 
 									 * the Java virtual machine internally 
 									 * converts values of types boolean, 
 									 * byte, char, and short to type int. 

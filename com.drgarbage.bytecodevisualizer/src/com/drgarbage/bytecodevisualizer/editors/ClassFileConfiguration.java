@@ -68,6 +68,7 @@ import com.drgarbage.asm.render.intf.IInstructionLine;
 import com.drgarbage.asm.render.intf.IMethodSection;
 import com.drgarbage.bytecode.ByteCodeConstants;
 import com.drgarbage.bytecode.instructions.BranchInstruction;
+import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.core.CorePlugin;
 import com.drgarbage.core.preferences.CorePreferenceConstants;
 
@@ -632,20 +633,15 @@ public class ClassFileConfiguration extends TextSourceViewerConfiguration {
 				}
 
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				BytecodeVisualizerPlugin.log(e);
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				BytecodeVisualizerPlugin.log(e);
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				BytecodeVisualizerPlugin.log(e);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				BytecodeVisualizerPlugin.log(e);
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				BytecodeVisualizerPlugin.log(e);
 			}
 
 
