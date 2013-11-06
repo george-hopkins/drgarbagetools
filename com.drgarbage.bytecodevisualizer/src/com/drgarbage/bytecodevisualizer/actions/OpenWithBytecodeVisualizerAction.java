@@ -62,7 +62,7 @@ public class OpenWithBytecodeVisualizerAction implements IObjectActionDelegate {
 			try {
 				page.openEditor(editorInput, BytecodeVisualizerPlugin.PLUGIN_ID + ".editor", true);
 			} catch (PartInitException e) {
-				e.printStackTrace(System.err); //FIXME: write to the log
+				BytecodeVisualizerPlugin.log(e);
 				Messages.error("PartInitException. For more details see log trace.");//TODO: define constant
 			}
 		}
