@@ -26,8 +26,6 @@ package com.drgarbage.bytecode;
   */
 public interface IAccessFlags {
 	
-	//TODO check if the field of ASM.Opcodes are the same
-
     public static final int ACC_PUBLIC = 0x0001;
     public static final int ACC_PRIVATE = 0x0002;
     public static final int ACC_PROTECTED = 0x0004;
