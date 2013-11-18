@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2012, Dr. Garbage Community
+ * Copyright (c) 2008-2013, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,6 @@
 
 package com.drgarbage.ast;
 
-/**
- * AST node Visitor.
- */
-
-import java.util.List;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,14 +32,12 @@ import org.eclipse.jdt.core.dom.AssertStatement;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BlockComment;
-import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
 import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.Comment;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
@@ -118,2365 +111,908 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
+/**
+ * The implementation of a visitor for abstract syntax trees.
+ * 
+ * @author Sergej Alekseev
+ * @version $Revision$
+ * $Id$
+ * 
+ * @see ASTVisitor
+ */
 public class ASTExplorerVisitor extends ASTVisitor {
 	
+	/**
+	 * The tree node data key.
+	 */
 	static final String NODE = "%NODE%";
 	
+	/**
+	 * Stack structure for tree elements.
+	 */
 	private Stack<Widget> stack;
+	
+	/**
+	 * The monitor object to control the progress of 
+	 * AST-Tree creation. 
+	 */
 	private IProgressMonitor monitor;
 		
-	ASTExplorerVisitor(Tree treeControl,IProgressMonitor monitor) {
+	/**
+	 * Constructs an AST visitor and initialize the tree object.
+	 * @param treeControl
+	 * @param monitor
+	 */
+	public ASTExplorerVisitor(Tree treeControl, IProgressMonitor m) {
 		super(true);
-		if (null == treeControl)
-			throw new IllegalArgumentException();
 		
-		this.stack = new Stack<Widget>();
-		this.monitor = monitor;
-		this.stack.push(treeControl);
+		if (treeControl == null){
+			throw new IllegalArgumentException();
+		}
+		
+		stack = new Stack<Widget>();
+		monitor = m;
+		stack.push(treeControl);
 	}
 	
+	/**
+	 * Returns <code>false</code> if the user has canceled the
+	 * operation, and <code>true</code> otherwise.
+	 * 
+	 * @return <code>true</code> or <code>false</code>
+	 */
 	private boolean isVisitChildren() {
 		return !(this.monitor.isCanceled());  
 	}
 	
 	/**
-	 * Visits the given AST node prior to the type-specific visit.
-	 * (before <code>visit</code>).
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
+	 * Visits the given AST node prior to the type-specific visit
+	 * creates a new tree item and pushes it onto the stack.
 	 * 
 	 * @param node the node to visit
+	 * @see ASTVisitor#preVisit(ASTNode)
 	 */
 	public void preVisit(ASTNode node) {
-		Object parent = this.stack.peek();
-		TreeItem child = null;
-		if (parent instanceof Tree)
-			child = new TreeItem((Tree)parent,SWT.NONE);
-		else
-			child = new TreeItem((TreeItem)parent,SWT.NONE);
-					
-		child.setText(getNodeAsString(node));
-		this.stack.push(child);
-		child.setData(NODE,node);
+		Object parent = stack.peek();
 		
-		/* set image */
+		TreeItem child = null;
+		if (parent instanceof Tree){
+			child = new TreeItem((Tree)parent, SWT.NONE);
+		} else {
+			child = new TreeItem((TreeItem)parent, SWT.NONE);
+		}
+		
+		stack.push(child);
+		child.setData(NODE, node);
+		
+		/* set text and corresponding image */
+		child.setText(getNodeDescr(node));
 		child.setImage(getImage(node));
-
 	}	
 	
 	/**
 	 * Returns an image corresponding to the AST element.
-	 * @param node
-	 * @return image
+	 * 
+	 * @param node the AST-node
+	 * @return the image
 	 */
+	@SuppressWarnings("restriction")
 	private Image getImage(ASTNode node){
 		switch(node.getNodeType()){
 		case ASTNode.COMPILATION_UNIT:
-			return JavaPluginImages.DESC_OBJS_CUNIT.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CUNIT);
 			
 		case ASTNode.PACKAGE_DECLARATION:
-			return JavaPluginImages.DESC_OBJS_PACKDECL.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_PACKDECL);
 			
 		case ASTNode.IMPORT_DECLARATION:
-			return JavaPluginImages.DESC_OBJS_IMPDECL.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_IMPDECL);
 			
 		case ASTNode.TYPE_DECLARATION:
-			return JavaPluginImages.DESC_OBJS_CLASS.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS);
 		
 		case ASTNode.ANNOTATION_TYPE_DECLARATION:
-			return JavaPluginImages.DESC_OBJS_ANNOTATION.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ANNOTATION);
 			
 		case ASTNode.ANONYMOUS_CLASS_DECLARATION:
-			return JavaPluginImages.DESC_OBJS_INNER_CLASS_DEFAULT.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_CLASS_DEFAULT);
 			
 		case ASTNode.ENUM_DECLARATION:
-			return JavaPluginImages.DESC_OBJS_ENUM.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ENUM);
 			
 		case ASTNode.FIELD_DECLARATION:
 		case ASTNode.ENUM_CONSTANT_DECLARATION:
-			return JavaPluginImages.DESC_FIELD_PROTECTED.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_PROTECTED);
 			
 		case ASTNode.METHOD_DECLARATION:
-			return JavaPluginImages.DESC_MISC_PUBLIC.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PUBLIC);
 			
 		case ASTNode.JAVADOC:
-			return JavaPluginImages.DESC_OBJS_JAVADOCTAG.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_JAVADOCTAG);
 		
 		case ASTNode.VARIABLE_DECLARATION_STATEMENT:
-			return JavaPluginImages.DESC_OBJS_LOCAL_VARIABLE.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_LOCAL_VARIABLE);
 		
 		case ASTNode.BLOCK:
+			//TODO: use registry for the image
 			return JavaPluginImages.DESC_OBJS_SOURCE_ATTACH_ATTRIB.createImage();
+//			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_SOURCE_ATTACH_ATTRIB);
 		
 		case ASTNode.MODIFIER:
-			return JavaPluginImages.DESC_FIELD_DEFAULT.createImage();
+			return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_DEFAULT);
 		}
 		
 		/* default */
-		return JavaPluginImages.DESC_FIELD_PRIVATE.createImage();
+		return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_PRIVATE);
 	}
 	
 	/**
-	 * Returns nodes as a string.
-	 * @param node
-	 * @return string
+	 * Returns nodes description.
+	 * 
+	 * @param node the AST-node
+	 * @return description string
 	 */
-	static private String getNodeAsString(ASTNode node) {
-		String className = node.getClass().getName();
-		int index = className.lastIndexOf(".");
-		if (index > 0)
-			className = className.substring(index+1);
+	static private String getNodeDescr(ASTNode node) {		
+		StringBuffer elementDescr = new StringBuffer(node.getClass().getSimpleName());
+		elementDescr.append(": ");
 		
-		if (node instanceof Comment) 
-			return className;
+		int nodeType = node.getNodeType();
+		switch(nodeType){
+			case ASTNode.COMPILATION_UNIT:
+				CompilationUnit cu = (CompilationUnit)node;
+				elementDescr.append(cu.getJavaElement().getElementName());
+				break;
 				
-		String modifiers = "";
-		if (node instanceof BodyDeclaration) {
-			int mod = ((BodyDeclaration)node).getModifiers();
-			if (Modifier.isAbstract(mod))
-				modifiers += Modifier.ModifierKeyword.ABSTRACT_KEYWORD.toString() + ",";
+			case ASTNode.PACKAGE_DECLARATION:
+				PackageDeclaration pd = (PackageDeclaration)node;
+				elementDescr.append(pd.getName());
+				break;
+				
+			case ASTNode.TYPE_DECLARATION:
+				TypeDeclaration td = (TypeDeclaration)node;
+				appendModifiers(td.getModifiers(), elementDescr);
+				elementDescr.append(" class ");
+				elementDescr.append(td.getName());
+				break;
+				
+			case ASTNode.METHOD_DECLARATION:
+				MethodDeclaration md = (MethodDeclaration)node;				
+				appendModifiers(md.getModifiers(), elementDescr);
+				elementDescr.append(md.getReturnType2() == null?
+						"" : md.getReturnType2().toString());
+				elementDescr.append(' ');
+				elementDescr.append(md.getName());
+				elementDescr.append("()");
+				break;
+				
+			case ASTNode.BLOCK:
+				elementDescr.append("{...}");
+				break;
 			
-			if (Modifier.isFinal(mod))
-				modifiers += Modifier.ModifierKeyword.FINAL_KEYWORD.toString() + ",";
+			case ASTNode.IF_STATEMENT:
+				IfStatement is = (IfStatement) node;
+				elementDescr.append("if( ");
+				elementDescr.append(is.getExpression().toString());
+				elementDescr.append(")");
+				break;
+				
+			case ASTNode.FOR_STATEMENT:
+				ForStatement fs = (ForStatement) node;
+				elementDescr.append("for (...; ");
+				elementDescr.append(fs.getExpression().toString());
+				elementDescr.append("; ...){...}");
+				break;
 			
-			if (Modifier.isNative(mod))
-				modifiers += Modifier.ModifierKeyword.NATIVE_KEYWORD.toString() + ",";
+			case ASTNode.WHILE_STATEMENT:
+				WhileStatement ws = (WhileStatement) node;
+				elementDescr.append("while ( ");
+				elementDescr.append(ws.getExpression().toString());
+				elementDescr.append("){...}");
+				break;
+				
+			case ASTNode.DO_STATEMENT:
+				DoStatement ds = (DoStatement) node;
+				elementDescr.append("do {...} while (");
+				elementDescr.append(ds.getExpression().toString());
+				elementDescr.append(")");
+				break;
+				
+			case ASTNode.LABELED_STATEMENT:
+				LabeledStatement ls = (LabeledStatement) node;
+				elementDescr.append(ls.getLabel().toString());
+				elementDescr.append(":");
+				break;
+				
+			case ASTNode.CATCH_CLAUSE:
+				CatchClause cs = (CatchClause) node;
+				elementDescr.append("catch (");
+				elementDescr.append(cs.getException().toString());
+				elementDescr.append("){...}");
+				break;
 			
-			if (Modifier.isPrivate(mod))
-				modifiers += Modifier.ModifierKeyword.PRIVATE_KEYWORD.toString() + ",";
-			
-			if (Modifier.isProtected(mod))
-				modifiers += Modifier.ModifierKeyword.PROTECTED_KEYWORD.toString() + ",";
-			
-			if (Modifier.isPublic(mod))
-				modifiers += Modifier.ModifierKeyword.PUBLIC_KEYWORD.toString() + ",";
-			
-			if (Modifier.isStatic(mod))
-				modifiers += Modifier.ModifierKeyword.STATIC_KEYWORD.toString() + ",";
-			
-			if (Modifier.isStrictfp(mod))
-				modifiers += Modifier.ModifierKeyword.STRICTFP_KEYWORD.toString() + ",";
-			
-			if (Modifier.isSynchronized(mod))
-				modifiers += Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD.toString() + ",";
-			
-			if (Modifier.isTransient(mod))
-				modifiers += Modifier.ModifierKeyword.TRANSIENT_KEYWORD.toString() + ",";
-			
-			if (Modifier.isVolatile(mod))
-				modifiers += Modifier.ModifierKeyword.VOLATILE_KEYWORD.toString() + ",";	
+			case ASTNode.SWITCH_STATEMENT:
+				SwitchStatement ss = (SwitchStatement) node;
+				elementDescr.append("switch (");
+				elementDescr.append(ss.getExpression().toString());
+				elementDescr.append("){...}");
+				break;
+				
+			case ASTNode.SWITCH_CASE:
+				SwitchCase sc = (SwitchCase) node;
+				elementDescr.append("case ");
+				elementDescr.append(sc.getExpression() == null? 
+						"default" : sc.getExpression().toString());
+				elementDescr.append(":");
+				break;
+			case ASTNode.JAVADOC:
+			case ASTNode.BLOCK_COMMENT:
+			case ASTNode.LINE_COMMENT:
+			case ASTNode.TRY_STATEMENT:
+				/* nothing to do */
+				break;
+				
+			default:
+					elementDescr.append(node.toString());
+		}
+
+		/* cut the string if it is too long */
+		String str = elementDescr.toString();
+		if(str.length() > 128){
+			str = str.substring(0, 128) + " ... "; 
+		}
+		str = str.replaceAll("\n", "");
+		return str;
+	}
+	
+	private static void appendModifiers(int mod, StringBuffer buf){
+		if (Modifier.isAbstract(mod)){
+			buf.append(Modifier.ModifierKeyword.ABSTRACT_KEYWORD.toString());
+			buf.append(' ');
 		}
 		
-		String toString = node.toString(); 
-		String value = "";
-		if (toString.startsWith(className)) {
-			if (modifiers.length() > 0) {
-				index = toString.indexOf("[");
-				if (index > 0) 
-					value = toString.substring(0,index+1) + " " + modifiers + " " + toString.substring(index+1);
-				else
-					value = modifiers + " " + toString;
-			}	
-			else
-				value = toString;
-		}
-		else {
-			value = className + "[";
-			if (modifiers.length() > 0) 
-				value += " " + modifiers + " ";
-			
-			value += toString + "]";
+		if (Modifier.isFinal(mod)){
+			buf.append(Modifier.ModifierKeyword.FINAL_KEYWORD.toString());
+			buf.append(' ');
 		}
 		
-		if(value.length() > 128){
-			value = value.substring(0, 128) + " ... "; 
+		if (Modifier.isNative(mod)){
+			buf.append(Modifier.ModifierKeyword.NATIVE_KEYWORD.toString());
+			buf.append(' ');
 		}
-		value = value.replaceAll("\n", "");
-		return value;
+		
+		if (Modifier.isPrivate(mod)){
+			buf.append(Modifier.ModifierKeyword.PRIVATE_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isProtected(mod)){
+			buf.append(Modifier.ModifierKeyword.PROTECTED_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isPublic(mod)){
+			buf.append(Modifier.ModifierKeyword.PUBLIC_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isStatic(mod)){
+			buf.append(Modifier.ModifierKeyword.STATIC_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isStrictfp(mod)){
+			buf.append(Modifier.ModifierKeyword.STRICTFP_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isSynchronized(mod)){
+			buf.append(Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isTransient(mod)){
+			buf.append(Modifier.ModifierKeyword.TRANSIENT_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isVolatile(mod)){
+			buf.append(Modifier.ModifierKeyword.VOLATILE_KEYWORD.toString());
+			buf.append(' ');
+		}
 	}
 	
 	/**
 	 * Visits the given AST node following the type-specific visit
-	 * (after <code>endVisit</code>).
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * enum
+	 * and pops one node from the stack.
+	 * 
 	 * @param node the node to visit
+	 * @see ASTVisitor#postVisit(ASTNode)
 	 */
 	public void postVisit(ASTNode node) {
 		this.stack.pop();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.AnnotationTypeDeclaration)
 	 */
 	public boolean visit(AnnotationTypeDeclaration node) {
 		return isVisitChildren();
 	}
 
-
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration)
 	 */
 	public boolean visit(AnnotationTypeMemberDeclaration node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.AnonymousClassDeclaration)
 	 */
 	public boolean visit(AnonymousClassDeclaration node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ArrayAccess)
 	 */
 	public boolean visit(ArrayAccess node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ArrayCreation)
 	 */
 	public boolean visit(ArrayCreation node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ArrayInitializer)
 	 */
 	public boolean visit(ArrayInitializer node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ArrayType)
 	 */
 	public boolean visit(ArrayType node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.AssertStatement)
 	 */
 	public boolean visit(AssertStatement node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Assignment)
 	 */
 	public boolean visit(Assignment node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Block)
 	 */
 	public boolean visit(Block node) {
 		return isVisitChildren();
 	}
-	
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.BlockComment)
 	 */
 	public boolean visit(BlockComment node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.BooleanLiteral)
 	 */
 	public boolean visit(BooleanLiteral node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.BreakStatement)
 	 */
 	public boolean visit(BreakStatement node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.CastExpression)
 	 */
 	public boolean visit(CastExpression node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.CatchClause)
 	 */
 	public boolean visit(CatchClause node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.CharacterLiteral)
 	 */
 	public boolean visit(CharacterLiteral node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ClassInstanceCreation)
 	 */
 	public boolean visit(ClassInstanceCreation node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.CompilationUnit)
 	 */
 	public boolean visit(CompilationUnit node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ConditionalExpression)
 	 */
 	public boolean visit(ConditionalExpression node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ConstructorInvocation)
 	 */
 	public boolean visit(ConstructorInvocation node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ContinueStatement)
 	 */
 	public boolean visit(ContinueStatement node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.DoStatement)
 	 */
 	public boolean visit(DoStatement node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.EmptyStatement)
 	 */
 	public boolean visit(EmptyStatement node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.EnhancedForStatement)
 	 */
 	public boolean visit(EnhancedForStatement node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.EnumConstantDeclaration)
 	 */
 	public boolean visit(EnumConstantDeclaration node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.EnumDeclaration)
 	 */
 	public boolean visit(EnumDeclaration node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ExpressionStatement)
 	 */
 	public boolean visit(ExpressionStatement node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.FieldAccess)
 	 */
 	public boolean visit(FieldAccess node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.FieldDeclaration)
 	 */
 	public boolean visit(FieldDeclaration node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ForStatement)
 	 */
 	public boolean visit(ForStatement node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.IfStatement)
 	 */
 	public boolean visit(IfStatement node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ImportDeclaration)
 	 */
 	public boolean visit(ImportDeclaration node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.InfixExpression)
 	 */
 	public boolean visit(InfixExpression node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.InstanceofExpression)
 	 */
 	public boolean visit(InstanceofExpression node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Initializer)
 	 */
 	public boolean visit(Initializer node) {
 		return isVisitChildren();
 	}
 
-	/**
-	 * Visits the given AST node.
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Javadoc)
 	 */
 	public boolean visit(Javadoc node) {
 		return isVisitChildren();
 	}
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.LabeledStatement)
 	 */
 	public boolean visit(LabeledStatement node) {
 		return isVisitChildren();
 	}
-	
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.LineComment)
 	 */
 	public boolean visit(LineComment node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MarkerAnnotation)
 	 */
 	public boolean visit(MarkerAnnotation node) {
 		return isVisitChildren();
 	}
 
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MemberRef)
 	 */
 	public boolean visit(MemberRef node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MemberValuePair)
 	 */
 	public boolean visit(MemberValuePair node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MethodRef)
 	 */
 	public boolean visit(MethodRef node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MethodRefParameter)
 	 */
 	public boolean visit(MethodRefParameter node) {
 		return isVisitChildren();
 	}
 	
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MethodDeclaration)
 	 */
 	public boolean visit(MethodDeclaration node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MethodInvocation)
 	 */
 	public boolean visit(MethodInvocation node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Modifier)
 	 */
 	public boolean visit(Modifier node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.NormalAnnotation)
 	 */
 	public boolean visit(NormalAnnotation node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.NullLiteral)
 	 */
 	public boolean visit(NullLiteral node) {
 		return isVisitChildren();
 	}
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.NumberLiteral)
 	 */
 	public boolean visit(NumberLiteral node) {
 		return isVisitChildren();
 	}
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.PackageDeclaration)
 	 */
 	public boolean visit(PackageDeclaration node) {
 		return isVisitChildren();
 	}
 
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ParameterizedType)
 	 */
 	public boolean visit(ParameterizedType node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ParenthesizedExpression)
 	 */
 	public boolean visit(ParenthesizedExpression node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.PostfixExpression)
 	 */
 	public boolean visit(PostfixExpression node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.PrefixExpression)
 	 */
 	public boolean visit(PrefixExpression node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.PrimitiveType)
 	 */
 	public boolean visit(PrimitiveType node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.QualifiedName)
 	 */
 	public boolean visit(QualifiedName node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.QualifiedType)
 	 */
 	public boolean visit(QualifiedType node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ReturnStatement)
 	 */
 	public boolean visit(ReturnStatement node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SimpleName)
 	 */
 	public boolean visit(SimpleName node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SimpleType)
 	 */
 	public boolean visit(SimpleType node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SingleMemberAnnotation)
 	 */
 	public boolean visit(SingleMemberAnnotation node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SingleVariableDeclaration)
 	 */
 	public boolean visit(SingleVariableDeclaration node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.StringLiteral)
 	 */
 	public boolean visit(StringLiteral node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SuperConstructorInvocation)
 	 */
 	public boolean visit(SuperConstructorInvocation node) {
 		return isVisitChildren();
 	}
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SuperFieldAccess)
 	 */
 	public boolean visit(SuperFieldAccess node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SuperMethodInvocation)
 	 */
 	public boolean visit(SuperMethodInvocation node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SwitchCase)
 	 */
 	public boolean visit(SwitchCase node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SwitchStatement)
 	 */
 	public boolean visit(SwitchStatement node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SynchronizedStatement)
 	 */
 	public boolean visit(SynchronizedStatement node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.TagElement)
 	 */
 	public boolean visit(TagElement node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.TextElement)
 	 */
 	public boolean visit(TextElement node) {
 		return isVisitChildren();
 	}
 
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ThisExpression)
 	 */
 	public boolean visit(ThisExpression node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ThrowStatement)
 	 */
 	public boolean visit(ThrowStatement node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.TryStatement)
 	 */
 	public boolean visit(TryStatement node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.TypeDeclaration)
 	 */
 	public boolean visit(TypeDeclaration node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.TypeDeclarationStatement)
 	 */
 	public boolean visit(TypeDeclarationStatement node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.TypeLiteral)
 	 */
 	public boolean visit(TypeLiteral node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.TypeParameter)
 	 */
 	public boolean visit(TypeParameter node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.VariableDeclarationExpression)
 	 */
 	public boolean visit(VariableDeclarationExpression node) {
 		return isVisitChildren();
 	}
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.VariableDeclarationStatement)
 	 */
 	public boolean visit(VariableDeclarationStatement node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.VariableDeclarationFragment)
 	 */
 	public boolean visit(VariableDeclarationFragment node) {
 		return isVisitChildren();
 	}
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.WhileStatement)
 	 */
 	public boolean visit(WhileStatement node) {
 		return isVisitChildren();
 	}
 	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, otherwise <code>false</code>.
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.WildcardType)
 	 */
 	public boolean visit(WildcardType node) {
 		return isVisitChildren();
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(AnnotationTypeDeclaration node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(AnnotationTypeMemberDeclaration node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(AnonymousClassDeclaration node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ArrayAccess node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ArrayCreation node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ArrayInitializer node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ArrayType node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(AssertStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(Assignment node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(Block node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(BlockComment node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(BooleanLiteral node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(BreakStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(CastExpression node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(CatchClause node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(CharacterLiteral node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ClassInstanceCreation node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(CompilationUnit node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ConditionalExpression node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ConstructorInvocation node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ContinueStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(DoStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(EmptyStatement node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(EnhancedForStatement node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(EnumConstantDeclaration node) {
-	}	
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(EnumDeclaration node) {
-	}	
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ExpressionStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(FieldAccess node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(FieldDeclaration node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ForStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(IfStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ImportDeclaration node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(InfixExpression node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(InstanceofExpression node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(Initializer node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(Javadoc node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(LabeledStatement node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(LineComment node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(MarkerAnnotation node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(MemberRef node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(MemberValuePair node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(MethodRef node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(MethodRefParameter node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(MethodDeclaration node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(MethodInvocation node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(Modifier node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(NormalAnnotation node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(NullLiteral node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(NumberLiteral node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(PackageDeclaration node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ParameterizedType node) {
-	}	
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ParenthesizedExpression node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(PostfixExpression node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(PrefixExpression node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(PrimitiveType node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(QualifiedName node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(QualifiedType node) {
-	}	
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ReturnStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SimpleName node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SimpleType node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SingleMemberAnnotation node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SingleVariableDeclaration node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(StringLiteral node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SuperConstructorInvocation node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SuperFieldAccess node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SuperMethodInvocation node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SwitchCase node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SwitchStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SynchronizedStatement node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(TagElement node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(TextElement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ThisExpression node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ThrowStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(TryStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(TypeDeclaration node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(TypeDeclarationStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(TypeLiteral node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(TypeParameter node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(VariableDeclarationExpression node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(VariableDeclarationStatement node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(VariableDeclarationFragment node) {
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(WhileStatement node) {
-	}
-	
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(WildcardType node) {
 	}
 }

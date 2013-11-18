@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2012, Dr. Garbage Community
+ * Copyright (c) 2008-2013, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -65,7 +64,7 @@ public class ASTExplorer extends Composite {
 	/**
 	 * AST Eclipse parser.
 	 */
-	private final ASTParser parser = ASTParser.newParser(AST.JLS3);
+	private final ASTParser parser = ASTParser.newParser(AST.JLS4);
 	
 	AbstractDecoratedTextEditor editorPart;
 	private Tree treeControl;
@@ -78,6 +77,7 @@ public class ASTExplorer extends Composite {
 	 */
 	public ASTExplorer(Composite parent,int style) {
 		super(parent,style);		
+
 		GridLayout gridLayout = new GridLayout();
 		super.setLayout(gridLayout);
 		this.treeControl = new Tree(this, SWT.BORDER | SWT.SINGLE | SWT.FILL);
@@ -141,7 +141,7 @@ public class ASTExplorer extends Composite {
 			    	}
 			    	
 			    	
-			    	comunicationObject.generateDiagramFromGraph("AST", graph);
+			    	comunicationObject.generateDiagramFromGraph("AST.graph", graph);
 				
 				}
 			}
@@ -272,19 +272,15 @@ public class ASTExplorer extends Composite {
 			}
 		});	
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.widgets.Composite#setLayout(org.eclipse.swt.widgets.Layout)
-	 */
-	public void setLayout(Layout layout) {
-	}
 	
 	/**
-	 * Sets the editor pasrt.
-	 * @param the editor part
+	 * Sets the active editor part reference.
+	 * 
+	 * @param ep the editor part
 	 */
-	public void setEditorPart(AbstractDecoratedTextEditor cue) {
-		editorPart = cue;
+	public void setEditorPart(AbstractDecoratedTextEditor ep) {
+		editorPart = ep;
+		
 	}
 
 }
