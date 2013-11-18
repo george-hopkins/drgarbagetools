@@ -1086,6 +1086,12 @@ public class BytecodeEditor extends JavaEditor
 			sourceCodeViewerComposite.setLayout(new FillLayout());
 
 			IEditorInput sourceCodeViewerInput = getSourceCodeViewerInput();
+
+			// check if .class file
+			if (!sourceCodeViewerInput.getName().toLowerCase().endsWith(".class")){
+				BytecodeVisualizerPlugin.logErrorMessage("Only '.class' files can be opened in Bytecode Visualizer.");
+			}
+
 			if (sourceCodeViewerInput instanceof IFileEditorInput) {
 
 				/* a local class file */
