@@ -30,16 +30,18 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPageListener;
+import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
-import com.drgarbage.ast.ASTExplorer;
+import com.drgarbage.ast.ASTPanel;
 import com.drgarbage.core.CoreConstants;
 import com.drgarbage.core.CorePlugin;
 
@@ -47,9 +49,21 @@ import com.drgarbage.core.CorePlugin;
  * Simple AST View
  */
 public class ASTView extends ViewPart {
+		
+	/**
+	 * The abstract syntax tree panel.
+	 */
+	private ASTPanel astPanel;
 	
-	private ITypeRoot activeTypeRoot;	
-	private ASTExplorer astExplorer;
+	/**
+	 * The reference to the editor part object.
+	 */
+	private IEditorPart editorPart;
+	
+	/**
+	 * The reference to active type root object.
+	 */
+	private ITypeRoot activeTypeRoot;
 
 	/**
 	 * Windows listener implementation.
@@ -66,7 +80,6 @@ public class ASTView extends ViewPart {
 		 * @see org.eclipse.ui.IWindowListener#windowClosed(org.eclipse.ui.IWorkbenchWindow)
 		 */
 		public void windowClosed(IWorkbenchWindow window) {
-			window.removePageListener(pageListener);
 		}
 
 		/* (non-Javadoc)
@@ -106,14 +119,14 @@ public class ASTView extends ViewPart {
 		 * @see org.eclipse.ui.IPageListener#pageOpened(org.eclipse.ui.IWorkbenchPage)
 		 */
 		public void pageOpened(IWorkbenchPage page) {
-			addSelecionListener(page);	
+			page.addPostSelectionListener(selectionListener);
 		}		
 	};
 	
 	/**
 	 * Selection listener implementation.
 	 */
-	ISelectionListener selectionListener = new ISelectionListener(){
+	private ISelectionListener selectionListener = new ISelectionListener(){
 
 		/* (non-Javadoc)
 		 * @see org.eclipse.ui.ISelectionListener#selectionChanged(org.eclipse.ui.IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
@@ -128,7 +141,7 @@ public class ASTView extends ViewPart {
 				return;
 			}
 
-			IEditorPart editorPart = (IEditorPart)part;
+			editorPart = (IEditorPart)part;
 			ITypeRoot typeRoot = EditorUtility.getEditorInputJavaElement(editorPart, false);
 			
 			if(activeTypeRoot == null || activeTypeRoot != typeRoot){
@@ -136,12 +149,12 @@ public class ASTView extends ViewPart {
 
 				try {
 					if(typeRoot instanceof ICompilationUnit){
-						astExplorer.setSource((ICompilationUnit)typeRoot);
+						astPanel.setSource((ICompilationUnit)typeRoot);
 					}
 					else if(typeRoot instanceof IClassFile){
-						astExplorer.setSource((IClassFile)typeRoot);
+						astPanel.setSource((IClassFile)typeRoot);
 					}
-					astExplorer.setEditorPart((AbstractDecoratedTextEditor) part);
+					astPanel.setEditorPart((AbstractDecoratedTextEditor) part);
 					
 				} catch (InterruptedException e1) {
 					CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,CorePlugin.PLUGIN_ID, e1.getMessage(), e1));
@@ -153,13 +166,71 @@ public class ASTView extends ViewPart {
 
 	};
 	
+	/**
+	 * Part listener implementation.
+	 */
+	private IPartListener2 partListener2 = new IPartListener2(){
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ui.IPartListener2#partActivated(org.eclipse.ui.IWorkbenchPartReference)
+		 */
+		public void partActivated(IWorkbenchPartReference partRef) {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ui.IPartListener2#partBroughtToTop(org.eclipse.ui.IWorkbenchPartReference)
+		 */
+		public void partBroughtToTop(IWorkbenchPartReference partRef) {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ui.IPartListener2#partClosed(org.eclipse.ui.IWorkbenchPartReference)
+		 */
+		public void partClosed(IWorkbenchPartReference partRef) {
+			if(partRef.getPart(false).equals(editorPart)){
+				astPanel.clearContent();
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ui.IPartListener2#partDeactivated(org.eclipse.ui.IWorkbenchPartReference)
+		 */
+		public void partDeactivated(IWorkbenchPartReference partRef) {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ui.IPartListener2#partOpened(org.eclipse.ui.IWorkbenchPartReference)
+		 */
+		public void partOpened(IWorkbenchPartReference partRef) {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ui.IPartListener2#partHidden(org.eclipse.ui.IWorkbenchPartReference)
+		 */
+		public void partHidden(IWorkbenchPartReference partRef) {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ui.IPartListener2#partVisible(org.eclipse.ui.IWorkbenchPartReference)
+		 */
+		public void partVisible(IWorkbenchPartReference partRef) {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ui.IPartListener2#partInputChanged(org.eclipse.ui.IWorkbenchPartReference)
+		 */
+		public void partInputChanged(IWorkbenchPartReference partRef) {
+		}
+		
+	};
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
 		/* create control */
-		astExplorer = new ASTExplorer(parent, SWT.NONE);
+		astPanel = new ASTPanel(parent, SWT.NONE);
 		
 		/* initialize listener */
 		IWorkbench workbench = getSite().getPage().getWorkbenchWindow().getWorkbench();
@@ -191,7 +262,7 @@ public class ASTView extends ViewPart {
 	}
 
 	/**
-	 * Adds page listener to the window.
+	 * Adds listener to all pages of the window.
 	 * @param window
 	 */
 	private void addPageListener(IWorkbenchWindow window){
@@ -199,16 +270,10 @@ public class ASTView extends ViewPart {
 		
 		IWorkbenchPage[] pages = window.getPages();
 		for(IWorkbenchPage page: pages){
-			addSelecionListener(page);
+			page.addPostSelectionListener(selectionListener);
+			
+			/* add part listener to handle close events */
+			page.addPartListener(partListener2);
 		}
-	}
-	
-	/**
-	 * Adds selection listener to rhe page.
-	 * @param page
-	 */
-	private void addSelecionListener(IWorkbenchPage page){
-		page.addPostSelectionListener(selectionListener);		
-
 	}
 }

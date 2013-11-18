@@ -59,7 +59,7 @@ import com.drgarbage.utils.Messages;
 /**
  * Parses a source file and creates a tree.
  */
-public class ASTExplorer extends Composite {
+public class ASTPanel extends Composite {
 	
 	/**
 	 * AST Eclipse parser.
@@ -75,7 +75,7 @@ public class ASTExplorer extends Composite {
 	 * @param parent
 	 * @param style
 	 */
-	public ASTExplorer(Composite parent,int style) {
+	public ASTPanel(Composite parent,int style) {
 		super(parent,style);		
 
 		GridLayout gridLayout = new GridLayout();
@@ -93,7 +93,7 @@ public class ASTExplorer extends Composite {
 				Tree tree = (Tree) e.widget;
 				selectedItems = tree.getSelection();
 				for (int i=0; i < selectedItems.length; ++i) {
-					ASTNode node = (ASTNode) selectedItems[i].getData(ASTExplorerVisitor.NODE);
+					ASTNode node = (ASTNode) selectedItems[i].getData(ASTVisitorImpl.NODE);
 					if (node != null) {
 						editorPart.selectAndReveal(node.getStartPosition(),node.getLength());
 					}
@@ -207,14 +207,7 @@ public class ASTExplorer extends Composite {
 			createGraphFromASTtree(item, i, nodes, edges);
 		}
 	}
-	
-	/**
-	 * Resets the tree view.
-	 */
-	private void reset() {
-		treeControl.removeAll();
-	}
-	
+		
 	/**
 	 * Sets source.
 	 * @param source
@@ -236,6 +229,13 @@ public class ASTExplorer extends Composite {
 	}
 	
 	/**
+	 * Clears the panel content.
+	 */
+	public void clearContent() {
+		treeControl.removeAll();
+	}
+	
+	/**
 	 * Creates content for the view.
 	 * @param compilationUnit
 	 * @param classFile
@@ -243,7 +243,7 @@ public class ASTExplorer extends Composite {
 	 * @throws InterruptedException
 	 */
 	private void createContent(final ICompilationUnit compilationUnit, final IClassFile classFile) throws InvocationTargetException, InterruptedException{
-		reset();
+		clearContent();
 		ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
 		dialog.run(true, true, new IRunnableWithProgress() {
 			public void run(final IProgressMonitor monitor) throws InvocationTargetException {
@@ -264,7 +264,7 @@ public class ASTExplorer extends Composite {
 					if (monitor.isCanceled()) return;
 					getDisplay().syncExec(new Runnable() {
 						public void run() {
-							ASTVisitor visitor = new ASTExplorerVisitor(treeControl,monitor);
+							ASTVisitor visitor = new ASTVisitorImpl(treeControl,monitor);
 							node.accept(visitor);	
 						}
 					}); 					

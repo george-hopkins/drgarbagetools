@@ -120,7 +120,7 @@ import org.eclipse.swt.widgets.Widget;
  * 
  * @see ASTVisitor
  */
-public class ASTExplorerVisitor extends ASTVisitor {
+public class ASTVisitorImpl extends ASTVisitor {
 	
 	/**
 	 * The tree node data key.
@@ -143,7 +143,7 @@ public class ASTExplorerVisitor extends ASTVisitor {
 	 * @param treeControl
 	 * @param monitor
 	 */
-	public ASTExplorerVisitor(Tree treeControl, IProgressMonitor m) {
+	public ASTVisitorImpl(Tree treeControl, IProgressMonitor m) {
 		super(true);
 		
 		if (treeControl == null){
