@@ -145,15 +145,14 @@ public class ASTPanel extends Composite {
 			    		return;
 			    	}
 			    	
-			    	comunicationObject.generateDiagramFromGraph("AST.graph", graph);
+			    	comunicationObject.generateDiagramFromGraph("AST.graph", graph);//TODO: use the class name
 				}
 			}
 		};
+//		action.setImageDescriptor(newImage); //TODO: create a new image
 		mm.add(action);
-		
 		Menu menu = mm.createContextMenu(treeControl);
 		treeControl.setMenu(menu);
-		
 	}
 	
 	/**
@@ -289,5 +288,37 @@ public class ASTPanel extends Composite {
 					});
 			}
 		});	
+	}
+
+	/**
+	 * Hides the package declarations.
+	 */
+	public void hidePackageDeclaration() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Hides the package imports.
+	 */
+	public void hidePackageImports() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Hides java doc items.
+	 */
+	public void hideJavaDoc() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Hide Fields.
+	 */
+	public void hideFields() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -23,8 +23,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -231,7 +235,7 @@ public class ASTView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		/* create control */
 		astPanel = new ASTPanel(parent, SWT.NONE);
-		
+
 		/* initialize listener */
 		IWorkbench workbench = getSite().getPage().getWorkbenchWindow().getWorkbench();
 		
@@ -242,6 +246,72 @@ public class ASTView extends ViewPart {
 		
 		workbench.addWindowListener(windowListener);
 
+		initializeActions();
+	}
+
+	/**
+	 * Creates and initializes the filter actions.
+	 */
+	private void initializeActions() {
+		final IToolBarManager tbm = getViewSite().getActionBars().getToolBarManager();
+		
+		IAction a = new Action("Hide package declaration", IAction.AS_CHECK_BOX) {//TODO: define constant
+			public void run() {
+				astPanel.hidePackageDeclaration();
+				setCheckedStatus(this);
+			}
+		};
+		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_PACKDECL);
+		a.setId("com.drgarbge.HIDE_PACKGE_DECL"); //TODO: define constant
+		a.setToolTipText("Hide package declaration");
+		tbm.add(a);
+		
+		a = new Action("Hide package imports", IAction.AS_CHECK_BOX) { //TODO: define constant
+			public void run() {
+				astPanel.hidePackageImports();
+				setCheckedStatus(this);
+			}
+		};
+		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_IMPDECL);
+		a.setId("com.drgarbge.HIDE_PACKGE_IMPORTS"); //TODO: define constant
+		a.setToolTipText("Hide package imports");//TODO: define constant
+		tbm.add(a);
+		
+		 a = new Action("Hide java doc items", IAction.AS_CHECK_BOX) {//TODO: define constant
+			public void run() {
+				astPanel.hideJavaDoc();
+				setCheckedStatus(this);
+			}
+		};
+		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_JAVADOCTAG);
+		a.setId("com.drgarbge.HIDE_JAVADOC"); //TODO: define constant
+		a.setToolTipText("Hide java doc items");//TODO: define constant
+		tbm.add(a);
+		
+		a = new Action("Hide fields", IAction.AS_CHECK_BOX) {//TODO: define constant
+			public void run() {
+				astPanel.hideFields();
+				setCheckedStatus(this);
+			}
+		};
+		a.setImageDescriptor(JavaPluginImages.DESC_FIELD_PROTECTED);
+		a.setId("com.drgarbge.HIDE_FIELDS"); //TODO: define constant
+		a.setToolTipText("Hide fields"); //TODO: define constant
+		tbm.add(a);
+		
+	}
+	
+	/**
+	 * Changes the checked status.
+	 * @param a the action object
+	 */
+	private void setCheckedStatus(IAction a){
+		if(a.isChecked()){
+			a.setChecked(true);
+		}
+		else{
+			a.setChecked(false);
+		}
 	}
 
 	/* (non-Javadoc)
