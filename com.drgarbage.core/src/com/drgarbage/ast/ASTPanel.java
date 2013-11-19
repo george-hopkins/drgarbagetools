@@ -57,7 +57,11 @@ import com.drgarbage.core.IExternalCommunication;
 import com.drgarbage.utils.Messages;
 
 /**
- * Parses a source file and creates a tree.
+ * Parses a source file and creates a tree control.
+ * 
+ * @author Sergej Alekseev
+ * @version $Revision$
+ * $Id$
  */
 public class ASTPanel extends Composite {
 	
@@ -66,14 +70,15 @@ public class ASTPanel extends Composite {
 	 */
 	private final ASTParser parser = ASTParser.newParser(AST.JLS4);
 	
-	AbstractDecoratedTextEditor editorPart;
+	private AbstractDecoratedTextEditor editorPart;
 	private Tree treeControl;
 	private TreeItem[] selectedItems = null;	
 		
 	/**
-	 * Constructor.
-	 * @param parent
-	 * @param style
+	 * Constructs a control panel with a tree object..
+	 * @param parent parent a composite control which will be the 
+	 *               parent of the new instance (cannot be null)
+	 * @param style the style of control to construct
 	 */
 	public ASTPanel(Composite parent,int style) {
 		super(parent,style);		
@@ -89,7 +94,7 @@ public class ASTPanel extends Composite {
 		
 		treeControl.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {				
-				// select text
+				// select text in the referenced resource
 				Tree tree = (Tree) e.widget;
 				selectedItems = tree.getSelection();
 				for (int i=0; i < selectedItems.length; ++i) {
@@ -104,7 +109,7 @@ public class ASTPanel extends Composite {
 		
 		MenuManager mm = new MenuManager();
 		
-		IAction action = new Action("Generate AST tree Graph"){
+		IAction action = new Action("Generate AST tree Graph"){//TODO: define constant
 			
 			/* (non-Javadoc)
 			 * @see org.eclipse.jface.action.Action#run()
@@ -140,9 +145,7 @@ public class ASTPanel extends Composite {
 			    		return;
 			    	}
 			    	
-			    	
 			    	comunicationObject.generateDiagramFromGraph("AST.graph", graph);
-				
 				}
 			}
 		};
@@ -154,9 +157,18 @@ public class ASTPanel extends Composite {
 	}
 	
 	/**
-	 * Creates graphs from the tree view.
-	 * @param item
-	 * @return
+	 * Sets the active editor part reference.
+	 * 
+	 * @param ep the editor part
+	 */
+	public void setEditorPart(AbstractDecoratedTextEditor ep) {
+		editorPart = ep;
+	}
+	
+	/**
+	 * Creates a graph from the selected subtree.
+	 * @param item the tree item
+	 * @return control flow graph
 	 */
 	private IDirectedGraphExt createGraphFromASTtree(TreeItem item){
 		IDirectedGraphExt cfg = GraphExtentionFactory.createDirectedGraphExtention();
@@ -179,14 +191,15 @@ public class ASTPanel extends Composite {
 		
 	/**
 	 * Creates graphs from the tree view.
-	 * @param parent
-	 * @param item
-	 * @param nodes
-	 * @param edges
+	 * The method is called recursively.
+	 * @param parent the parent of the current tree item
+	 * @param item the current tree item
+	 * @param nodes the list of nodes
+	 * @param edges the list of edges
 	 */
 	private void createGraphFromASTtree(TreeItem parent, TreeItem item, INodeListExt nodes, IEdgeListExt edges){
 		
-		System.out.println("CR NODE: " + item.getText());	
+		log("CR NODE: " + item.getText());	
 		INodeExt node = GraphExtentionFactory.createNodeExtention(null);
 		node.setByteCodeString(item.getText().substring(0, 8));
 		node.setToolTipText(item.getText());
@@ -194,10 +207,9 @@ public class ASTPanel extends Composite {
 		nodes.add(node);
 		item.setData(node); /* set reference*/
 		
-		System.out.println("CR EDGE: " + parent.getText() + " -> " + item.getText());
+		log("CR EDGE: " + parent.getText() + " -> " + item.getText());
 		IEdgeExt edge = GraphExtentionFactory.createEdgeExtention((INodeExt)parent.getData(), node);
 		edges.add(edge);
-		
 		
 		if(item.getItemCount() == 0){
 			return;
@@ -207,10 +219,15 @@ public class ASTPanel extends Composite {
 			createGraphFromASTtree(item, i, nodes, edges);
 		}
 	}
+	
+	private void log(String s){
+		System.out.println(s);
+	}
 		
 	/**
-	 * Sets source.
-	 * @param source
+	 * Sets the source for the tree control. 
+	 * @param source the compilation unit object.
+	 * 
 	 * @throws InterruptedException
 	 * @throws InvocationTargetException
 	 */
@@ -219,8 +236,9 @@ public class ASTPanel extends Composite {
 	}
 	
 	/**
-	 * Sets the source.
-	 * @param source
+	 * Sets the source for the tree control.
+	 * @param source the class file object.
+	 * 
 	 * @throws InterruptedException
 	 * @throws InvocationTargetException
 	 */
@@ -236,9 +254,10 @@ public class ASTPanel extends Composite {
 	}
 	
 	/**
-	 * Creates content for the view.
-	 * @param compilationUnit
-	 * @param classFile
+	 * Creates content for the tree viewer.
+	 * @param compilationUnit the compilation unit object (may be <code>null</code>).
+	 * @param classFile the class file object (may be <code>null</code>).
+	 * 
 	 * @throws InvocationTargetException
 	 * @throws InterruptedException
 	 */
@@ -267,20 +286,8 @@ public class ASTPanel extends Composite {
 							ASTVisitor visitor = new ASTVisitorImpl(treeControl,monitor);
 							node.accept(visitor);	
 						}
-					}); 					
-
+					});
 			}
 		});	
 	}
-	
-	/**
-	 * Sets the active editor part reference.
-	 * 
-	 * @param ep the editor part
-	 */
-	public void setEditorPart(AbstractDecoratedTextEditor ep) {
-		editorPart = ep;
-		
-	}
-
 }
