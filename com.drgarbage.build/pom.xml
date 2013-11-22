@@ -225,7 +225,6 @@
 		<module>../com.drgarbage.asm</module>
 		<module>../com.drgarbage.asm.plugin</module>
 		<module>../com.drgarbage.core</module>
-		<module>../com.drgarbage.core.feature</module>
 		<module>../com.drgarbage.bytecodevisualizer</module>
 		<module>../com.drgarbage.bytecodevisualizer.feature</module>
 		<module>../com.drgarbage.controlflowgraphfactory</module>
