@@ -1,6 +1,0 @@
-<antlib>
-    <taskdef
-        name="drGarbageUpdateVersions"
-        classname="com.drgarbage.ant.DrGarbageUpdateVersions"
-        onerror="ignore"/>
-</antlib>
