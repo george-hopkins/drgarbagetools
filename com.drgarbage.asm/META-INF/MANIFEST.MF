@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Export-Package: com.drgarbage.asm,com.drgarbage.asm.signature,com.drga
  rbage.asm.util,com.drgarbage.asm_ext
-Bundle-Vendor: Dr. Garbage
+Bundle-Vendor: Dr. Garbage Community
 Ant-Version: Apache Ant 1.7.1
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: com.drgarbage.asm_4.0.jar,com.drgarbage.asm.util_4.0
