@@ -210,5 +210,7 @@ public class BytecodeVisualizerMessages extends NLS {
 	public static String Buildpath_Dialog_Title;
 	public static String Buildpath_Dialog_Message;
 	
+	public static String Error_could_not_load_a_class;
+	
 	
 }

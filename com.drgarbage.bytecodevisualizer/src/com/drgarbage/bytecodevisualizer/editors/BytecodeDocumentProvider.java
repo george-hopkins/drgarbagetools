@@ -72,6 +72,7 @@ import com.drgarbage.bytecode.BytecodeUtils;
 import com.drgarbage.bytecode.jdi.JDIClassFileDocument;
 import com.drgarbage.bytecode.jdi.dialogs.SelectDebugTargetDialog;
 import com.drgarbage.bytecode.jdi.dialogs.SelectJavaTypeDialog;
+import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.bytecodevisualizer.preferences.BytecodeVisualizerPreferenceConstats;
 import com.drgarbage.core.CoreConstants;
@@ -375,7 +376,7 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 						jarFile.close();
 					}
 				} catch (IOException e) {
-					throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, "could not load a class file", e));
+					throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, BytecodeVisualizerMessages.Error_could_not_load_a_class, e));
 				}
 			}
 
@@ -396,7 +397,7 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 						return true;
 					}
 				} catch (FileNotFoundException e) {
-					throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, "could not load a class file", e));
+					throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, BytecodeVisualizerMessages.Error_could_not_load_a_class, e));
 				}			
 			}
 
@@ -409,7 +410,7 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 				InputStream contentStream = new FileInputStream(f);
 				setDocumentContent(document, contentStream, encoding);
 			} catch (FileNotFoundException e) {
-				throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, "could not load a class file", e));
+				throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, BytecodeVisualizerMessages.Error_could_not_load_a_class, e));
 			}
 
 			return true;
@@ -449,7 +450,7 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, "could not load a class file", e));//TODO: define constant
+			throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, BytecodeVisualizerMessages.Error_could_not_load_a_class, e));//TODO: define constant
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -522,7 +523,7 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 							return model;
 						}
 					} catch (JavaModelException e) {
-						throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, "could not create the bytecode annotation model", e));//TODO: define constant
+						throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, BytecodeVisualizerMessages.Error_could_not_load_a_class, e));//TODO: define constant
 					}	
 				}
 				
