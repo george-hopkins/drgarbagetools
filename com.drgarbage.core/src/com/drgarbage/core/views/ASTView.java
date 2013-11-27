@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2012, Dr. Garbage Community
+ * Copyright (c) 2008-2013, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,337 +13,110 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.drgarbage.core.views;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.IClassFile;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPageListener;
-import org.eclipse.ui.IPartListener2;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWindowListener;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchPartReference;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
+import org.eclipse.ui.internal.views.ViewsPlugin;
+import org.eclipse.ui.part.IPage;
+import org.eclipse.ui.part.IPageBookViewPage;
+import org.eclipse.ui.part.MessagePage;
+import org.eclipse.ui.part.PageBook;
+import org.eclipse.ui.part.PageBookView;
 
-import com.drgarbage.ast.ASTPanel;
 import com.drgarbage.core.CoreConstants;
-import com.drgarbage.core.CorePlugin;
+
 
 /**
- * Simple AST View
+ * Abstract syntax tree view.
+ * 
+ * @author Sergej Alekseev
+ * @version $Revision$
+ * $Id$
  */
-public class ASTView extends ViewPart {
-		
-	/**
-	 * The abstract syntax tree panel.
-	 */
-	private ASTPanel astPanel;
-	
-	/**
-	 * The reference to the editor part object.
-	 */
-	private IEditorPart editorPart;
-	
-	/**
-	 * The reference to active type root object.
-	 */
-	private ITypeRoot activeTypeRoot;
+public class ASTView extends PageBookView {
 
-	/**
-	 * Windows listener implementation.
-	 */
-	private IWindowListener windowListener = new IWindowListener(){
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IWindowListener#windowActivated(org.eclipse.ui.IWorkbenchWindow)
-		 */
-		public void windowActivated(IWorkbenchWindow window) {
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IWindowListener#windowClosed(org.eclipse.ui.IWorkbenchWindow)
-		 */
-		public void windowClosed(IWorkbenchWindow window) {
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IWindowListener#windowDeactivated(org.eclipse.ui.IWorkbenchWindow)
-		 */
-		public void windowDeactivated(IWorkbenchWindow window) {
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IWindowListener#windowOpened(org.eclipse.ui.IWorkbenchWindow)
-		 */
-		public void windowOpened(IWorkbenchWindow window) {
-			addPageListener(window);
-		}
-		
-	};
-
-	/**
-	 * Page listener implementation.
-	 */
-	private IPageListener pageListener = new IPageListener(){
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPageListener#pageActivated(org.eclipse.ui.IWorkbenchPage)
-		 */
-		public void pageActivated(IWorkbenchPage page) {
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPageListener#pageClosed(org.eclipse.ui.IWorkbenchPage)
-		 */
-		public void pageClosed(IWorkbenchPage page) {
-			page.removePostSelectionListener(selectionListener);
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPageListener#pageOpened(org.eclipse.ui.IWorkbenchPage)
-		 */
-		public void pageOpened(IWorkbenchPage page) {
-			page.addPostSelectionListener(selectionListener);
-		}		
-	};
-	
-	/**
-	 * Selection listener implementation.
-	 */
-	private ISelectionListener selectionListener = new ISelectionListener(){
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.ISelectionListener#selectionChanged(org.eclipse.ui.IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
-		 */
-		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-			if(!(part instanceof IEditorPart)){
-				return;
-			}
-			
-			if(!(part instanceof CompilationUnitEditor) &&
-					!part.getSite().getId().equals(CoreConstants.BYTECODE_VISUALIZER_EDITOR_ID)){
-				return;
-			}
-
-			editorPart = (IEditorPart)part;
-			ITypeRoot typeRoot = EditorUtility.getEditorInputJavaElement(editorPart, false);
-			
-			if(activeTypeRoot == null || activeTypeRoot != typeRoot){
-				activeTypeRoot = typeRoot;
-
-				try {
-					if(typeRoot instanceof ICompilationUnit){
-						astPanel.setSource((ICompilationUnit)typeRoot);
-					}
-					else if(typeRoot instanceof IClassFile){
-						astPanel.setSource((IClassFile)typeRoot);
-					}
-					astPanel.setEditorPart((AbstractDecoratedTextEditor) part);
-					
-				} catch (InterruptedException e1) {
-					CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,CorePlugin.PLUGIN_ID, e1.getMessage(), e1));
-				} catch (InvocationTargetException e2) {
-					CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,CorePlugin.PLUGIN_ID, e2.getMessage(), e2));
-				}
-			}
-		}
-
-	};
-	
-	/**
-	 * Part listener implementation.
-	 */
-	private IPartListener2 partListener2 = new IPartListener2(){
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPartListener2#partActivated(org.eclipse.ui.IWorkbenchPartReference)
-		 */
-		public void partActivated(IWorkbenchPartReference partRef) {
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPartListener2#partBroughtToTop(org.eclipse.ui.IWorkbenchPartReference)
-		 */
-		public void partBroughtToTop(IWorkbenchPartReference partRef) {
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPartListener2#partClosed(org.eclipse.ui.IWorkbenchPartReference)
-		 */
-		public void partClosed(IWorkbenchPartReference partRef) {
-			if(partRef.getPart(false).equals(editorPart)){
-				astPanel.clearContent();
-			}
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPartListener2#partDeactivated(org.eclipse.ui.IWorkbenchPartReference)
-		 */
-		public void partDeactivated(IWorkbenchPartReference partRef) {
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPartListener2#partOpened(org.eclipse.ui.IWorkbenchPartReference)
-		 */
-		public void partOpened(IWorkbenchPartReference partRef) {
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPartListener2#partHidden(org.eclipse.ui.IWorkbenchPartReference)
-		 */
-		public void partHidden(IWorkbenchPartReference partRef) {
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPartListener2#partVisible(org.eclipse.ui.IWorkbenchPartReference)
-		 */
-		public void partVisible(IWorkbenchPartReference partRef) {
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ui.IPartListener2#partInputChanged(org.eclipse.ui.IWorkbenchPartReference)
-		 */
-		public void partInputChanged(IWorkbenchPartReference partRef) {
-		}
-		
-	};
-	
 	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+	 * @see org.eclipse.ui.part.PageBookView#doCreatePage(org.eclipse.ui.IWorkbenchPart)
 	 */
-	@Override
-	public void createPartControl(Composite parent) {
-		/* create control */
-		astPanel = new ASTPanel(parent, SWT.NONE);
+	protected PageRec doCreatePage(IWorkbenchPart part) {
+		
+		/* set reference in the editor */
+		if(part instanceof CompilationUnitEditor 
+//TODO: synchronize ast view with the bytecode visualizer
+//				|| part.getSite().getId().
+//				equals(CoreConstants.BYTECODE_VISUALIZER_EDITOR_ID)
+				){
 
-		/* initialize listener */
-		IWorkbench workbench = getSite().getPage().getWorkbenchWindow().getWorkbench();
-		
-		IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
-		for(IWorkbenchWindow window: windows){
-			addPageListener(window);
-		}
-		
-		workbench.addWindowListener(windowListener);
+			ASTViewPage page = null;
+			
+			//FIXME: Implement adapter pattern in the editor classes 
+        	Object obj = ViewsPlugin.getAdapter(part, ASTViewPage.class, false);
+            if (obj instanceof ASTViewPage) {
+            	page = (ASTViewPage) obj;
+            }
+            else {
+            	//FIXME: The page is created here so long the adapter pattern is missing 
+            	/* should never happen */
+            	page = new ASTViewPage();
+            }
+        	
+			initPage((IPageBookViewPage) page);
+            page.createControl(getPageBook());
+            
+            /* set input */
+            page.setInput((IEditorPart)part);
 
-		initializeActions();
-	}
+            return new PageRec(part, page);
+        }
 
-	/**
-	 * Creates and initializes the filter actions.
-	 */
-	private void initializeActions() {
-		final IToolBarManager tbm = getViewSite().getActionBars().getToolBarManager();
-		
-		IAction a = new Action("Hide package declaration", IAction.AS_CHECK_BOX) {//TODO: define constant
-			public void run() {
-				astPanel.hidePackageDeclaration();
-				setCheckedStatus(this);
-			}
-		};
-		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_PACKDECL);
-		a.setId("com.drgarbge.HIDE_PACKGE_DECL"); //TODO: define constant
-		a.setToolTipText("Hide package declaration");
-		tbm.add(a);
-		
-		a = new Action("Hide package imports", IAction.AS_CHECK_BOX) { //TODO: define constant
-			public void run() {
-				astPanel.hidePackageImports();
-				setCheckedStatus(this);
-			}
-		};
-		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_IMPDECL);
-		a.setId("com.drgarbge.HIDE_PACKGE_IMPORTS"); //TODO: define constant
-		a.setToolTipText("Hide package imports");//TODO: define constant
-		tbm.add(a);
-		
-		 a = new Action("Hide java doc items", IAction.AS_CHECK_BOX) {//TODO: define constant
-			public void run() {
-				astPanel.hideJavaDoc();
-				setCheckedStatus(this);
-			}
-		};
-		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_JAVADOCTAG);
-		a.setId("com.drgarbge.HIDE_JAVADOC"); //TODO: define constant
-		a.setToolTipText("Hide java doc items");//TODO: define constant
-		tbm.add(a);
-		
-		a = new Action("Hide fields", IAction.AS_CHECK_BOX) {//TODO: define constant
-			public void run() {
-				astPanel.hideFields();
-				setCheckedStatus(this);
-			}
-		};
-		a.setImageDescriptor(JavaPluginImages.DESC_FIELD_PROTECTED);
-		a.setId("com.drgarbge.HIDE_FIELDS"); //TODO: define constant
-		a.setToolTipText("Hide fields"); //TODO: define constant
-		tbm.add(a);
-		
-	}
-	
-	/**
-	 * Changes the checked status.
-	 * @param a the action object
-	 */
-	private void setCheckedStatus(IAction a){
-		if(a.isChecked()){
-			a.setChecked(true);
-		}
-		else{
-			a.setChecked(false);
-		}
+        return null;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
+	 * @see org.eclipse.ui.part.PageBookView#getBootstrapPart()
 	 */
 	@Override
-	public void setFocus() {
+	protected IWorkbenchPart getBootstrapPart() {
+        IWorkbenchPage page = getSite().getPage();
+        if (page != null) {
+			return page.getActiveEditor();
+		}
+
+        return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.ui.AbstractDebugView#isImportant(org.eclipse.ui.IWorkbenchPart)
+	 */
+	@Override
+	protected boolean isImportant(IWorkbenchPart part) {
+		/* we are interested only on an editor */
+		return part instanceof IEditorPart ? true : false;
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+	 * @see org.eclipse.ui.part.PageBookView#createDefaultPage(org.eclipse.ui.part.PageBook)
 	 */
-	@Override
-	public void dispose() {
-		super.dispose();
-		IWorkbench workbench = getSite().getPage().getWorkbenchWindow().getWorkbench();
-		workbench.removeWindowListener(windowListener);
+	protected IPage createDefaultPage(PageBook book) {
+        MessagePage page = new MessagePage();
+		page = new MessagePage();
+        initPage(page);
+        page.createControl(book);
+        page.setMessage("AST view is not available");//TODO: define constant for default page
+        
+        return page;
 	}
 
-	/**
-	 * Adds listener to all pages of the window.
-	 * @param window
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.PageBookView#doDestroyPage(org.eclipse.ui.IWorkbenchPart, org.eclipse.ui.part.PageBookView.PageRec)
 	 */
-	private void addPageListener(IWorkbenchWindow window){
-		window.addPageListener(pageListener);
-		
-		IWorkbenchPage[] pages = window.getPages();
-		for(IWorkbenchPage page: pages){
-			page.addPostSelectionListener(selectionListener);
-			
-			/* add part listener to handle close events */
-			page.addPartListener(partListener2);
-		}
+	@Override
+	protected void doDestroyPage(IWorkbenchPart part, PageRec rec) {
+        rec.page.dispose();
 	}
 }
