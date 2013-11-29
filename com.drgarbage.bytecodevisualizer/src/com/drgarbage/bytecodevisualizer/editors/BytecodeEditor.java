@@ -17,16 +17,24 @@
 package com.drgarbage.bytecodevisualizer.editors;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IStackFrame;
@@ -52,13 +60,17 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.debug.core.IJavaStackFrame;
+import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jdt.internal.ui.javaeditor.IClassFileEditorInput;
+import org.eclipse.jdt.internal.ui.javaeditor.ICompilationUnitDocumentProvider;
 import org.eclipse.jdt.internal.ui.javaeditor.InternalClassFileEditorInput;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditorBreadcrumb;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.ui.text.IColorManager;
 import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.JavaTextTools;
@@ -145,6 +157,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.internal.PartSite;
 import org.eclipse.ui.internal.WorkbenchImages;
+import org.eclipse.ui.internal.part.NullEditorInput;
 import org.eclipse.ui.internal.texteditor.LineNumberColumn;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
@@ -152,6 +165,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
+import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.rulers.IColumnSupport;
 import org.eclipse.ui.texteditor.rulers.RulerColumnDescriptor;
@@ -184,6 +198,7 @@ import com.drgarbage.core.views.ControlFlowGraphView;
 import com.drgarbage.core.views.ControlFlowGraphViewPage;
 import com.drgarbage.core.views.IControlFlowGraphView;
 import com.drgarbage.core.views.IControlFlowGraphViewPage;
+import com.drgarbage.javalang.JavaLangUtils;
 import com.drgarbage.utils.ClassFileDocumentsUtils;
 import com.drgarbage.utils.Messages;
 
@@ -200,13 +215,6 @@ public class BytecodeEditor extends JavaEditor
 		IClassFileEditor,
 		BytecodeVisualizerPreferenceConstats
 	{
-
-//	/* bug#91 NullPointerException if license has been expired. */
-//	class StructuredSelection2 extends StructuredSelection {
-//		public Object getFirstElement() {
-//			return new JavaEditorBreadcrumb(getEditor());
-//		}
-//	}
 	
 	/** Key constants */
 	private static final int ARROW_DOWN = SWT.KEYCODE_BIT + 2; 	//keyCode=16777218 (KeyEvent KeyDown)
@@ -276,12 +284,6 @@ public class BytecodeEditor extends JavaEditor
 	 * Menu provider.
 	 */
 	private MenuManager cmProvider;
-	
-//	/**
-//	 * The canonical empty selection. This selection should be used 
-//	 * for bug correction bug#91 NullPointerException if license has been expired.
-//	 */
-//	public final StructuredSelection EMPTY = new StructuredSelection2();
 
 	/**
 	 * Outline page of the class file editor.
@@ -652,10 +654,7 @@ public class BytecodeEditor extends JavaEditor
 		textWidget.addFocusListener(new FocusListener(){
 			public void focusGained(FocusEvent e) {
 				if(canvasControlFlowGraph.isDisposed())
-					return;
-
-//				System.out.print("gain: ");
-//				System.out.println(isControlFlowgraphViewVisible());				
+					return;			
 
 				if(isControlFlowgraphViewVisible()){
 					a1.setEnabled(true);
@@ -670,9 +669,6 @@ public class BytecodeEditor extends JavaEditor
 			public void focusLost(FocusEvent e) {
 				if(canvasControlFlowGraph.isDisposed())
 					return;
-
-//				System.out.print("lost: ");
-//				System.out.println(isControlFlowgraphViewVisible());
 
 				if(!isControlFlowgraphViewVisible()){
 					a1.setEnabled(false);
@@ -944,7 +940,6 @@ public class BytecodeEditor extends JavaEditor
 		Composite editorParent = new Composite(parent, SWT.NONE);	
 		editorParent.setLayout(new FillLayout());
 		super.createPartControl(editorParent);
-		//createSuperPartControl(editorParent);
 		layout.topControl = editorParent;
 		
 		/* install context menu */
@@ -1081,16 +1076,10 @@ public class BytecodeEditor extends JavaEditor
 	 */
 	protected void createSourceCodeTab() {
 		try {
-
 			sourceCodeViewerComposite = new Composite(getTabFolder(), SWT.NONE);
 			sourceCodeViewerComposite.setLayout(new FillLayout());
 
 			IEditorInput sourceCodeViewerInput = getSourceCodeViewerInput();
-
-			// check if .class file
-			if (!sourceCodeViewerInput.getName().toLowerCase().endsWith(".class")){
-				BytecodeVisualizerPlugin.logErrorMessage("Only '.class' files can be opened in Bytecode Visualizer.");
-			}
 
 			if (sourceCodeViewerInput instanceof IFileEditorInput) {
 
@@ -1184,12 +1173,9 @@ public class BytecodeEditor extends JavaEditor
 
 
 		} catch (PartInitException e) {
-			Messages.error(CoreMessages.ERROR_CreateNested_Editor);
-
-			AbstractUIPlugin p = CorePlugin.getPluginFromRegistry(CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID);
-			p.getLog().log(e.getStatus());
+			Messages.error(CoreMessages.ERROR_CreateNested_Editor + CoreMessages.ExceptionAdditionalMessage);
+			BytecodeVisualizerPlugin.log(BytecodeVisualizerPlugin.createErrorStatus(e.getMessage(), e));
 		}
-
 	}
 	
     /**
@@ -1367,11 +1353,134 @@ public class BytecodeEditor extends JavaEditor
 		super.doRestoreState(memento);
 	}
 
+	private boolean setNewInput(IEditorInput input){
+		if (input instanceof IFileEditorInput) {
+
+			/* a local class file */
+			IFileEditorInput fileEditorInput = (IFileEditorInput) input;
+			IFile file = fileEditorInput.getFile();
+			IProject project = file.getProject();
+
+			/* create java project */
+			IJavaProject javaProject = JavaCore.create(project);
+
+			/* get class path */
+			try {
+
+				IPath projectPath = file.getProjectRelativePath();
+				
+				/* remove the source folder segment */
+				IPath sourceFolder = projectPath.removeFirstSegments(1);
+
+				IJavaElement javaElement = javaProject.findElement(sourceFolder);
+				if(javaElement instanceof ICompilationUnit){
+					ICompilationUnit unit = (ICompilationUnit)javaElement;
+
+					List<String> classList = new ArrayList<String>();
+					
+					IType[] types = unit.getTypes();
+					for(IType t: types){
+						ClassFileDocumentsUtils.collectNestedClasses(t, classList);
+					}
+					
+					/* 
+					 * If the compilation unit includes more than one class 
+					 * declaration, ask the user to select a class to be opened.
+					 */
+					String className = "";
+					if(classList.size() > 1){
+						//TODO: define text constant
+						className = Messages.openSelectDialog("The java source file contains more then one class definition."
+								+ "\n"
+								+ "Please select a class wich has to be visualized from the list:",
+								JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS),
+								classList);
+						if(className == null){
+							return false;
+						}
+					}
+					else{
+						if(classList.size() == 1){
+							className = classList.get(0);
+						}
+						else{
+							return false;
+						}
+					}
+
+					String[] classPath = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
+
+					String packageName = ClassFileDocumentsUtils.getPackageNameFromCompilationUnit(unit);
+					File f = JavaLangUtils.findFileResource(classPath, packageName, className);
+					IPath classFilePath = new Path(f.getAbsolutePath()); 
+
+					/* make path relative /<project>/<bin folder>/<package>/<class> */
+					classFilePath = classFilePath.removeFirstSegments(projectPath.segmentCount() + 1);
+
+					/* find the resource and set the new editor input */
+					final IFile classFile = ResourcesPlugin.getWorkspace().getRoot().getFile(classFilePath);
+					doSetInput(new FileEditorInput(classFile));
+				}
+
+				return true;
+
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				
+				return false;
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+
+		}
+		
+		return false;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#doSetInput(org.eclipse.ui.IEditorInput)
 	 */
+	@SuppressWarnings("restriction")
 	protected void doSetInput(IEditorInput input) throws CoreException {
+		
+		/* 
+		 * Check if the user has selected a source file (*.java).
+		 * If the source is a compilation unit look for the 
+		 * corresponding classes in the 'bin' folder of the 
+		 * project and create a new input to open a class file
+		 * instead of the source.
+		 */
+		if (input.getName().toLowerCase().endsWith(".java")){
+			//TODO: define text constant
+			String msg = "You have selected a java source file '"
+					+ input.getName()
+					+ "'."
+					+ "\n"
+					+ "Bytecode Visualizer is only able to visualize the content of a class file."
+					+ "\n"
+					+ "Would you like to open the corresponding class file instead.";
+			
+			if(Messages.openConfirm(msg)){
+				if(!setNewInput(input)){
+					/* 
+					 * If the user has rejected the action, 
+					 * create a NullEditorInput.
+					 */
+					super.doSetInput(new NullEditorInput());
+				}
+			}
+			else{
+				super.doSetInput(new NullEditorInput());
+			}
+			return;
+		}
+		
 		super.doSetInput(input);
+
 		if (sourceCodeViewer != null) {
 			if (input instanceof IFileEditorInput){
 				//TODO: implement for local class file
