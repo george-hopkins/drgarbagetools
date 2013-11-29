@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2012, Dr. Garbage Community
+ * Copyright (c) 2008-2013, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -47,6 +47,16 @@ import com.drgarbage.javalang.JavaLangUtils;
  */
 public class ClassFileDocumentsUtils {
 
+	/**
+	 * Returns a method object for the given type
+	 * by the method name and the method signature. 
+	 * @param type type representing a class
+	 * @param methodName method name
+	 * @param methodSignature method signature in java class file format
+	 * @return
+	 * @throws JavaModelException
+	 * @see IType
+	 */
 	public static IMethod findMethod(IType type, String methodName, String methodSignature) 
 	throws JavaModelException{
 		if(type == null){
@@ -70,11 +80,17 @@ public class ClassFileDocumentsUtils {
 		return null;
 	}
 
+	/**
+	 * Returns the method signature string.
+	 * @param iMethod method object
+	 * @return method signature string
+	 * 
+	 * @see IMethod
+	 */
 	public  static String resolveMethodSignature(IMethod iMethod){
 
 		String mMethodSignature = null;
 		try{
-
 			/* 
 			 * Method Signature:
 			 * NOTE: if class file is selected then the method signature is resolved. 
@@ -98,8 +114,6 @@ public class ClassFileDocumentsUtils {
 				buf.append(res);
 
 				mMethodSignature=buf.toString();
-
-
 			}
 
 		}catch(IllegalArgumentException e){
@@ -114,40 +128,55 @@ public class ClassFileDocumentsUtils {
 	}
 
 	/**
+	 * Returns the package name as a string for the given 
+	 * compilation unit. 
+	 * @param unit compilation unit
+	 * @return package name
+	 * @throws JavaModelException
+	 */
+	public static String getPackageNameFromCompilationUnit(ICompilationUnit unit)
+			throws JavaModelException{
+		IPackageDeclaration[]  p = unit.getPackageDeclarations();
+		if(p.length > 0){
+			return p[0].getElementName();
+		}
+
+		return null;
+	}
+	
+	/**
 	 * Collects recursively nested classes in the compilation unit.
-	 * The nested Classes are append with a prefix of the main class.
+	 * The nested class names are type-qualified. The classes are 
+	 * stored in the class list given as argument.
 	 * For example:
+	 * <pre>
 	 *      HEllo
 	 *      HEllo$C1
 	 *      HEllo$C1$C3
+	 * </pre>
 	 *  
-	 *  The classes are stored in the list.
-	 *  
-	 * @param start element
-	 * @param list of classes
+	 * @param t type representing a class
+	 * @param classList class list to store nested classes
 	 * @throws JavaModelException
+	 * @see IType#getTypeQualifiedName()
 	 */
-	public static void collectNestedClasses(IJavaElement element, List<String> classList) 
-	throws JavaModelException{
-		if(element instanceof IType) {
-			IType t = (IType) element;
-			classList.add(t.getTypeQualifiedName());
-			
-			/* start recursion */
-			IJavaElement[] elements = t.getChildren();
-			for(IJavaElement e: elements){
-				collectNestedClasses(e, classList);
-			}
+	public static void collectNestedClasses(IType t, List<String> classList) 
+			throws JavaModelException{
+		classList.add(t.getTypeQualifiedName());
+
+		/* start recursion */
+		IType[] types = t.getTypes();
+		for(IType e: types){
+			collectNestedClasses(e, classList);
 		}
 	}
 	
 	/**
-	 * Returns the list of InputStreams instances for
-	 * the given classes.
-	 * @param list of classes
-	 * @param classpath
-	 * @param package name
-	 * @return
+	 * Returns the list of InputStreams for the given list of classes.
+	 * @param classList list of classes
+	 * @param classPath classpath
+	 * @param packageName package name
+	 * @return list if InputStreams
 	 */
 	public static List<InputStream> getInputStreams(List<String> classList, String[] classPath, String packageName){
 		List<InputStream> streams = new ArrayList<InputStream>();
@@ -178,29 +207,24 @@ public class ClassFileDocumentsUtils {
 	}
 	
 	/**
-	 * Create a list of graphs.
-	 * @return list of graphs
+	 * Returns the list of InputStreams for all classes defined in the 
+	 * compilation unit including nested classes.
+	 * @param unit compilation unit 
+	 * @param jp java project
+	 * @return list if InputStreams
 	 */
 	public static List<InputStream> findClasses(ICompilationUnit unit, IJavaProject jp){
-
-		String[] classpath = null;
-		String packageName = "";
-		List<String> classList = new ArrayList<String>();
-
 		try {
-			/* get class path */
-			classpath = JavaRuntime.computeDefaultRuntimeClassPath(jp);
-
-			/* get package name and classes */
-			IJavaElement[] elements = unit.getChildren();
-			for(IJavaElement element: elements){
-				if(element.getElementType() == IJavaElement.PACKAGE_DECLARATION){
-					packageName = element.getElementName();
-				} 
-				else if(element instanceof IType) {                                                 
-					collectNestedClasses(element, classList);
-				}
+			List<String> classList = new ArrayList<String>();
+			IType[] types = unit.getTypes();
+			for(IType t: types){
+				ClassFileDocumentsUtils.collectNestedClasses(t, classList);
 			}
+			
+			String[] classpath = JavaRuntime.computeDefaultRuntimeClassPath(jp);			
+			String packageName = getPackageNameFromCompilationUnit(unit);
+			
+			return getInputStreams(classList, classpath, packageName);
 
 		} catch (JavaModelException e) {
 			handleException(e);
@@ -208,17 +232,20 @@ public class ClassFileDocumentsUtils {
 			handleException(e);
 		}
 
-		return getInputStreams(classList, classpath, packageName);
+		return null;
 
 	}
 	
 	/**
-	 * Exceptions handler. Just to reduce number of code lines.
-	 * @param e
+	 * Exceptions handler.
+	 * @param e exception
 	 */
 	private static void handleException(Throwable e){
-		CorePlugin.getDefault().getLog().log(
-				new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e));
+		CorePlugin.log(
+				new Status(IStatus.ERROR, 
+						CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, 
+						e.getMessage(), 
+						e));
 
 	}
 }

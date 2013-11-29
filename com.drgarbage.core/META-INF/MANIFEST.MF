@@ -1,28 +1,24 @@
 Manifest-Version: 1.0
-Export-Package: com.drgarbage.algorithms;x-friends:="com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer,com.drgarbage.bytecodevisualizer",
+Export-Package: com.drgarbage.algorithms,
  com.drgarbage.asm.render.intf;uses:="com.drgarbage.bytecode.instructions",
- com.drgarbage.asm.visitor;x-friends:="com.drgarbage.coverage",
+ com.drgarbage.asm.visitor,
  com.drgarbage.bytecode;uses:="com.drgarbage.bytecode.instructions",
- com.drgarbage.bytecode.constant_pool;x-friends:="com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer,com.drgarbage.bytecodevisualizer",
+ com.drgarbage.bytecode.constant_pool,
  com.drgarbage.bytecode.instructions;uses:="com.drgarbage.bytecode",
- com.drgarbage.controlflowgraph;x-friends:="com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer,com.drgarbage.bytecodevisualizer",
- com.drgarbage.controlflowgraph.anchors;x-friends:="com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer",
- com.drgarbage.controlflowgraph.figures;x-friends:="com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer",
- com.drgarbage.controlflowgraph.intf;x-friends:="com.drgarbage.bytecodevisualizer,com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer",
+ com.drgarbage.controlflowgraph,
+ com.drgarbage.controlflowgraph.anchors,
+ com.drgarbage.controlflowgraph.figures,
+ com.drgarbage.controlflowgraph.intf,
  com.drgarbage.core;x-friends:="com.drgarbage.bytecodevisualizer,com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer",
- com.drgarbage.core.img;x-friends:="com.drgarbage.bytecodevisualizer,com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer",
- com.drgarbage.core.jface;x-friends:="com.drgarbage.bytecodevisualizer,com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer",
+ com.drgarbage.core.img,
+ com.drgarbage.core.jface,
  com.drgarbage.core.preferences;x-friends:="com.drgarbage.bytecodevisualizer,com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer",
- com.drgarbage.core.views;x-friends:="com.drgarbage.bytecodevisualizer,com.drgarbage.controlflowgraphfactory,com.drgarbage.sourcecodevisualizer",
- com.drgarbage.draw2d;x-friends:="com.drgarbage.sourcecodevisualizer,com.drgarbage.bytecodevisualizer",
+ com.drgarbage.core.views,
+ com.drgarbage.draw2d,
  com.drgarbage.io,
  com.drgarbage.javalang,
- com.drgarbage.javasrc;x-friends:="com.drgarbage.bytecodevisualizer",
- com.drgarbage.utils;
-  x-friends:="com.drgarbage.bytecodevisualizer,
-   com.drgarbage.controlflowgraphfactory,
-   com.drgarbage.coverage,
-   com.drgarbage.sourcecodevisualizer"
+ com.drgarbage.javasrc,
+ com.drgarbage.utils
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,lib/com.drgarbage.asm_3.1.jar,lib/com.drgarbage.as
  m.util_3.1.jar

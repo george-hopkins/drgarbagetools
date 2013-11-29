@@ -36,6 +36,28 @@ import org.eclipse.jdt.launching.JavaRuntime;
  */
 public class JavaLangUtils {
 	
+	public static File findFileResource(String[] classPath, String packageName, String className) throws IOException {
+		if(packageName == null){
+			packageName= "";
+		}
+	    String relativePath = packageName.replace('.', File.separatorChar) + (packageName.length() == 0 ? "" : File.separator) + className + ".class";
+	    for (int i = 0; i <  classPath.length; i++) {
+	        File currentClassPathEntry = new File(classPath[i]);
+	        if (!currentClassPathEntry.exists()) {
+	            continue;
+	        }
+	        if (currentClassPathEntry.isDirectory()) {
+	            File file = new File(currentClassPathEntry, relativePath);
+	            if (file.exists()) {
+	            	return file;
+	            }
+	        } else if (currentClassPathEntry.isFile()) {
+	        	/* not supported, just ignore */
+	        }
+	    }
+	    return null;
+	}
+	
 	public static InputStream findResource(String[] classPath, String packageName, String className) throws IOException {
 		if(packageName == null){
 			packageName= "";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2012, Dr. Garbage Community
+ * Copyright (c) 2008-2013, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,20 @@
 
 package com.drgarbage.utils;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import com.drgarbage.core.CoreMessages;
 import com.drgarbage.core.img.CoreImg;
+import com.drgarbage.core.jface.SelectDialog;
 
 /**
- * Message Boxes.
+ * Message Boxes and dialogs
  * 
  * @author Sergej Alekseev
  * @version $Revision$
@@ -109,16 +113,92 @@ public class Messages {
         return dialog.open() == 0;
     }
 
+    /**
+     * @see  #openConfirm(Shell, String, String, String[])
+     */
     public static boolean openConfirm(Shell parent, String title, String message) {
     	return openConfirm(parent, title, message, new String[] { IDialogConstants.OK_LABEL,
                 IDialogConstants.CANCEL_LABEL});
     }
-    
+
+    /**
+     * @see  #openConfirm(Shell, String, String, String[])
+     */
     public static boolean openConfirm(String title, String message) {
     	return openConfirm(null, title, message);
     }
  
+    /**
+     * @see  #openConfirm(Shell, String, String, String[])
+     */
     public static boolean openConfirm(String message) {
     	return openConfirm(null, CoreMessages.MessageDialogQuestion, message);
+    }
+    
+    /**
+     * Convenience method to open a select dialog.
+     * 
+     * @param parentShell 
+     * 						the parent shell of the dialog, or <code>null</code> if none
+     * @param title 
+     * 						the dialog's title, or <code>null</code> if none
+     * @param message 	
+     * 						the message
+     * @param buttons 
+     * 						the labels of the buttons to appear in the button bar
+     * @param classList
+     * 						the list of elements have to be displayed in the selection list
+     * 
+     * @return selected text if the user presses the OK button,
+     *         <code>null</code> otherwise
+     */
+    public static String openSelectDialog(Shell parentShell, 
+    		String title, 
+    		String message, 
+    		String[] buttons, 
+    		Image selectionListImage,
+    		List<String> elementList){
+    	
+    	SelectDialog dialog = 
+    			new SelectDialog(parentShell, title, 
+        		CoreImg.aboutDrGarbageIcon_16x16.createImage(),
+                message, MessageDialog.QUESTION, buttons , 0, selectionListImage); /* OK is the default */
+        
+		dialog.create();
+		dialog.addElementsToList(elementList);
+		
+		dialog.open() ;
+    	return dialog.getSelectedText();	
+    }
+    
+    /**
+     * @see  #openSelectDialog(Shell, String, String, String[], List)
+     */
+    public static String openSelectDialog(String message,
+    		Image selectionListImage,
+    		List<String>  elementList) {
+    	return openSelectDialog(null, CoreMessages.MessageDialogQuestion, message, selectionListImage, elementList);
+    }
+    
+    /**
+     * @see  #openSelectDialog(Shell, String, String, String[], List)
+     */    
+    public static String openSelectDialog(String title, 
+    		String message, 
+    		Image selectionListImage,
+    		List<String> elementList) {
+    	return openSelectDialog(null, title, message, selectionListImage, elementList);
+    }
+    
+    /**
+     * @see  #openSelectDialog(Shell, String, String, String[], List)
+     */
+    public static String openSelectDialog(Shell parent, 
+    		String title, 
+    		String message, 
+    		Image selectionListImage,
+    		List<String> elementList) {
+    	return openSelectDialog(parent, title, message, new String[] { IDialogConstants.OK_LABEL,
+                IDialogConstants.CANCEL_LABEL}, selectionListImage, elementList);
     }
 }
