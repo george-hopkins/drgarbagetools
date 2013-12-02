@@ -197,4 +197,6 @@ public class ControlFlowFactoryMessages extends NLS {
 	public static String GraphDOTExport_Cannot_transform_line_style_0; 
 	public static String Export_Could_not_export_0_;
 	
+	public static String Open_newly_created_graph_file;
+	
 }
