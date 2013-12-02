@@ -73,6 +73,13 @@ public class ASTPanel extends Composite {
 	private AbstractDecoratedTextEditor editorPart;
 	private Tree treeControl;
 	private TreeItem[] selectedItems = null;	
+	
+	private ICompilationUnit sourceCompilationUnit = null;
+	private IClassFile sourceClassFile = null;
+	private boolean packageDeclarationsAreShown = true;
+	private boolean packageImportsAreShown = true;
+	private boolean javaDocIsShown = true;
+	private boolean fieldDeclarationsAreShown = true;
 		
 	/**
 	 * Constructs a control panel with a tree object..
@@ -231,6 +238,7 @@ public class ASTPanel extends Composite {
 	 * @throws InvocationTargetException
 	 */
 	public void setSource(ICompilationUnit source) throws InterruptedException, InvocationTargetException {
+		sourceCompilationUnit = source;
 		createContent(source, null);
 	}
 	
@@ -242,6 +250,7 @@ public class ASTPanel extends Composite {
 	 * @throws InvocationTargetException
 	 */
 	public void setSource(IClassFile source) throws InterruptedException, InvocationTargetException {
+		sourceClassFile = source;
 		createContent(null, source);
 	}
 	
@@ -290,35 +299,101 @@ public class ASTPanel extends Composite {
 		});	
 	}
 
+	private void deleteTreeItems(TreeItem parent, int type){
+		System.out.println("deletetreeitems vor for: " + parent);
+		for(int i=0; i < parent.getItemCount(); i++){
+			TreeItem child = parent.getItem(i);
+			System.out.println("deletetreeitems: " + child);
+			ASTNode childNode = (ASTNode) child.getData(ASTVisitorImpl.NODE);
+			if( childNode.getNodeType() == type ) {
+				System.out.println("Child will be disposed");
+				deleteTreeItems(child, type);
+				child.dispose();
+				i--;
+			}
+			else {
+				System.out.println("recurse on child " + child);
+				deleteTreeItems(child, type);
+			}
+		}
+	}
+	
+	private void recreateTree(){
+		try {
+			createContent(sourceCompilationUnit, sourceClassFile);
+		}
+		catch (Exception e){
+			CorePlugin.log(e);
+		}
+		for(int i=0; i < treeControl.getItemCount(); i++){
+			if(!packageDeclarationsAreShown) deleteTreeItems(treeControl.getItem(i), ASTNode.PACKAGE_DECLARATION);
+			if(!packageImportsAreShown) deleteTreeItems(treeControl.getItem(i), ASTNode.IMPORT_DECLARATION);
+			if(!javaDocIsShown) deleteTreeItems(treeControl.getItem(i), ASTNode.JAVADOC);
+			if(!fieldDeclarationsAreShown) deleteTreeItems(treeControl.getItem(i), ASTNode.FIELD_DECLARATION);
+		}
+	}
+
 	/**
 	 * Hides the package declarations.
 	 */
 	public void hidePackageDeclaration() {
-		// TODO Auto-generated method stub
-		
+		if(packageDeclarationsAreShown){
+			for(int i=0; i < treeControl.getItemCount(); i++){
+				deleteTreeItems(treeControl.getItem(i), ASTNode.PACKAGE_DECLARATION);
+			}
+			packageDeclarationsAreShown = false;
+		}
+		else {
+			packageDeclarationsAreShown = true;
+			recreateTree();
+		}
 	}
 
 	/**
 	 * Hides the package imports.
 	 */
 	public void hidePackageImports() {
-		// TODO Auto-generated method stub
-		
+		if(packageImportsAreShown){
+			for(int i=0; i < treeControl.getItemCount(); i++){
+				deleteTreeItems(treeControl.getItem(i), ASTNode.IMPORT_DECLARATION);
+			}
+			packageImportsAreShown = false;
+		}
+		else {
+			packageImportsAreShown = true;
+			recreateTree();
+		}
 	}
 
 	/**
 	 * Hides java doc items.
 	 */
 	public void hideJavaDoc() {
-		// TODO Auto-generated method stub
-		
+		if(javaDocIsShown){
+			for(int i=0; i < treeControl.getItemCount(); i++){
+				deleteTreeItems(treeControl.getItem(i), ASTNode.JAVADOC);
+			}
+			javaDocIsShown = false;
+		}
+		else {
+			javaDocIsShown = true;
+			recreateTree();
+		}
 	}
 
 	/**
 	 * Hide Fields.
 	 */
 	public void hideFields() {
-		// TODO Auto-generated method stub
-		
+		if(fieldDeclarationsAreShown){
+			for(int i=0; i < treeControl.getItemCount(); i++){
+				deleteTreeItems(treeControl.getItem(i), ASTNode.FIELD_DECLARATION);
+			}
+			fieldDeclarationsAreShown = false;
+		}
+		else {
+			fieldDeclarationsAreShown = true;
+			recreateTree();
+		}
 	}
 }
