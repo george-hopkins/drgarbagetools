@@ -36,6 +36,7 @@ import org.eclipse.ui.part.Page;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
 import com.drgarbage.ast.ASTPanel;
+import com.drgarbage.core.CoreMessages;
 import com.drgarbage.core.CorePlugin;
 
 /**
@@ -106,48 +107,48 @@ public class ASTViewPage extends Page {
 		IActionBars bars = getSite().getActionBars();
 		IToolBarManager tbm = bars.getToolBarManager();
 		
-		IAction a = new Action("Hide package declaration", IAction.AS_CHECK_BOX) {//TODO: define constant
+		IAction a = new Action(CoreMessages.ASTViewPage_Hide_PKG_DECL, IAction.AS_CHECK_BOX) {
 			public void run() {
 				astPanel.hidePackageDeclaration();
 				setCheckedStatus(this);
 			}
 		};
 		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_PACKDECL);
-		a.setId("com.drgarbge.HIDE_PACKGE_DECL"); //TODO: define constant
-		a.setToolTipText("Hide package declaration");
+		a.setId(CoreMessages.ASTViewPage_Hide_PKG_DECL_ID);
+		a.setToolTipText(CoreMessages.ASTViewPage_Hide_PKG_DECL_tooltip);
 		tbm.add(a);
 		
-		a = new Action("Hide package imports", IAction.AS_CHECK_BOX) { //TODO: define constant
+		a = new Action(CoreMessages.ASTViewPage_Hide_PKG_Imports, IAction.AS_CHECK_BOX) { 
 			public void run() {
 				astPanel.hidePackageImports();
 				setCheckedStatus(this);
 			}
 		};
 		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_IMPDECL);
-		a.setId("com.drgarbge.HIDE_PACKGE_IMPORTS"); //TODO: define constant
-		a.setToolTipText("Hide package imports");//TODO: define constant
+		a.setId(CoreMessages.ASTViewPage_Hide_PKG_Imports_ID);
+		a.setToolTipText(CoreMessages.ASTViewPage_Hide_PKG_Imports_tooltip);
 		tbm.add(a);
 		
-		 a = new Action("Hide java doc items", IAction.AS_CHECK_BOX) {//TODO: define constant
+		 a = new Action(CoreMessages.ASTViewPage_Hide_JAVADOC, IAction.AS_CHECK_BOX) {
 			public void run() {
 				astPanel.hideJavaDoc();
 				setCheckedStatus(this);
 			}
 		};
 		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_JAVADOCTAG);
-		a.setId("com.drgarbge.HIDE_JAVADOC"); //TODO: define constant
-		a.setToolTipText("Hide java doc items");//TODO: define constant
+		a.setId(CoreMessages.ASTViewPage_Hide_JAVADOC_ID); 
+		a.setToolTipText(CoreMessages.ASTViewPage_Hide_JAVADOC_tooltip);
 		tbm.add(a);
 		
-		a = new Action("Hide fields", IAction.AS_CHECK_BOX) {//TODO: define constant
+		a = new Action(CoreMessages.ASTViewPage_Hide_FIELDS, IAction.AS_CHECK_BOX) {
 			public void run() {
 				astPanel.hideFields();
 				setCheckedStatus(this);
 			}
 		};
 		a.setImageDescriptor(JavaPluginImages.DESC_FIELD_PROTECTED);
-		a.setId("com.drgarbge.HIDE_FIELDS"); //TODO: define constant
-		a.setToolTipText("Hide fields"); //TODO: define constant
+		a.setId(CoreMessages.ASTViewPage_Hide_FIELDS_ID);
+		a.setToolTipText(CoreMessages.ASTViewPage_Hide_FIELDS_tooltip);
 		tbm.add(a);
 		
 	}
