@@ -208,8 +208,8 @@ import com.drgarbage.utils.Messages;
   * Byte Code Editor.
   *
   * @author Sergej Alekseev and Peter Palaga
-  * @version $Revision:25 $
-  * $Id:ClassFileEditor.java 25 2007-04-01 17:56:22Z aleks $
+  * @version $Revision$
+  * $Id$
   */
 public class BytecodeEditor extends JavaEditor 
 	implements IDocumentUpdateListener, 

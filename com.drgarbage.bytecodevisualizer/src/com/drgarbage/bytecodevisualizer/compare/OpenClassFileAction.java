@@ -47,7 +47,7 @@ import com.drgarbage.utils.Messages;
 @SuppressWarnings("restriction")
 public class OpenClassFileAction extends AbstractCompareClassFileAction implements IObjectActionDelegate {
 
-    /**
+    /* (non-Javadoc)
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     public void run(IAction action) {
@@ -69,6 +69,12 @@ public class OpenClassFileAction extends AbstractCompareClassFileAction implemen
         }
     }
 
+    /**
+     * Opens a dialog with a list of classes from the current workspace.
+     * The selected class is returned as a java element.
+     * @return the java element or <code>null</null>
+     * @see IJavaElement
+     */
     private IJavaElement selectJavaElement() {
 
         Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();

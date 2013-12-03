@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2012, Dr. Garbage Community
+ * Copyright (c) 2008-2013, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,12 +81,12 @@ import com.drgarbage.javasrc.JavaLexicalConstants;
 import com.sun.jdi.ReferenceType;
 
 /**
- * Except for file resources handled by the superclass, it can hanle also 
+ * Except for file resources handled by the superclass, it can handle also 
  * class files coming from jar archives.
  *
  * @author Peter Palaga
- * @version $Revision:25 $
- * $Id:ByteCodeDocumentProvider.java 25 2007-04-01 17:56:22Z aleks $
+ * @version $Revision$
+ * $Id$
  */
 @SuppressWarnings("restriction")
 public class BytecodeDocumentProvider extends FileDocumentProvider {
@@ -105,14 +105,6 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 	 * Reference to the class file outline element.
 	 */
 	private IJavaElement classFileOutlineElement;
-	
-
-
-	//private IClassFile classFile;
-
-//	public IClassFile getClassFile() {
-//		return classFile;
-//	}
 
 	/**
 	 * List of the document update listeners. <code>BytecodeDocumentProvider</code> fires on each 
@@ -305,11 +297,8 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 
 				}
 				
-				
-				
 				if (referenceType != null) {
 					/* we were able to read the referenceType over JDI */
-					
 					ClassFileOutlineElement outlineElement = new ClassFileOutlineElement();
 					JDIClassFileDocument doc = new JDIClassFileDocument(referenceType, debugTargetName, outlineElement);
 			        outlineElement.setClassFileDocument(doc);
@@ -334,14 +323,13 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 				
 			}
 			
-			/* If we reached this point it means that JDI is not prefered or that JDI did not work. */
-			
+			/* If we reached this point it means that JDI is not preferred or that JDI did not work. */
 			IPath filePath =  classFile.getPath();
 			String ext = filePath.getFileExtension();
 			if (FileExtensions.JAR.equalsIgnoreCase(ext)) {
 				/* really a jar, check if it is an external or internal resource 
 				 * FIX: bug#50 "java.util.zip.ZipException: error 
-				 * in opening zip file" on openening*/				
+				 * in opening zip file" on opening*/				
 				File f = null;
 				IResource res = classFile.getResource();
 				if(res != null){
@@ -422,7 +410,6 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 		
 		return false;
 	}
-
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.editors.text.StorageDocumentProvider#setDocumentContent(org.eclipse.jface.text.IDocument, java.io.InputStream, java.lang.String)
@@ -526,10 +513,8 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 						throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, BytecodeVisualizerMessages.Error_not_load_file, e));
 					}	
 				}
-				
 			}
 		}
-		
 		
 		if(element instanceof IClassFileEditorInput){
 			return createClassFileAnnotationModel((IClassFileEditorInput)element);
@@ -566,15 +551,42 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.AbstractDocumentProvider#getDocument(java.lang.Object)
+	 */
 	@Override
 	public IDocument getDocument(Object element) {
 		return getBytecodeDocument(element);
 	}
 
+	/**
+	 * <p>
+	 * Returns the document for the given element. The document contains 
+	 * a textual presentation of the class file content.
+	 * </p>
+	 * <p>
+	 * This method wraps the {@link IDocumentProvider#getDocument(Object)}
+	 * to avoid calling this method directly.
+	 * </p>
+	 * @param input the element, or <code>null</code>
+	 * @return the document, or <code>null</code> if none
+	 * 
+	 * @see IDocumentProvider#getDocument(Object)
+	 */
 	public IDocument getBytecodeDocument(Object input) {
 		return super.getDocument(input);
 	}
 	
+	/**
+	 * Returns the document from the source code viewer for
+	 * the given element. The document contains the source code
+	 * attached to the class file or <code>null</code> if none.
+	 *  
+	 * @param input the element, or <code>null</code>
+	 * @return the document, or <code>null</code> if none
+	 * 
+	 * @see IDocumentProvider#getDocument(Object)
+	 */
 	public IDocument getSourcecodeDocument(Object input) {
 		if (classFileEditor != null) {
 			ISourceCodeViewer sourceCodeViewer = classFileEditor.getSourceCodeViewer();
