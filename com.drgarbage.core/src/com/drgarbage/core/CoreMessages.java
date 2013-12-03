@@ -75,7 +75,7 @@ public class CoreMessages extends NLS {
 
 	
 	/* errors and exceptions */
-	public static String LINE_NOT_FOUND_IN_SELECTED_TEXT;
+	public static String ERROR_LINE_NUMBER_NOT_FOUND_IN_SELECTED_TEXT;
 	public static String CLASS_NAME_NOT_RESOLVED;
 	
 	/*Error handling*/

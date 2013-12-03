@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -1133,11 +1134,12 @@ public class BytecodeEditor extends JavaEditor
 					}
 
 				} catch (JavaModelException e) {
-					BytecodeVisualizerPlugin.getDefault().getLog().log(
-							new Status(IStatus.WARNING, 
-									BytecodeVisualizerPlugin.PLUGIN_ID,
-									CoreMessages.ERROR_Cannot_get_Sourcecode, 
-									e));
+
+					String msg = MessageFormat.format(CoreMessages.ERROR_Cannot_get_Sourcecode, 
+							new Object[] {fileEditorInput.getName()});
+					
+					BytecodeVisualizerPlugin.log(
+							new Status(IStatus.WARNING, BytecodeVisualizerPlugin.PLUGIN_ID, msg, e));
 
 					/* try with class file viewer */
 					sourceCodeViewer =  new  ClassFileSourcecodeViewer();
@@ -1425,14 +1427,11 @@ public class BytecodeEditor extends JavaEditor
 				return true;
 
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				
+				BytecodeVisualizerPlugin.log(e);
 				return false;
 				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				BytecodeVisualizerPlugin.log(e);
 				return false;
 			}
 
@@ -1642,8 +1641,8 @@ public class BytecodeEditor extends JavaEditor
 			return className.trim();
 		}
 		
-		CorePlugin.getDefault().getLog().log(
-				new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, CoreMessages.CLASS_NAME_NOT_RESOLVED) 
+		BytecodeVisualizerPlugin.log(
+				new Status(IStatus.ERROR, BytecodeVisualizerPlugin.PLUGIN_ID, CoreMessages.CLASS_NAME_NOT_RESOLVED) 
 				);
 
 		return null;
@@ -1757,8 +1756,8 @@ public class BytecodeEditor extends JavaEditor
 				line = document.getLineOfOffset(selectedRange.x);
 				
 			} catch (BadLocationException e) {
-				CorePlugin.getDefault().getLog().log(
-						new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e)
+				BytecodeVisualizerPlugin.log(
+						new Status(IStatus.ERROR, BytecodeVisualizerPlugin.PLUGIN_ID, e.getMessage(), e)
 						);
 			}
 		}
@@ -1810,7 +1809,7 @@ public class BytecodeEditor extends JavaEditor
 		
 		String linkText = text.substring(beginIndex, endIndex);
 		
-		/* Get LIne Number from the link string */
+		/* Get Line Number from the link string */
 		int index = linkText.lastIndexOf(':');
 		if (index >= 0) {
 			String numText = linkText.substring(index + 1);
@@ -1821,14 +1820,14 @@ public class BytecodeEditor extends JavaEditor
 			try {
 				return Integer.parseInt(numText);
 			} catch (NumberFormatException e) {
-				CorePlugin.getDefault().getLog().log(
-						new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e)
+				BytecodeVisualizerPlugin.log(
+						new Status(IStatus.ERROR, BytecodeVisualizerPlugin.PLUGIN_ID, e.getMessage(), e)
 						);
 			}		
 		}
-		
-		CorePlugin.getDefault().getLog().log(
-				new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, CoreMessages.LINE_NOT_FOUND_IN_SELECTED_TEXT)
+
+		BytecodeVisualizerPlugin.log(
+				new Status(IStatus.ERROR, BytecodeVisualizerPlugin.PLUGIN_ID, CoreMessages.ERROR_LINE_NUMBER_NOT_FOUND_IN_SELECTED_TEXT)
 				);
 
 		return IClassFileEditor.INVALID_LINE;
@@ -2226,10 +2225,9 @@ public class BytecodeEditor extends JavaEditor
 				int line = getSourceCodeLine(textPagesel) - 1; /* 0-based line number */
 
 				if(line == IClassFileEditor.INVALID_LINE){
-					AbstractUIPlugin p = CorePlugin.getPluginFromRegistry(CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID);
-					p.getLog().log(
-							new Status(IStatus.ERROR, CorePlugin.PLUGIN_ID, "Could not find the source code line.") //TODO: define constant
-					);
+					BytecodeVisualizerPlugin.log(
+							new Status(IStatus.ERROR, BytecodeVisualizerPlugin.PLUGIN_ID, "Could not find the source code line.")//TODO: define constant 
+							);
 					return false;
 				}
 
@@ -2498,8 +2496,8 @@ public class BytecodeEditor extends JavaEditor
 				}
 
 			} catch (JavaModelException e) {
-				CorePlugin.getDefault().getLog().log(
-						new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e)
+				BytecodeVisualizerPlugin.log(
+						new Status(IStatus.ERROR, BytecodeVisualizerPlugin.PLUGIN_ID, e.getMessage(), e)
 						);
 			}
 			
@@ -2588,8 +2586,8 @@ public class BytecodeEditor extends JavaEditor
 			
 			
 			} catch (PartInitException e) {
-				CorePlugin.getDefault().getLog().log(
-						new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e)
+				BytecodeVisualizerPlugin.log(
+						new Status(IStatus.ERROR, BytecodeVisualizerPlugin.PLUGIN_ID, e.getMessage(), e)
 						);
 			}
 		}
