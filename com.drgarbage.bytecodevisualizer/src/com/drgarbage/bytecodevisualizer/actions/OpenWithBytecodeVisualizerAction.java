@@ -27,6 +27,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 
+import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.utils.Messages;
 
@@ -63,11 +64,11 @@ public class OpenWithBytecodeVisualizerAction implements IObjectActionDelegate {
 				page.openEditor(editorInput, BytecodeVisualizerPlugin.PLUGIN_ID + ".editor", true);
 			} catch (PartInitException e) {
 				BytecodeVisualizerPlugin.log(e);
-				Messages.error("PartInitException. For more details see log trace.");//TODO: define constant
+				Messages.error(BytecodeVisualizerMessages.Error_part_init_exception);
 			}
 		}
 		else{
-			Messages.error("TreeSelection-Interface is not compartible.");//TODO: define constant
+			Messages.error(BytecodeVisualizerMessages.Error_tree_selection_interface);
 		}
 	}
 
