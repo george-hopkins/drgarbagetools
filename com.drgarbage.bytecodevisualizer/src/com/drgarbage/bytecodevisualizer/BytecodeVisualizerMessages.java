@@ -211,7 +211,11 @@ public class BytecodeVisualizerMessages extends NLS {
 	public static String Buildpath_Dialog_Message;
 	
 	public static String Error_could_not_load_a_class;
-	
+	public static String Error_not_load_file;
+	public static String Error_not_find_line;
+	public static String Error_part_init_exception;
+	public static String Error_tree_selection_interface;
+	public static String Message_file_to_compare;
 	/* Bytecode editor error handling */
 	public static String OpenClassfileInsteadOfSource;
 	public static String SourceContainsSeveralClassDefinitions;

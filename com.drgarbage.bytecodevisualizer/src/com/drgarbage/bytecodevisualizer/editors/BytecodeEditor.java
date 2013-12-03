@@ -2221,7 +2221,7 @@ public class BytecodeEditor extends JavaEditor
 
 				if(line == IClassFileEditor.INVALID_LINE){
 					BytecodeVisualizerPlugin.log(
-							new Status(IStatus.ERROR, BytecodeVisualizerPlugin.PLUGIN_ID, "Could not find the source code line.")//TODO: define constant 
+							new Status(IStatus.ERROR, BytecodeVisualizerPlugin.PLUGIN_ID, BytecodeVisualizerMessages.Error_not_find_line)
 							);
 					return false;
 				}

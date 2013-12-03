@@ -450,7 +450,7 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, BytecodeVisualizerMessages.Error_could_not_load_a_class, e));//TODO: define constant
+			throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, BytecodeVisualizerMessages.Error_not_load_file, e));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -523,7 +523,7 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 							return model;
 						}
 					} catch (JavaModelException e) {
-						throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, BytecodeVisualizerMessages.Error_could_not_load_a_class, e));//TODO: define constant
+						throw new CoreException(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, IStatus.OK, BytecodeVisualizerMessages.Error_not_load_file, e));
 					}	
 				}
 				
