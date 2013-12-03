@@ -46,8 +46,13 @@ import com.drgarbage.core.CorePlugin;
  * @version $Revision$
  * $Id$
  */
+@SuppressWarnings("restriction")
 public class ASTViewPage extends Page {
 
+	public static String ASTViewPage_HIDE_PKG_IMPORTS_ACTION_ID = "com.drgarbge.HIDE_PACKGE_IMPORTS";
+	public static String ASTViewPage_HIDE_JAVADOC_ACTION__ID = "com.drgarbge.HIDE_JAVADOC";
+	public static String ASTViewPage_HIDE_FIELDS_ACTION_ID = "com.drgarbge.HIDE_FIELDS";
+	
 	/**
 	 * The abstract syntax tree control panel.
 	 */
@@ -125,7 +130,7 @@ public class ASTViewPage extends Page {
 			}
 		};
 		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_IMPDECL);
-		a.setId(CoreMessages.ASTViewPage_Hide_PKG_Imports_ID);
+		a.setId(ASTViewPage_HIDE_PKG_IMPORTS_ACTION_ID);
 		a.setToolTipText(CoreMessages.ASTViewPage_Hide_PKG_Imports_tooltip);
 		tbm.add(a);
 		
@@ -136,7 +141,7 @@ public class ASTViewPage extends Page {
 			}
 		};
 		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_JAVADOCTAG);
-		a.setId(CoreMessages.ASTViewPage_Hide_JAVADOC_ID); 
+		a.setId(ASTViewPage_HIDE_JAVADOC_ACTION__ID); 
 		a.setToolTipText(CoreMessages.ASTViewPage_Hide_JAVADOC_tooltip);
 		tbm.add(a);
 		
@@ -147,7 +152,7 @@ public class ASTViewPage extends Page {
 			}
 		};
 		a.setImageDescriptor(JavaPluginImages.DESC_FIELD_PROTECTED);
-		a.setId(CoreMessages.ASTViewPage_Hide_FIELDS_ID);
+		a.setId(ASTViewPage_HIDE_FIELDS_ACTION_ID);
 		a.setToolTipText(CoreMessages.ASTViewPage_Hide_FIELDS_tooltip);
 		tbm.add(a);
 		

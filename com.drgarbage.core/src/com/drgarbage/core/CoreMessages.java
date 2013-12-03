@@ -121,13 +121,10 @@ public class CoreMessages extends NLS {
 	public static String ASTViewPage_Hide_PKG_DECL_ID;
 	public static String ASTViewPage_Hide_PKG_DECL_tooltip;
 	public static String ASTViewPage_Hide_PKG_Imports;
-	public static String ASTViewPage_Hide_PKG_Imports_ID;
 	public static String ASTViewPage_Hide_PKG_Imports_tooltip;
 	public static String ASTViewPage_Hide_JAVADOC;
-	public static String ASTViewPage_Hide_JAVADOC_ID;
 	public static String ASTViewPage_Hide_JAVADOC_tooltip;
 	public static String ASTViewPage_Hide_FIELDS;
-	public static String ASTViewPage_Hide_FIELDS_ID;
 	public static String ASTViewPage_Hide_FIELDS_tooltip;
 	
 }
