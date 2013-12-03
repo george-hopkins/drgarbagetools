@@ -31,6 +31,7 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.FilteredItemsSelectionDialog;
 
+import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
 import com.drgarbage.core.CoreMessages;
 import com.drgarbage.utils.Messages;
@@ -79,7 +80,7 @@ public class OpenClassFileAction extends AbstractCompareClassFileAction implemen
         				SearchEngine.createWorkspaceScope(), 
         				IJavaSearchConstants.TYPE);
         dialog.setTitle(ClassFileMergeViewer.CLASS_FILE_MERGEVIEWER_TITLE);
-        dialog.setMessage("Please select class file to compare"); //TODO: define constant
+        dialog.setMessage(BytecodeVisualizerMessages.Message_file_to_compare); 
 
         int resultCode = dialog.open();
         if (resultCode != IDialogConstants.OK_ID) {
