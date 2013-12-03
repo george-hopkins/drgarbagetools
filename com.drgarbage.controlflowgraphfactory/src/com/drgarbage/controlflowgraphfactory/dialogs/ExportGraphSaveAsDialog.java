@@ -202,7 +202,7 @@ public class ExportGraphSaveAsDialog extends SaveAsDialog {
 			}
 		});
 		checkButton4.setSelection(true);
-		checkButton4.setText(ControlFlowFactoryMessages.Open_newly_created_graph_file);//TODO: define constant
+		checkButton4.setText(ControlFlowFactoryMessages.Open_newly_created_graph_file);
 		
 		/* Buttons */
 		Composite composite = new Composite(parent, SWT.NONE);
