@@ -40,7 +40,7 @@ import com.drgarbage.graph.IGraphSpecification;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: ExportGraphFileFolderSelectionDialog.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class ExportGraphFileFolderSelectionDialog extends FileFolderSelectionDialog {
 

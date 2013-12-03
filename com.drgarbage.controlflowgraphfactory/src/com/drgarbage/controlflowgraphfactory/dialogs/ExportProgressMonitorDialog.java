@@ -26,7 +26,7 @@ import com.drgarbage.utils.Messages;
  * Sometimes necessary to avoid invalid access thread exception.
  * 
  * @author Serrej Alekseev
- * $Id: ExportProgressMonitorDialog.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $ 
+ * $Id$ 
  */
 public class ExportProgressMonitorDialog extends ProgressMonitorDialog {
 

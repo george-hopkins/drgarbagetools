@@ -42,7 +42,7 @@ import com.drgarbage.io.IoUtils;
  * 
  * @author Sergej Alekseev
  * @version $Revision$
- * $Id: ExportGraphSaveAsDialog.java 1523 2012-04-13 14:34:24Z Sergej Alekseev $
+ * $Id$
  */
 public class ExportGraphSaveAsDialog extends SaveAsDialog {
 	private IGraphSpecification graphSpecification;
