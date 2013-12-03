@@ -200,6 +200,7 @@ import com.drgarbage.core.views.ControlFlowGraphViewPage;
 import com.drgarbage.core.views.IControlFlowGraphView;
 import com.drgarbage.core.views.IControlFlowGraphViewPage;
 import com.drgarbage.javalang.JavaLangUtils;
+import com.drgarbage.javasrc.JavaLexicalConstants;
 import com.drgarbage.utils.ClassFileDocumentsUtils;
 import com.drgarbage.utils.Messages;
 
@@ -1391,10 +1392,10 @@ public class BytecodeEditor extends JavaEditor
 					 */
 					String className = "";
 					if(classList.size() > 1){
-						//TODO: define text constant
-						className = Messages.openSelectDialog("The java source file contains more then one class definition."
-								+ "\n"
-								+ "Please select a class wich has to be visualized from the list:",
+						StringBuffer msg = new StringBuffer(BytecodeVisualizerMessages.SourceContainsSeveralClassDefinitions);
+						msg.append(JavaLexicalConstants.NEWLINE);
+						msg.append(BytecodeVisualizerMessages.SelectClassToVisualize);
+						className = Messages.openSelectDialog(msg.toString(),
 								JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS),
 								classList);
 						if(className == null){
@@ -1454,14 +1455,8 @@ public class BytecodeEditor extends JavaEditor
 		 * instead of the source.
 		 */
 		if (input.getName().toLowerCase().endsWith(".java")){
-			//TODO: define text constant
-			String msg = "You have selected a java source file '"
-					+ input.getName()
-					+ "'."
-					+ "\n"
-					+ "Bytecode Visualizer is only able to visualize the content of a class file."
-					+ "\n"
-					+ "Would you like to open the corresponding class file instead.";
+			String msg = MessageFormat.format(BytecodeVisualizerMessages.OpenClassfileInsteadOfSource, 
+					new Object[] {input.getName()});
 			
 			if(Messages.openConfirm(msg)){
 				if(!setNewInput(input)){

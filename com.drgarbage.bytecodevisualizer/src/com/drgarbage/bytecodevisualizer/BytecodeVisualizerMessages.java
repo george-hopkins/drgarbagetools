@@ -212,5 +212,10 @@ public class BytecodeVisualizerMessages extends NLS {
 	
 	public static String Error_could_not_load_a_class;
 	
+	/* Bytecode editor error handling */
+	public static String OpenClassfileInsteadOfSource;
+	public static String SourceContainsSeveralClassDefinitions;
+	public static String SelectClassToVisualize;
+	
 	
 }
