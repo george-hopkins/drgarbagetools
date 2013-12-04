@@ -17,6 +17,8 @@
 package com.drgarbage.ast;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -25,22 +27,40 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.DoStatement;
+import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.LabeledStatement;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.core.dom.SwitchCase;
+import org.eclipse.jdt.core.dom.SwitchStatement;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.WhileStatement;
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -71,12 +91,16 @@ public class ASTPanel extends Composite {
 	private final ASTParser parser = ASTParser.newParser(AST.JLS4);
 	
 	private AbstractDecoratedTextEditor editorPart;
-	private Tree treeControl;
-	private TreeItem[] selectedItems = null;	
+
+	private TreeViewer treeViewer;
+	private TreeModel selectedModelElement = null;	
 	
+	@SuppressWarnings("unused")
 	private ICompilationUnit sourceCompilationUnit = null;
+	@SuppressWarnings("unused")
 	private IClassFile sourceClassFile = null;
-	private boolean packageDeclarationsAreShown = true;
+	
+	private boolean packageDeclarationsAreShown = false;
 	private boolean packageImportsAreShown = true;
 	private boolean javaDocIsShown = true;
 	private boolean fieldDeclarationsAreShown = true;
@@ -92,28 +116,84 @@ public class ASTPanel extends Composite {
 
 		GridLayout gridLayout = new GridLayout();
 		super.setLayout(gridLayout);
-		this.treeControl = new Tree(this, SWT.BORDER | SWT.SINGLE | SWT.FILL);
+	
+		treeViewer = new TreeViewer(this, SWT.BORDER | SWT.SINGLE | SWT.FILL);
 		gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
-		treeControl.setLayout(gridLayout);
-		treeControl.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | 
-		GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		gridLayout.numColumns = 1;		
+		treeViewer.getControl().setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | 
+				GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		
-		treeControl.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {				
-				// select text in the referenced resource
-				Tree tree = (Tree) e.widget;
-				selectedItems = tree.getSelection();
-				for (int i=0; i < selectedItems.length; ++i) {
-					ASTNode node = (ASTNode) selectedItems[i].getData(ASTVisitorImpl.NODE);
-					if (node != null) {
-						editorPart.selectAndReveal(node.getStartPosition(),node.getLength());
+		treeViewer.addSelectionChangedListener(new ISelectionChangedListener(){
+
+			/* (non-Javadoc)
+			 * @see org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.SelectionChangedEvent)
+			 */
+			public void selectionChanged(SelectionChangedEvent event) {
+				/* select text in the referenced resource */
+				ISelection sel = event.getSelection();
+				if(sel instanceof TreeSelection){
+					TreeSelection ts = (TreeSelection) sel;
+					Object o = ts.getFirstElement();
+					if(o != null){
+						selectedModelElement = (TreeModel) o;
+						ASTNode node = selectedModelElement.getNode();
+						if (node != null) {
+							editorPart.selectAndReveal(node.getStartPosition(),node.getLength());
+						}
 					}
 				}
 			}
 		});
 		
-		
+		treeViewer.setContentProvider(new TreeContentProvider());
+		treeViewer.setLabelProvider(new ILabelProvider(){
+
+			/* (non-Javadoc)
+			 * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
+			 */
+			public void addListener(ILabelProviderListener listener) {	
+			}
+
+			/* (non-Javadoc)
+			 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
+			 */
+			public void dispose() {
+			}
+
+			/* (non-Javadoc)
+			 * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
+			 */
+			public boolean isLabelProperty(Object element, String property) {
+				return false;
+			}
+
+			/* (non-Javadoc)
+			 * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
+			 */
+			public void removeListener(ILabelProviderListener listener) {
+			}
+
+			/* (non-Javadoc)
+			 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
+			 */
+			public Image getImage(Object element) {
+				TreeModel tm = (TreeModel) element;
+				Image i = getImage(tm.getNode());
+				return i;
+			}
+
+			/* (non-Javadoc)
+			 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
+			 */
+			public String getText(Object element) {
+				TreeModel tm = (TreeModel) element;
+				ASTNode n = tm.getNode();
+				String s = getNodeDescr(n);
+				return s;
+			}
+			
+		});
+				
 		MenuManager mm = new MenuManager();
 		
 		IAction action = new Action("Generate AST tree Graph"){//TODO: define constant
@@ -122,9 +202,8 @@ public class ASTPanel extends Composite {
 			 * @see org.eclipse.jface.action.Action#run()
 			 */
 			public void run() {
-				if(selectedItems != null && selectedItems.length == 1){
-					selectedItems[0].setExpanded(true);
-					IDirectedGraphExt graph = 	createGraphFromASTtree(selectedItems[0]);
+				if(selectedModelElement != null){
+					IDirectedGraphExt graph = 	createGraphFromASTtree(selectedModelElement);
 
 					final String controlFlowFactoryID = "com.drgarbage.controlflowgraphfactory";
 					
@@ -158,9 +237,79 @@ public class ASTPanel extends Composite {
 		};
 //		action.setImageDescriptor(newImage); //TODO: create a new image
 		mm.add(action);
-		Menu menu = mm.createContextMenu(treeControl);
-		treeControl.setMenu(menu);
+		Menu menu = mm.createContextMenu(treeViewer.getControl());
+		treeViewer.getControl().setMenu(menu);
 	}
+	
+	
+	/**
+	 * Simple implementation of the Tree content provider.
+	 * @see {@link ITreeContentProvider}
+	 */
+	public class TreeContentProvider implements ITreeContentProvider {
+		
+		/* (non-Javadoc)
+		 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
+		 */
+		public Object[] getChildren(Object parentElement) {
+			
+			if(packageDeclarationsAreShown){
+				List<Object> objects = new ArrayList<Object>();
+				List<TreeModel>children = ((TreeModel)parentElement).getChildren();
+				for(TreeModel t: children){
+					if(t.getNode().getNodeType() !=  ASTNode.PACKAGE_DECLARATION){
+						objects.add(t);
+					}
+				}
+				return objects.toArray();
+			}
+			
+			if (parentElement instanceof TreeModel){
+				return ((TreeModel)parentElement).getChildren().toArray();
+			}
+
+			return new Object[0];
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
+		 */
+		public Object getParent(Object arg0) {
+			return null;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
+		 */
+		public boolean hasChildren(Object element) {
+			if (element instanceof TreeModel){
+				return ((TreeModel)element).getChildren().size() != 0;
+			}
+
+			return false;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.jface.viewers.ITreeContentProvider#getElements(java.lang.Object)
+		 */
+		public Object[] getElements(Object nodes) {
+			return getChildren(nodes);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
+		 */
+		public void dispose() {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+		 */
+		public void inputChanged(Viewer arg0, Object arg1, Object arg2) {
+		}
+
+	}
+	
 	
 	/**
 	 * Sets the active editor part reference.
@@ -173,23 +322,25 @@ public class ASTPanel extends Composite {
 	
 	/**
 	 * Creates a graph from the selected subtree.
-	 * @param item the tree item
+	 * @param treeRoot the tree item
 	 * @return control flow graph
 	 */
-	private IDirectedGraphExt createGraphFromASTtree(TreeItem item){
+	private IDirectedGraphExt createGraphFromASTtree(TreeModel treeRoot){
 		IDirectedGraphExt cfg = GraphExtentionFactory.createDirectedGraphExtention();
 		INodeListExt nodes = cfg.getNodeList();
 		IEdgeListExt edges = cfg.getEdgeList();
 
 		INodeExt root = GraphExtentionFactory.createNodeExtention(null);
-		root.setByteCodeString(item.getText().substring(0, 8));
-		root.setToolTipText(item.getText());
+		ASTNode n = treeRoot.getNode();
+		String s = getNodeDescr(n);
+		root.setByteCodeString(s.substring(0, 8));
+		root.setToolTipText(s);
 		root.setVertexType(INodeType.NODE_TYPE_SIMPLE);
 		nodes.add(root);
-		item.setData(root); /* set reference*/	
+		treeRoot.setData(root); /* set reference*/	
 		
-		for(TreeItem i: item.getItems()){
-			createGraphFromASTtree(item, i, nodes, edges);
+		for(TreeModel i: treeRoot.getChildren()){
+			createGraphFromASTtree(treeRoot, i, nodes, edges);
 		}
 		
 		return cfg;
@@ -199,30 +350,36 @@ public class ASTPanel extends Composite {
 	 * Creates graphs from the tree view.
 	 * The method is called recursively.
 	 * @param parent the parent of the current tree item
-	 * @param item the current tree item
+	 * @param child the current tree item
 	 * @param nodes the list of nodes
 	 * @param edges the list of edges
 	 */
-	private void createGraphFromASTtree(TreeItem parent, TreeItem item, INodeListExt nodes, IEdgeListExt edges){
+	private void createGraphFromASTtree(TreeModel parent, TreeModel child, INodeListExt nodes, IEdgeListExt edges){
 		
-		log("CR NODE: " + item.getText());	
+		ASTNode n = child.getNode();
+		String s = getNodeDescr(n);
+		
+		log("CR NODE: " + s);	
 		INodeExt node = GraphExtentionFactory.createNodeExtention(null);
-		node.setByteCodeString(item.getText().substring(0, 8));
-		node.setToolTipText(item.getText());
+		node.setByteCodeString(s.substring(0, 8));
+		node.setToolTipText(s);
 		node.setVertexType(INodeType.NODE_TYPE_SIMPLE);
 		nodes.add(node);
-		item.setData(node); /* set reference*/
+		child.setData(node); /* set reference*/
 		
-		log("CR EDGE: " + parent.getText() + " -> " + item.getText());
+		ASTNode p = parent.getNode();
+		String ps = getNodeDescr(p);
+		
+		log("CR EDGE: " + ps + " -> " + s);
 		IEdgeExt edge = GraphExtentionFactory.createEdgeExtention((INodeExt)parent.getData(), node);
 		edges.add(edge);
 		
-		if(item.getItemCount() == 0){
+		if(child.getChildren().size() == 0){
 			return;
 		}
 		
-		for(TreeItem i: item.getItems()){
-			createGraphFromASTtree(item, i, nodes, edges);
+		for(TreeModel i: child.getChildren()){
+			createGraphFromASTtree(child, i, nodes, edges);
 		}
 	}
 	
@@ -258,7 +415,7 @@ public class ASTPanel extends Composite {
 	 * Clears the panel content.
 	 */
 	public void clearContent() {
-		treeControl.removeAll();
+		treeViewer.setInput(null);
 	}
 	
 	/**
@@ -291,46 +448,14 @@ public class ASTPanel extends Composite {
 					if (monitor.isCanceled()) return;
 					getDisplay().syncExec(new Runnable() {
 						public void run() {
-							ASTVisitor visitor = new ASTVisitorImpl(treeControl,monitor);
-							node.accept(visitor);	
+							TreeModel t = new TreeModel();
+							ASTVisitorImpl visitor = new ASTVisitorImpl(t, monitor);
+							node.accept(visitor);
+							treeViewer.setInput(t);
 						}
 					});
 			}
 		});	
-	}
-
-	private void deleteTreeItems(TreeItem parent, int type){
-		System.out.println("deletetreeitems vor for: " + parent);
-		for(int i=0; i < parent.getItemCount(); i++){
-			TreeItem child = parent.getItem(i);
-			System.out.println("deletetreeitems: " + child);
-			ASTNode childNode = (ASTNode) child.getData(ASTVisitorImpl.NODE);
-			if( childNode.getNodeType() == type ) {
-				System.out.println("Child will be disposed");
-				deleteTreeItems(child, type);
-				child.dispose();
-				i--;
-			}
-			else {
-				System.out.println("recurse on child " + child);
-				deleteTreeItems(child, type);
-			}
-		}
-	}
-	
-	private void recreateTree(){
-		try {
-			createContent(sourceCompilationUnit, sourceClassFile);
-		}
-		catch (Exception e){
-			CorePlugin.log(e);
-		}
-		for(int i=0; i < treeControl.getItemCount(); i++){
-			if(!packageDeclarationsAreShown) deleteTreeItems(treeControl.getItem(i), ASTNode.PACKAGE_DECLARATION);
-			if(!packageImportsAreShown) deleteTreeItems(treeControl.getItem(i), ASTNode.IMPORT_DECLARATION);
-			if(!javaDocIsShown) deleteTreeItems(treeControl.getItem(i), ASTNode.JAVADOC);
-			if(!fieldDeclarationsAreShown) deleteTreeItems(treeControl.getItem(i), ASTNode.FIELD_DECLARATION);
-		}
 	}
 
 	/**
@@ -338,62 +463,265 @@ public class ASTPanel extends Composite {
 	 */
 	public void hidePackageDeclaration() {
 		if(packageDeclarationsAreShown){
-			for(int i=0; i < treeControl.getItemCount(); i++){
-				deleteTreeItems(treeControl.getItem(i), ASTNode.PACKAGE_DECLARATION);
-			}
 			packageDeclarationsAreShown = false;
 		}
-		else {
+		else{
 			packageDeclarationsAreShown = true;
-			recreateTree();
 		}
+		
+		treeViewer.refresh();
 	}
 
 	/**
 	 * Hides the package imports.
 	 */
 	public void hidePackageImports() {
-		if(packageImportsAreShown){
-			for(int i=0; i < treeControl.getItemCount(); i++){
-				deleteTreeItems(treeControl.getItem(i), ASTNode.IMPORT_DECLARATION);
-			}
-			packageImportsAreShown = false;
-		}
-		else {
-			packageImportsAreShown = true;
-			recreateTree();
-		}
+		//TODO: implement
 	}
 
 	/**
 	 * Hides java doc items.
 	 */
 	public void hideJavaDoc() {
-		if(javaDocIsShown){
-			for(int i=0; i < treeControl.getItemCount(); i++){
-				deleteTreeItems(treeControl.getItem(i), ASTNode.JAVADOC);
-			}
-			javaDocIsShown = false;
-		}
-		else {
-			javaDocIsShown = true;
-			recreateTree();
-		}
+		//TODO: implement
 	}
 
 	/**
 	 * Hide Fields.
 	 */
 	public void hideFields() {
-		if(fieldDeclarationsAreShown){
-			for(int i=0; i < treeControl.getItemCount(); i++){
-				deleteTreeItems(treeControl.getItem(i), ASTNode.FIELD_DECLARATION);
-			}
-			fieldDeclarationsAreShown = false;
+		//TODO: implement
+	}
+	
+	
+	/**
+	 * Returns an image corresponding to the AST element.
+	 * 
+	 * @param node the AST-node
+	 * @return the image
+	 */
+	@SuppressWarnings("restriction")
+	public static Image getImage(ASTNode node){
+		switch(node.getNodeType()){
+		case ASTNode.COMPILATION_UNIT:
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CUNIT);
+			
+		case ASTNode.PACKAGE_DECLARATION:
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_PACKDECL);
+			
+		case ASTNode.IMPORT_DECLARATION:
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_IMPDECL);
+			
+		case ASTNode.TYPE_DECLARATION:
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS);
+		
+		case ASTNode.ANNOTATION_TYPE_DECLARATION:
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ANNOTATION);
+			
+		case ASTNode.ANONYMOUS_CLASS_DECLARATION:
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_CLASS_DEFAULT);
+			
+		case ASTNode.ENUM_DECLARATION:
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ENUM);
+			
+		case ASTNode.FIELD_DECLARATION:
+		case ASTNode.ENUM_CONSTANT_DECLARATION:
+			return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_PROTECTED);
+			
+		case ASTNode.METHOD_DECLARATION:
+			return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PUBLIC);
+			
+		case ASTNode.JAVADOC:
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_JAVADOCTAG);
+		
+		case ASTNode.VARIABLE_DECLARATION_STATEMENT:
+			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_LOCAL_VARIABLE);
+		
+		case ASTNode.BLOCK:
+			//TODO: use registry for the image
+			return JavaPluginImages.DESC_OBJS_SOURCE_ATTACH_ATTRIB.createImage();
+//			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_SOURCE_ATTACH_ATTRIB);
+		
+		case ASTNode.MODIFIER:
+			return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_DEFAULT);
 		}
-		else {
-			fieldDeclarationsAreShown = true;
-			recreateTree();
+		
+		/* default */
+		return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_PRIVATE);
+	}
+	
+	/**
+	 * Returns nodes description.
+	 * 
+	 * @param node the AST-node
+	 * @return description string
+	 */
+	public static String getNodeDescr(ASTNode node) {		
+		StringBuffer elementDescr = new StringBuffer(node.getClass().getSimpleName());
+		elementDescr.append(": ");
+		
+		int nodeType = node.getNodeType();
+		switch(nodeType){
+			case ASTNode.COMPILATION_UNIT:
+				CompilationUnit cu = (CompilationUnit)node;
+				elementDescr.append(cu.getJavaElement().getElementName());
+				break;
+				
+			case ASTNode.PACKAGE_DECLARATION:
+				PackageDeclaration pd = (PackageDeclaration)node;
+				elementDescr.append(pd.getName());
+				break;
+				
+			case ASTNode.TYPE_DECLARATION:
+				TypeDeclaration td = (TypeDeclaration)node;
+				appendModifiers(td.getModifiers(), elementDescr);
+				elementDescr.append(" class ");
+				elementDescr.append(td.getName());
+				break;
+				
+			case ASTNode.METHOD_DECLARATION:
+				MethodDeclaration md = (MethodDeclaration)node;				
+				appendModifiers(md.getModifiers(), elementDescr);
+				elementDescr.append(md.getReturnType2() == null?
+						"" : md.getReturnType2().toString());
+				elementDescr.append(' ');
+				elementDescr.append(md.getName());
+				elementDescr.append("()");
+				break;
+				
+			case ASTNode.BLOCK:
+				elementDescr.append("{...}");
+				break;
+			
+			case ASTNode.IF_STATEMENT:
+				IfStatement is = (IfStatement) node;
+				elementDescr.append("if( ");
+				elementDescr.append(is.getExpression().toString());
+				elementDescr.append(")");
+				break;
+				
+			case ASTNode.FOR_STATEMENT:
+				ForStatement fs = (ForStatement) node;
+				elementDescr.append("for (...; ");
+				elementDescr.append(fs.getExpression().toString());
+				elementDescr.append("; ...){...}");
+				break;
+			
+			case ASTNode.WHILE_STATEMENT:
+				WhileStatement ws = (WhileStatement) node;
+				elementDescr.append("while ( ");
+				elementDescr.append(ws.getExpression().toString());
+				elementDescr.append("){...}");
+				break;
+				
+			case ASTNode.DO_STATEMENT:
+				DoStatement ds = (DoStatement) node;
+				elementDescr.append("do {...} while (");
+				elementDescr.append(ds.getExpression().toString());
+				elementDescr.append(")");
+				break;
+				
+			case ASTNode.LABELED_STATEMENT:
+				LabeledStatement ls = (LabeledStatement) node;
+				elementDescr.append(ls.getLabel().toString());
+				elementDescr.append(":");
+				break;
+				
+			case ASTNode.CATCH_CLAUSE:
+				CatchClause cs = (CatchClause) node;
+				elementDescr.append("catch (");
+				elementDescr.append(cs.getException().toString());
+				elementDescr.append("){...}");
+				break;
+			
+			case ASTNode.SWITCH_STATEMENT:
+				SwitchStatement ss = (SwitchStatement) node;
+				elementDescr.append("switch (");
+				elementDescr.append(ss.getExpression().toString());
+				elementDescr.append("){...}");
+				break;
+				
+			case ASTNode.SWITCH_CASE:
+				SwitchCase sc = (SwitchCase) node;
+				elementDescr.append("case ");
+				elementDescr.append(sc.getExpression() == null? 
+						"default" : sc.getExpression().toString());
+				elementDescr.append(":");
+				break;
+			case ASTNode.JAVADOC:
+			case ASTNode.BLOCK_COMMENT:
+			case ASTNode.LINE_COMMENT:
+			case ASTNode.TRY_STATEMENT:
+				/* nothing to do */
+				break;
+				
+			default:
+					elementDescr.append(node.toString());
+		}
+
+		/* cut the string if it is too long */
+		String str = elementDescr.toString();
+		if(str.length() > 128){
+			str = str.substring(0, 128) + " ... "; 
+		}
+		str = str.replaceAll("\n", "");
+		return str;
+	}
+	
+	private static void appendModifiers(int mod, StringBuffer buf){
+		if (Modifier.isAbstract(mod)){
+			buf.append(Modifier.ModifierKeyword.ABSTRACT_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isFinal(mod)){
+			buf.append(Modifier.ModifierKeyword.FINAL_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isNative(mod)){
+			buf.append(Modifier.ModifierKeyword.NATIVE_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isPrivate(mod)){
+			buf.append(Modifier.ModifierKeyword.PRIVATE_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isProtected(mod)){
+			buf.append(Modifier.ModifierKeyword.PROTECTED_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isPublic(mod)){
+			buf.append(Modifier.ModifierKeyword.PUBLIC_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isStatic(mod)){
+			buf.append(Modifier.ModifierKeyword.STATIC_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isStrictfp(mod)){
+			buf.append(Modifier.ModifierKeyword.STRICTFP_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isSynchronized(mod)){
+			buf.append(Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isTransient(mod)){
+			buf.append(Modifier.ModifierKeyword.TRANSIENT_KEYWORD.toString());
+			buf.append(' ');
+		}
+		
+		if (Modifier.isVolatile(mod)){
+			buf.append(Modifier.ModifierKeyword.VOLATILE_KEYWORD.toString());
+			buf.append(' ');
 		}
 	}
 }

@@ -104,12 +104,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
-import org.eclipse.jdt.internal.ui.JavaPluginImages;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.swt.widgets.Widget;
 
 /**
  * The implementation of a visitor for abstract syntax trees.
@@ -123,36 +117,33 @@ import org.eclipse.swt.widgets.Widget;
 public class ASTVisitorImpl extends ASTVisitor {
 	
 	/**
-	 * The tree node data key.
-	 */
-	static final String NODE = "%NODE%";
-	
-	/**
 	 * Stack structure for tree elements.
 	 */
-	private Stack<Widget> stack;
+	private Stack<TreeModel> stack;
 	
 	/**
 	 * The monitor object to control the progress of 
 	 * AST-Tree creation. 
 	 */
 	private IProgressMonitor monitor;
-		
+
 	/**
 	 * Constructs an AST visitor and initialize the tree object.
-	 * @param treeControl
-	 * @param monitor
+	 * @param treeModel the tree to be filled
+	 * @param monitor progress monitor
+	 * @see IProgressMonitor
 	 */
-	public ASTVisitorImpl(Tree treeControl, IProgressMonitor m) {
+	public ASTVisitorImpl(TreeModel treeModel, IProgressMonitor m) {
 		super(true);
 		
-		if (treeControl == null){
+		if (treeModel == null){
 			throw new IllegalArgumentException();
 		}
 		
-		stack = new Stack<Widget>();
+		stack = new Stack<TreeModel>();
+		stack.push(treeModel);
+		
 		monitor = m;
-		stack.push(treeControl);
 	}
 	
 	/**
@@ -173,252 +164,12 @@ public class ASTVisitorImpl extends ASTVisitor {
 	 * @see ASTVisitor#preVisit(ASTNode)
 	 */
 	public void preVisit(ASTNode node) {
-		Object parent = stack.peek();
-		
-		TreeItem child = null;
-		if (parent instanceof Tree){
-			child = new TreeItem((Tree)parent, SWT.NONE);
-		} else {
-			child = new TreeItem((TreeItem)parent, SWT.NONE);
-		}
-		
-		stack.push(child);
-		child.setData(NODE, node);
-		
-		/* set text and corresponding image */
-		child.setText(getNodeDescr(node));
-		child.setImage(getImage(node));
-	}	
-	
-	/**
-	 * Returns an image corresponding to the AST element.
-	 * 
-	 * @param node the AST-node
-	 * @return the image
-	 */
-	@SuppressWarnings("restriction")
-	private Image getImage(ASTNode node){
-		switch(node.getNodeType()){
-		case ASTNode.COMPILATION_UNIT:
-			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CUNIT);
-			
-		case ASTNode.PACKAGE_DECLARATION:
-			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_PACKDECL);
-			
-		case ASTNode.IMPORT_DECLARATION:
-			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_IMPDECL);
-			
-		case ASTNode.TYPE_DECLARATION:
-			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS);
-		
-		case ASTNode.ANNOTATION_TYPE_DECLARATION:
-			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ANNOTATION);
-			
-		case ASTNode.ANONYMOUS_CLASS_DECLARATION:
-			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_CLASS_DEFAULT);
-			
-		case ASTNode.ENUM_DECLARATION:
-			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ENUM);
-			
-		case ASTNode.FIELD_DECLARATION:
-		case ASTNode.ENUM_CONSTANT_DECLARATION:
-			return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_PROTECTED);
-			
-		case ASTNode.METHOD_DECLARATION:
-			return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PUBLIC);
-			
-		case ASTNode.JAVADOC:
-			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_JAVADOCTAG);
-		
-		case ASTNode.VARIABLE_DECLARATION_STATEMENT:
-			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_LOCAL_VARIABLE);
-		
-		case ASTNode.BLOCK:
-			//TODO: use registry for the image
-			return JavaPluginImages.DESC_OBJS_SOURCE_ATTACH_ATTRIB.createImage();
-//			return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_SOURCE_ATTACH_ATTRIB);
-		
-		case ASTNode.MODIFIER:
-			return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_DEFAULT);
-		}
-		
-		/* default */
-		return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_PRIVATE);
-	}
-	
-	/**
-	 * Returns nodes description.
-	 * 
-	 * @param node the AST-node
-	 * @return description string
-	 */
-	static private String getNodeDescr(ASTNode node) {		
-		StringBuffer elementDescr = new StringBuffer(node.getClass().getSimpleName());
-		elementDescr.append(": ");
-		
-		int nodeType = node.getNodeType();
-		switch(nodeType){
-			case ASTNode.COMPILATION_UNIT:
-				CompilationUnit cu = (CompilationUnit)node;
-				elementDescr.append(cu.getJavaElement().getElementName());
-				break;
-				
-			case ASTNode.PACKAGE_DECLARATION:
-				PackageDeclaration pd = (PackageDeclaration)node;
-				elementDescr.append(pd.getName());
-				break;
-				
-			case ASTNode.TYPE_DECLARATION:
-				TypeDeclaration td = (TypeDeclaration)node;
-				appendModifiers(td.getModifiers(), elementDescr);
-				elementDescr.append(" class ");
-				elementDescr.append(td.getName());
-				break;
-				
-			case ASTNode.METHOD_DECLARATION:
-				MethodDeclaration md = (MethodDeclaration)node;				
-				appendModifiers(md.getModifiers(), elementDescr);
-				elementDescr.append(md.getReturnType2() == null?
-						"" : md.getReturnType2().toString());
-				elementDescr.append(' ');
-				elementDescr.append(md.getName());
-				elementDescr.append("()");
-				break;
-				
-			case ASTNode.BLOCK:
-				elementDescr.append("{...}");
-				break;
-			
-			case ASTNode.IF_STATEMENT:
-				IfStatement is = (IfStatement) node;
-				elementDescr.append("if( ");
-				elementDescr.append(is.getExpression().toString());
-				elementDescr.append(")");
-				break;
-				
-			case ASTNode.FOR_STATEMENT:
-				ForStatement fs = (ForStatement) node;
-				elementDescr.append("for (...; ");
-				elementDescr.append(fs.getExpression().toString());
-				elementDescr.append("; ...){...}");
-				break;
-			
-			case ASTNode.WHILE_STATEMENT:
-				WhileStatement ws = (WhileStatement) node;
-				elementDescr.append("while ( ");
-				elementDescr.append(ws.getExpression().toString());
-				elementDescr.append("){...}");
-				break;
-				
-			case ASTNode.DO_STATEMENT:
-				DoStatement ds = (DoStatement) node;
-				elementDescr.append("do {...} while (");
-				elementDescr.append(ds.getExpression().toString());
-				elementDescr.append(")");
-				break;
-				
-			case ASTNode.LABELED_STATEMENT:
-				LabeledStatement ls = (LabeledStatement) node;
-				elementDescr.append(ls.getLabel().toString());
-				elementDescr.append(":");
-				break;
-				
-			case ASTNode.CATCH_CLAUSE:
-				CatchClause cs = (CatchClause) node;
-				elementDescr.append("catch (");
-				elementDescr.append(cs.getException().toString());
-				elementDescr.append("){...}");
-				break;
-			
-			case ASTNode.SWITCH_STATEMENT:
-				SwitchStatement ss = (SwitchStatement) node;
-				elementDescr.append("switch (");
-				elementDescr.append(ss.getExpression().toString());
-				elementDescr.append("){...}");
-				break;
-				
-			case ASTNode.SWITCH_CASE:
-				SwitchCase sc = (SwitchCase) node;
-				elementDescr.append("case ");
-				elementDescr.append(sc.getExpression() == null? 
-						"default" : sc.getExpression().toString());
-				elementDescr.append(":");
-				break;
-			case ASTNode.JAVADOC:
-			case ASTNode.BLOCK_COMMENT:
-			case ASTNode.LINE_COMMENT:
-			case ASTNode.TRY_STATEMENT:
-				/* nothing to do */
-				break;
-				
-			default:
-					elementDescr.append(node.toString());
-		}
+		TreeModel child = new TreeModel(node);
 
-		/* cut the string if it is too long */
-		String str = elementDescr.toString();
-		if(str.length() > 128){
-			str = str.substring(0, 128) + " ... "; 
-		}
-		str = str.replaceAll("\n", "");
-		return str;
-	}
-	
-	private static void appendModifiers(int mod, StringBuffer buf){
-		if (Modifier.isAbstract(mod)){
-			buf.append(Modifier.ModifierKeyword.ABSTRACT_KEYWORD.toString());
-			buf.append(' ');
-		}
-		
-		if (Modifier.isFinal(mod)){
-			buf.append(Modifier.ModifierKeyword.FINAL_KEYWORD.toString());
-			buf.append(' ');
-		}
-		
-		if (Modifier.isNative(mod)){
-			buf.append(Modifier.ModifierKeyword.NATIVE_KEYWORD.toString());
-			buf.append(' ');
-		}
-		
-		if (Modifier.isPrivate(mod)){
-			buf.append(Modifier.ModifierKeyword.PRIVATE_KEYWORD.toString());
-			buf.append(' ');
-		}
-		
-		if (Modifier.isProtected(mod)){
-			buf.append(Modifier.ModifierKeyword.PROTECTED_KEYWORD.toString());
-			buf.append(' ');
-		}
-		
-		if (Modifier.isPublic(mod)){
-			buf.append(Modifier.ModifierKeyword.PUBLIC_KEYWORD.toString());
-			buf.append(' ');
-		}
-		
-		if (Modifier.isStatic(mod)){
-			buf.append(Modifier.ModifierKeyword.STATIC_KEYWORD.toString());
-			buf.append(' ');
-		}
-		
-		if (Modifier.isStrictfp(mod)){
-			buf.append(Modifier.ModifierKeyword.STRICTFP_KEYWORD.toString());
-			buf.append(' ');
-		}
-		
-		if (Modifier.isSynchronized(mod)){
-			buf.append(Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD.toString());
-			buf.append(' ');
-		}
-		
-		if (Modifier.isTransient(mod)){
-			buf.append(Modifier.ModifierKeyword.TRANSIENT_KEYWORD.toString());
-			buf.append(' ');
-		}
-		
-		if (Modifier.isVolatile(mod)){
-			buf.append(Modifier.ModifierKeyword.VOLATILE_KEYWORD.toString());
-			buf.append(' ');
-		}
+		TreeModel parent = stack.peek();
+		parent.addChild(child);
+
+		stack.push(child);
 	}
 	
 	/**
