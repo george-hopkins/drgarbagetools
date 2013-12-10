@@ -100,11 +100,6 @@ public class ASTPanel extends Composite {
 	@SuppressWarnings("unused")
 	private IClassFile sourceClassFile = null;
 	
-	private boolean packageDeclarationsAreShown = false;
-	private boolean packageImportsAreShown = true;
-	private boolean javaDocIsShown = true;
-	private boolean fieldDeclarationsAreShown = true;
-		
 	/**
 	 * Constructs a control panel with a tree object..
 	 * @param parent parent a composite control which will be the 
