@@ -177,8 +177,15 @@ public class ASTPanel extends Composite {
 			 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
 			 */
 			public Image getImage(Object element) {
-				TreeModel tm = (TreeModel) element;
-				Image i = getImage(tm.getNode());
+				ASTNode n;
+				if(element instanceof TreeModel){
+					TreeModel tm = (TreeModel)element;
+					n = tm.getNode();
+				}
+				else {
+					n = (ASTNode)element;
+				}
+				Image i = ASTPanel.getImage(n);
 				return i;
 			}
 
