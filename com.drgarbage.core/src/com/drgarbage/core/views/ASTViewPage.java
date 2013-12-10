@@ -114,7 +114,7 @@ public class ASTViewPage extends Page {
 		
 		IAction a = new Action(CoreMessages.ASTViewPage_Hide_PKG_DECL, IAction.AS_CHECK_BOX) {
 			public void run() {
-				astPanel.hidePackageDeclaration();
+				astPanel.hidePackageDeclaration(isChecked());
 				setCheckedStatus(this);
 			}
 		};
@@ -125,7 +125,7 @@ public class ASTViewPage extends Page {
 		
 		a = new Action(CoreMessages.ASTViewPage_Hide_PKG_Imports, IAction.AS_CHECK_BOX) { 
 			public void run() {
-				astPanel.hidePackageImports();
+				astPanel.hidePackageImports(isChecked());
 				setCheckedStatus(this);
 			}
 		};
@@ -136,7 +136,7 @@ public class ASTViewPage extends Page {
 		
 		 a = new Action(CoreMessages.ASTViewPage_Hide_JAVADOC, IAction.AS_CHECK_BOX) {
 			public void run() {
-				astPanel.hideJavaDoc();
+				astPanel.hideJavaDoc(isChecked());
 				setCheckedStatus(this);
 			}
 		};
@@ -147,7 +147,7 @@ public class ASTViewPage extends Page {
 		
 		a = new Action(CoreMessages.ASTViewPage_Hide_FIELDS, IAction.AS_CHECK_BOX) {
 			public void run() {
-				astPanel.hideFields();
+				astPanel.hideFields(isChecked());
 				setCheckedStatus(this);
 			}
 		};

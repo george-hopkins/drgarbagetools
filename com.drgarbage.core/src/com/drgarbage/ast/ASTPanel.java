@@ -247,28 +247,37 @@ public class ASTPanel extends Composite {
 	 * @see {@link ITreeContentProvider}
 	 */
 	public class TreeContentProvider implements ITreeContentProvider {
+		List<Integer> hiddenItems = new ArrayList<Integer>();
+		
+		public void hide(int e){
+			hiddenItems.add(e);
+		}
+		
+		public void show(int e){
+			if(hiddenItems.contains(e)) hiddenItems.remove((Integer) e);
+		}
 		
 		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
 		 */
 		public Object[] getChildren(Object parentElement) {
 			
-			if(packageDeclarationsAreShown){
-				List<Object> objects = new ArrayList<Object>();
-				List<TreeModel>children = ((TreeModel)parentElement).getChildren();
-				for(TreeModel t: children){
-					if(t.getNode().getNodeType() !=  ASTNode.PACKAGE_DECLARATION){
-						objects.add(t);
-					}
+			List<Object> objects = new ArrayList<Object>();
+			List<TreeModel>children = ((TreeModel)parentElement).getChildren();
+			for(TreeModel t: children){
+				if( !hiddenItems.contains(t.getNode().getNodeType()) ){
+					objects.add(t);
 				}
-				return objects.toArray();
 			}
+			return objects.toArray();
 			
+			/*
 			if (parentElement instanceof TreeModel){
 				return ((TreeModel)parentElement).getChildren().toArray();
 			}
 
 			return new Object[0];
+			*/
 		}
 
 		/* (non-Javadoc)
@@ -461,36 +470,53 @@ public class ASTPanel extends Composite {
 	/**
 	 * Hides the package declarations.
 	 */
-	public void hidePackageDeclaration() {
-		if(packageDeclarationsAreShown){
-			packageDeclarationsAreShown = false;
+	public void hidePackageDeclaration(boolean hidden) {
+		if(hidden) {
+			((TreeContentProvider)treeViewer.getContentProvider()).hide(ASTNode.PACKAGE_DECLARATION);
 		}
-		else{
-			packageDeclarationsAreShown = true;
+		else {
+			((TreeContentProvider)treeViewer.getContentProvider()).show(ASTNode.PACKAGE_DECLARATION);
 		}
-		
 		treeViewer.refresh();
 	}
 
 	/**
 	 * Hides the package imports.
 	 */
-	public void hidePackageImports() {
-		//TODO: implement
+	public void hidePackageImports(boolean hidden) {
+		if(hidden) {
+			((TreeContentProvider)treeViewer.getContentProvider()).hide(ASTNode.IMPORT_DECLARATION);
+		}
+		else {
+			((TreeContentProvider)treeViewer.getContentProvider()).show(ASTNode.IMPORT_DECLARATION);
+		}
+		treeViewer.refresh();
 	}
 
 	/**
 	 * Hides java doc items.
 	 */
-	public void hideJavaDoc() {
-		//TODO: implement
+	public void hideJavaDoc(boolean hidden) {
+		if(hidden) {
+			((TreeContentProvider)treeViewer.getContentProvider()).hide(ASTNode.JAVADOC);
+		}
+		else {
+			((TreeContentProvider)treeViewer.getContentProvider()).show(ASTNode.JAVADOC);
+		}
+		treeViewer.refresh();
 	}
 
 	/**
 	 * Hide Fields.
 	 */
-	public void hideFields() {
-		//TODO: implement
+	public void hideFields(boolean hidden) {
+		if(hidden) {
+			((TreeContentProvider)treeViewer.getContentProvider()).hide(ASTNode.FIELD_DECLARATION);
+		}
+		else {
+			((TreeContentProvider)treeViewer.getContentProvider()).show(ASTNode.FIELD_DECLARATION);
+		}
+		treeViewer.refresh();
 	}
 	
 	
