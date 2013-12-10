@@ -28,7 +28,10 @@ public interface CoreConstants {
 	 * for the standard Bytecode Visualizer Plugin.
 	 */
 	/* modified for maven build process. the id corresponds to the artifact id */
+	public static final String CORE_PLUGIN_ID = "com.drgarbage.core.plugin";
 	public static final String BYTECODE_VISUALIZER_PLUGIN_ID = "com.drgarbage.bytecodevisualizer.plugin";
+	public static final String CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID = "com.drgarbage.controlflowgraphfactory.plugin";
+	public static final String SOURCECODE_VISUALIZER_PLUGIN_ID = "com.drgarbage.sourcecodevisualizer.plugin";
 	
 	/* constant */
 	public static final String BYTECODE_VISUALIZER_CONTEXT_MENU_ID  = "com.drgarbage.bytecodevisualizer.context";

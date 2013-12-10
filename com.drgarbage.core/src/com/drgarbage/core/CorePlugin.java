@@ -64,7 +64,7 @@ public class CorePlugin extends AbstractUIPlugin {
 	private static Map<String, IExternalCommunication> externalCommunicationTable = new TreeMap<String, IExternalCommunication>();
 	
 	/** The plug-in ID */
-	public static final String PLUGIN_ID = "com.drgarbage.core";
+	public static final String PLUGIN_ID = CoreConstants.CORE_PLUGIN_ID;
 
 	/**
 	 * Single plug-in instance. 
@@ -109,7 +109,7 @@ public class CorePlugin extends AbstractUIPlugin {
 			try { /*start bundle if not yet activated */
 				b.start();
 			} catch (BundleException e) {
-				getDefault().getLog().log(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e));
+				getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, e.getMessage(), e));
 				return null;
 			}
 		} 
@@ -123,17 +123,17 @@ public class CorePlugin extends AbstractUIPlugin {
     		Object activatorInstance = method.invoke(null);
     		return (AbstractUIPlugin)activatorInstance;
     	} catch (ClassNotFoundException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
 		} catch (SecurityException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
 		} catch (NoSuchMethodException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
 		} catch (IllegalArgumentException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
 		} catch (IllegalAccessException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
 		} catch (InvocationTargetException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR, CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
 		}
 		
 		return null;

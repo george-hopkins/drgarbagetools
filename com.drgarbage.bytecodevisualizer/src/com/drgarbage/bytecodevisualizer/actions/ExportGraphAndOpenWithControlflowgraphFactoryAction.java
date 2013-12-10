@@ -31,6 +31,7 @@ import com.drgarbage.asm.render.intf.IMethodSection;
 import com.drgarbage.bytecode.instructions.AbstractInstruction;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.editors.BytecodeEditor;
+import com.drgarbage.core.CoreConstants;
 import com.drgarbage.core.CorePlugin;
 import com.drgarbage.core.IExternalCommunication;
 import com.drgarbage.core.img.CoreImg;
@@ -62,11 +63,6 @@ public class ExportGraphAndOpenWithControlflowgraphFactoryAction extends Retarge
 	private IClassFileDocument classFileDocument = null;
 	
 	/**
-	 * ID of the control flow factory plugin. This plugin is accesed via external communication interface.
-	 */
-	private final static String controlFlowFactoryID = "com.drgarbage.controlflowgraphfactory";
-	
-	/**
 	 * String of the Constructor.
 	 */
 	private static final String constructorString = "<init>";
@@ -88,11 +84,12 @@ public class ExportGraphAndOpenWithControlflowgraphFactoryAction extends Retarge
      * @see org.eclipse.ui.actions.RetargetAction#run()
      */
     public void run() {
-    	IExternalCommunication comunicationObject = CorePlugin.getDefault().getExternalComunicationObject(controlFlowFactoryID);
+    	IExternalCommunication comunicationObject = CorePlugin.getDefault()
+    			.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
     	
     	if(comunicationObject == null){
     		/* activate target plugin */
-        	Bundle b = Platform.getBundle(controlFlowFactoryID);
+        	Bundle b = Platform.getBundle(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
         	if(b != null){
 	        	if(b.getState() != Bundle.ACTIVE){
 	    	    	try {
@@ -103,7 +100,8 @@ public class ExportGraphAndOpenWithControlflowgraphFactoryAction extends Retarge
 	        	}  		
 	    		
 	        	/* get communication object again*/
-	    		comunicationObject = CorePlugin.getDefault().getExternalComunicationObject(controlFlowFactoryID);
+	    		comunicationObject = CorePlugin.getDefault()
+	    				.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
 	        	}
     	}
     	

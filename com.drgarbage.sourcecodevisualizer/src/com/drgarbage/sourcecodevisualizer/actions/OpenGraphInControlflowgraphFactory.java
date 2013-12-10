@@ -33,6 +33,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
 import com.drgarbage.core.ActionUtils;
+import com.drgarbage.core.CoreConstants;
 import com.drgarbage.core.CorePlugin;
 import com.drgarbage.core.IExternalCommunication;
 import com.drgarbage.core.img.CoreImg;
@@ -68,11 +69,6 @@ public class OpenGraphInControlflowgraphFactory extends RetargetAction {
 	private static final String constructorString = "<init>";
 	
 	/**
-	 * ID of the control flow factory plugin. This plugin is accesed via external communication interface.
-	 */
-	private final static String controlFlowFactoryID = "com.drgarbage.controlflowgraphfactory";
-	
-	/**
 	 * Constructor.
 	 * @param editor
 	 * @param classFileDocument
@@ -88,11 +84,12 @@ public class OpenGraphInControlflowgraphFactory extends RetargetAction {
      * (non-Javadoc) Method declared on IAction.
      */
     public void run() {
-    	IExternalCommunication comunicationObject = CorePlugin.getDefault().getExternalComunicationObject(controlFlowFactoryID);
+    	IExternalCommunication comunicationObject = CorePlugin.getDefault()
+    			.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
     	
     	if(comunicationObject == null){
     		/* activate target plugin */
-        	Bundle b = Platform.getBundle(controlFlowFactoryID);
+        	Bundle b = Platform.getBundle(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
         	if(b != null){
 	        	if(b.getState() != Bundle.ACTIVE){
 	    	    	try {
@@ -103,7 +100,8 @@ public class OpenGraphInControlflowgraphFactory extends RetargetAction {
 	        	}  		
 	    		
 	        	/* get communication object again*/
-	    		comunicationObject = CorePlugin.getDefault().getExternalComunicationObject(controlFlowFactoryID);
+	    		comunicationObject = CorePlugin.getDefault()
+	    				.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
 	        	}
     	}
     	

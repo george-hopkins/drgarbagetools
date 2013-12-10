@@ -50,7 +50,7 @@ public class BytecodeVisualizerPlugin extends AbstractUIPlugin implements Byteco
 	private static BytecodeVisualizerPlugin plugin;
 
 	/* The plug-in ID */
-	public static final String PLUGIN_ID = "com.drgarbage.bytecodevisualizer";
+	public static final String PLUGIN_ID = CoreConstants.BYTECODE_VISUALIZER_PLUGIN_ID;
 	
 	/* The plug-in version */
 	public static String PLUGIN_VERSION;

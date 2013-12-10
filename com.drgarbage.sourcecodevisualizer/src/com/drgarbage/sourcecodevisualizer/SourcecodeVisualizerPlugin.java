@@ -52,7 +52,7 @@ public class SourcecodeVisualizerPlugin extends AbstractUIPlugin {
 	/** 
 	 * The plug-in ID 
 	 */
-	public static final String PLUGIN_ID = "com.drgarbage.sourcecodevisualizer";
+	public static final String PLUGIN_ID = CoreConstants.SOURCECODE_VISUALIZER_PLUGIN_ID;
 	
 	/**
 	 *  The plug-in version 

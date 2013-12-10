@@ -23,6 +23,7 @@ import org.osgi.framework.BundleContext;
 
 import com.drgarbage.controlflowgraphfactory.actions.ExternalActionGenerateGraph;
 import com.drgarbage.controlflowgraphfactory.preferences.ControlFlowFactoryPreferenceConstants;
+import com.drgarbage.core.CoreConstants;
 import com.drgarbage.core.CorePlugin;
 
 /**
@@ -33,7 +34,7 @@ public class ControlFlowFactoryPlugin extends AbstractUIPlugin {
 	/**
 	 * The plug-in ID. 
 	 */
-	public static final String PLUGIN_ID = "com.drgarbage.controlflowgraphfactory";
+	public static final String PLUGIN_ID = CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID;
 
 	/**
 	 * The plug.in version.
