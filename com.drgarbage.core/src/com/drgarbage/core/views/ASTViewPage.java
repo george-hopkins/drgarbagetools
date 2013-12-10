@@ -49,6 +49,7 @@ import com.drgarbage.core.CorePlugin;
 @SuppressWarnings("restriction")
 public class ASTViewPage extends Page {
 
+	public static String ASTViewPage_HIDE_PKG_DECL_ACTION_ID = "com.drgarbge.HIDE_PACKGE_DECL";
 	public static String ASTViewPage_HIDE_PKG_IMPORTS_ACTION_ID = "com.drgarbge.HIDE_PACKGE_IMPORTS";
 	public static String ASTViewPage_HIDE_JAVADOC_ACTION__ID = "com.drgarbge.HIDE_JAVADOC";
 	public static String ASTViewPage_HIDE_FIELDS_ACTION_ID = "com.drgarbge.HIDE_FIELDS";
@@ -119,7 +120,7 @@ public class ASTViewPage extends Page {
 			}
 		};
 		a.setImageDescriptor(JavaPluginImages.DESC_OBJS_PACKDECL);
-		a.setId(CoreMessages.ASTViewPage_Hide_PKG_DECL_ID);
+		a.setId(ASTViewPage_HIDE_PKG_DECL_ACTION_ID);
 		a.setToolTipText(CoreMessages.ASTViewPage_Hide_PKG_DECL_tooltip);
 		tbm.add(a);
 		

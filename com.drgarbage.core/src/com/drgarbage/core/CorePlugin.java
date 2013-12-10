@@ -42,6 +42,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
+import com.drgarbage.utils.Messages;
 import com.drgarbage.utils.WebUtils;
 
 /**
@@ -81,7 +82,10 @@ public class CorePlugin extends AbstractUIPlugin {
 		return new Status(IStatus.ERROR, PLUGIN_ID, message, exception);
 	}
 	
-
+	public static IStatus createWarningStatus(String message) {
+		return new Status(IStatus.WARNING, PLUGIN_ID, message);
+	}
+	
 	public static IStatus createInfoStatus(String message) {
 		return new Status(IStatus.INFO, PLUGIN_ID, message);
 	}
@@ -123,17 +127,17 @@ public class CorePlugin extends AbstractUIPlugin {
     		Object activatorInstance = method.invoke(null);
     		return (AbstractUIPlugin)activatorInstance;
     	} catch (ClassNotFoundException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, e.getMessage(), e));
 		} catch (SecurityException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, e.getMessage(), e));
 		} catch (NoSuchMethodException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, e.getMessage(), e));
 		} catch (IllegalArgumentException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, e.getMessage(), e));
 		} catch (IllegalAccessException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, e.getMessage(), e));
 		} catch (InvocationTargetException e) {
-			getDefault().getLog().log(new Status(IStatus.ERROR,PLUGIN_ID, e.getMessage(), e));
+			getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, e.getMessage(), e));
 		}
 		
 		return null;
@@ -317,6 +321,46 @@ public class CorePlugin extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		singleton = null;
 		super.stop(context);
+	}
+	
+	/**
+	 * Returns the communication object or <code>null</code> 
+	 * if the communication is not possible.
+	 * 
+	 * @return communication object or <code>null</code>
+	 * 
+	 * @see IExternalCommunication
+	 */
+	public static IExternalCommunication getExternalCommunication(){
+		IExternalCommunication comunicationObject = CorePlugin.getDefault()
+    			.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
+    	
+    	if(comunicationObject == null){
+    		/* activate target plugin */
+        	Bundle b = Platform.getBundle(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
+        	if(b != null){
+        		if(b.getState() != Bundle.ACTIVE){
+        			try {
+        				b.start();
+        			} catch (BundleException e) {
+        				e.printStackTrace(System.err);
+        			}
+        		}  		
+
+        		/* get communication object again*/
+        		comunicationObject = CorePlugin.getDefault()
+        				.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
+        		
+        		return comunicationObject;
+        	}
+        	String msg = CoreMessages.ERROR_Starting_CFGF_failed
+        			+ '\n'
+        			+ CoreMessages.ERROR_CFGF_is_not_installed;
+        	CorePlugin.log(createWarningStatus(msg ));
+        	return null;
+    	}
+    	
+    	return comunicationObject;
 	}
 	
 }

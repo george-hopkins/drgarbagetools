@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
@@ -49,13 +48,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
 
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
-import com.drgarbage.core.CoreConstants;
+import com.drgarbage.core.CoreMessages;
 import com.drgarbage.core.CorePlugin;
 import com.drgarbage.core.IExternalCommunication;
+import com.drgarbage.core.img.CoreImg;
 import com.drgarbage.utils.Messages;
 
 /**
@@ -172,12 +170,12 @@ public class ASTPanel extends Composite {
 				String s = ASTGraphUtil.getNodeDescr(n);
 				return s;
 			}
-			
+
 		});
 				
 		MenuManager mm = new MenuManager();
 		
-		IAction action = new Action("Generate AST tree Graph"){//TODO: define constant
+		IAction action = new Action(CoreMessages.ASTView_Action_Generate_AST_Graph){
 			
 			/* (non-Javadoc)
 			 * @see org.eclipse.jface.action.Action#run()
@@ -186,39 +184,21 @@ public class ASTPanel extends Composite {
 				if(selectedModelElement != null){
 					IDirectedGraphExt graph = 	ASTGraphUtil.createGraphFromASTtree(selectedModelElement);
 
-			    	IExternalCommunication comunicationObject = CorePlugin.getDefault()
-			    			.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
-			    	
+			    	IExternalCommunication comunicationObject =  CorePlugin.getExternalCommunication();
 			    	if(comunicationObject == null){
-			    		/* activate target plugin */
-			        	Bundle b = Platform.getBundle(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
-			        	if(b != null){
-				        	if(b.getState() != Bundle.ACTIVE){
-				    	    	try {
-				    				b.start();
-				    			} catch (BundleException e) {
-				    				e.printStackTrace(System.err);
-				    			}
-				        	}  		
-				    		
-				        	/* get communication object again*/
-				    		comunicationObject = CorePlugin.getDefault()
-				    				.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
-				        	}
-			    	}
-			    	
-			    	if(comunicationObject == null){
-			    		//TODO: define a message constant for the string 
-			    		String msg = "Can't connect to the Control Flow Factory Plugin\n Please check if the plugin installed.\n For further information visit our home page www.drgarbage.com";
+			    		String msg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed
+			    				+ '\n'
+			    				+ CoreMessages.ERROR_CFGF_is_not_installed;
 			    		Messages.error(msg);
 			    		return;
 			    	}
+			    	
 			    	String fileName = treeName + "-ast-tree.graph";
 			    	comunicationObject.generateDiagramFromGraph(fileName, graph);
 				}
 			}
 		};
-//		action.setImageDescriptor(newImage); //TODO: create a new image
+		action.setImageDescriptor(CoreImg.astview_new_16x16);
 		mm.add(action);
 		Menu menu = mm.createContextMenu(treeViewer.getControl());
 		treeViewer.getControl().setMenu(menu);
@@ -230,6 +210,9 @@ public class ASTPanel extends Composite {
 	 * @see {@link ITreeContentProvider}
 	 */
 	public class TreeContentProvider implements ITreeContentProvider {
+		/**
+		 * 
+		 */
 		List<Integer> hiddenItems = new ArrayList<Integer>();
 		
 		/**

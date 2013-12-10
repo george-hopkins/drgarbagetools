@@ -17,7 +17,8 @@
 package com.drgarbage.sourcecodevisualizer.actions;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -29,15 +30,14 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.texteditor.IDocumentProvider;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
 
 import com.drgarbage.core.ActionUtils;
-import com.drgarbage.core.CoreConstants;
+import com.drgarbage.core.CoreMessages;
 import com.drgarbage.core.CorePlugin;
 import com.drgarbage.core.IExternalCommunication;
 import com.drgarbage.core.img.CoreImg;
 import com.drgarbage.sourcecodevisualizer.SourcecodeVisualizerMessages;
+import com.drgarbage.sourcecodevisualizer.SourcecodeVisualizerPlugin;
 import com.drgarbage.sourcecodevisualizer.editors.JavaCodeEditor;
 import com.drgarbage.utils.Messages;
 
@@ -57,7 +57,7 @@ public class OpenGraphInControlflowgraphFactory extends RetargetAction {
 	public static final String ID = "com.drgarbage.sourcecodevizualizer.actions.createbytecodegraph";
 	private static final String text = SourcecodeVisualizerMessages.Sourcecodevisualizer_CreateBytecodeGraphAction_Text;
 	private static final String toolTipText = SourcecodeVisualizerMessages.Sourcecodevisualizer_CreateBytecodeGraphAction_TooltipText;
-	private static final String openGraphInControlFlowFactoryFailed = SourcecodeVisualizerMessages.Sourcecodevisualizer_OpenGraphInControlFlowFactoryFailed;
+	
 	/**
 	 * Active class file editor.
 	 */
@@ -84,36 +84,29 @@ public class OpenGraphInControlflowgraphFactory extends RetargetAction {
      * (non-Javadoc) Method declared on IAction.
      */
     public void run() {
-    	IExternalCommunication comunicationObject = CorePlugin.getDefault()
-    			.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
     	
+    	IExternalCommunication comunicationObject =  CorePlugin.getExternalCommunication();
     	if(comunicationObject == null){
-    		/* activate target plugin */
-        	Bundle b = Platform.getBundle(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
-        	if(b != null){
-	        	if(b.getState() != Bundle.ACTIVE){
-	    	    	try {
-	    				b.start();
-	    			} catch (BundleException e) {
-	    				e.printStackTrace(System.err);
-	    			}
-	        	}  		
-	    		
-	        	/* get communication object again*/
-	    		comunicationObject = CorePlugin.getDefault()
-	    				.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
-	        	}
-    	}
-    	
-    	if(comunicationObject == null){
-    		Messages.error(openGraphInControlFlowFactoryFailed);
+    		String msg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed
+    				+'\n'
+    				+ CoreMessages.ERROR_CFGF_is_not_installed;
+    		Messages.error(msg);
     		return;
     	}
     		
     	IMethod method = editor.getSelectedMethod();
     	
     	if(method == null){
-    		Messages.error(openGraphInControlFlowFactoryFailed);
+    		String errorMsg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed
+    				+ '\n'
+    				+ "The selected method object is null.";
+    		IStatus s = new Status(IStatus.ERROR, SourcecodeVisualizerPlugin.PLUGIN_ID, errorMsg, null);
+    		CorePlugin.log(s);
+    		
+    		String msg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed 
+    				+ '\n'
+    				+ CoreMessages.ExceptionAdditionalMessage;
+    		Messages.error(msg);
     		return;   		
     	}
 
@@ -143,9 +136,32 @@ public class OpenGraphInControlflowgraphFactory extends RetargetAction {
 				}
 
 			} catch (JavaModelException e) {
-				e.printStackTrace(System.err);
+				String errorMsg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed
+						+ '\n'
+						+ "Can not get packege or class name.";
+				IStatus s = new Status(IStatus.ERROR, SourcecodeVisualizerPlugin.PLUGIN_ID, errorMsg, e);
+				CorePlugin.log(s);
+
+				String msg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed 
+						+ '\n'
+						+ CoreMessages.ExceptionAdditionalMessage;
+				Messages.error(msg);
+				
+	    		return;
+	    		
 			} catch (CoreException e) {
-				e.printStackTrace(System.err);
+				String errorMsg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed
+	    				+ '\n'
+	    				+ "Can not compute runtime class path.";
+				IStatus s = new Status(IStatus.ERROR, SourcecodeVisualizerPlugin.PLUGIN_ID, errorMsg, e);
+	    		CorePlugin.log(s);
+	    		
+	    		String msg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed 
+	    				+ '\n'
+	    				+ CoreMessages.ExceptionAdditionalMessage;
+	    		Messages.error(msg);
+				
+				return;
 			}
 
 		}
@@ -182,13 +198,32 @@ public class OpenGraphInControlflowgraphFactory extends RetargetAction {
 			methodSig = buf.toString();
 			
 		}catch(IllegalArgumentException e){
-			e.printStackTrace(System.err);
-			Messages.error(e.getMessage() + SourcecodeVisualizerMessages.ExceptionAdditionalMessage);
-			return;
+			String errorMsg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed
+    				+ '\n'
+    				+ e.getMessage();
+			IStatus s = new Status(IStatus.ERROR, SourcecodeVisualizerPlugin.PLUGIN_ID, errorMsg, e);
+    		CorePlugin.log(s);
+    		
+    		String msg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed 
+    				+ '\n'
+    				+ CoreMessages.ExceptionAdditionalMessage;
+    		Messages.error(msg);
+    		
+    		return;
+    		
 		} catch (JavaModelException e) {
-			e.printStackTrace(System.err);
-			Messages.error(e.getMessage() + SourcecodeVisualizerMessages.ExceptionAdditionalMessage);
-			return;
+			String errorMsg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed
+    				+ '\n'
+    				+ e.getMessage();
+			IStatus s = new Status(IStatus.ERROR, SourcecodeVisualizerPlugin.PLUGIN_ID, errorMsg, e);
+    		CorePlugin.log(s);
+    		
+    		String msg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed 
+    				+ '\n'
+    				+ CoreMessages.ExceptionAdditionalMessage;
+    		Messages.error(msg);
+    		
+    		return;
 		}
 
 		StringBuffer buf = new StringBuffer();

@@ -32,6 +32,7 @@ import com.drgarbage.bytecode.instructions.AbstractInstruction;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.editors.BytecodeEditor;
 import com.drgarbage.core.CoreConstants;
+import com.drgarbage.core.CoreMessages;
 import com.drgarbage.core.CorePlugin;
 import com.drgarbage.core.IExternalCommunication;
 import com.drgarbage.core.img.CoreImg;
@@ -84,32 +85,16 @@ public class ExportGraphAndOpenWithControlflowgraphFactoryAction extends Retarge
      * @see org.eclipse.ui.actions.RetargetAction#run()
      */
     public void run() {
-    	IExternalCommunication comunicationObject = CorePlugin.getDefault()
-    			.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
-    	
+    	IExternalCommunication comunicationObject =  CorePlugin.getExternalCommunication();
     	if(comunicationObject == null){
-    		/* activate target plugin */
-        	Bundle b = Platform.getBundle(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
-        	if(b != null){
-	        	if(b.getState() != Bundle.ACTIVE){
-	    	    	try {
-	    				b.start();
-	    			} catch (BundleException e) {
-	    				e.printStackTrace(System.err);
-	    			}
-	        	}  		
-	    		
-	        	/* get communication object again*/
-	    		comunicationObject = CorePlugin.getDefault()
-	    				.getExternalComunicationObject(CoreConstants.CONTROL_FLOW_GRAPH_FACTORY_PLUGIN_ID);
-	        	}
-    	}
-    	
-    	if(comunicationObject == null){
-    		Messages.error(BytecodeVisualizerMessages.OpenGraphInControlflowgraphFactoryAction_error_Opening_failed);
+    		
+    		String msg = CoreMessages.ERROR_Opening_Graph_in_CFGF_failed
+    				+ '\n'
+    				+ CoreMessages.ERROR_CFGF_is_not_installed;
+    		Messages.error(msg);
     		return;
     	}
-    		
+    	
     	IMethodSection ms = classFileDocument.findMethodSection(editor.getSelectedLine()/* changed to 0-based */);
     	
     	/* convert instruction lines to instruction list */

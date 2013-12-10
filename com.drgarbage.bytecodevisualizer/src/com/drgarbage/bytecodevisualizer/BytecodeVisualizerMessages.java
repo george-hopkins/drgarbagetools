@@ -104,8 +104,6 @@ public class BytecodeVisualizerMessages extends NLS {
 	public static String OpenGraphInControlflowgraphFactoryAction_text;
 	public static String OpenGraphInControlflowgraphFactoryAction_tooltipText;
 
-	public static String OpenGraphInControlflowgraphFactoryAction_error_Opening_failed;
-
 	public static String StepOverSingleInstructionAction_text;
 	public static String StepIntoBytecodeAction_text;
 	public static String Read_Classes_From_JVM_text;

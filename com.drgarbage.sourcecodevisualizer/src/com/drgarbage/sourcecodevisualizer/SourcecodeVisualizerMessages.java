@@ -49,7 +49,6 @@ public class SourcecodeVisualizerMessages extends NLS {
 	public static String Sourcecodevisualizer_AboutAction_Copyright;
 	public static String Sourcecodevisualizer_CreateBytecodeGraphAction_Text;
 	public static String Sourcecodevisualizer_CreateBytecodeGraphAction_TooltipText;
-	public static String Sourcecodevisualizer_OpenGraphInControlFlowFactoryFailed;
 
 	/* actions */
 	public static String Sourcecodevisualizer_ConstructorFilterAction_Text;

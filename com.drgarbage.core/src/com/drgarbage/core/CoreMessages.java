@@ -83,6 +83,9 @@ public class CoreMessages extends NLS {
 	public static String ERROR_Cannot_get_Sourcecode;
 	public static String ERROR_ToggleBreakpointAction_1;
 	public static String ERROR_ToggleBreakpointAction_2;
+	public static String ERROR_Starting_CFGF_failed;
+	public static String ERROR_Opening_Graph_in_CFGF_failed;
+	public static String ERROR_CFGF_is_not_installed;
 	public static String Error;
 	public static String Warning;
 	public static String Info;
@@ -118,7 +121,6 @@ public class CoreMessages extends NLS {
 	public static String lbl_Java_Development_Tools_JDT_Plugin;
 	
 	public static String ASTViewPage_Hide_PKG_DECL;
-	public static String ASTViewPage_Hide_PKG_DECL_ID;
 	public static String ASTViewPage_Hide_PKG_DECL_tooltip;
 	public static String ASTViewPage_Hide_PKG_Imports;
 	public static String ASTViewPage_Hide_PKG_Imports_tooltip;
@@ -126,5 +128,6 @@ public class CoreMessages extends NLS {
 	public static String ASTViewPage_Hide_JAVADOC_tooltip;
 	public static String ASTViewPage_Hide_FIELDS;
 	public static String ASTViewPage_Hide_FIELDS_tooltip;
+	public static String ASTView_Action_Generate_AST_Graph;
 	
 }
