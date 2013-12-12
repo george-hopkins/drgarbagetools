@@ -15,15 +15,7 @@
  */
 package com.drgarbage.core.views;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.IClassFile;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
-import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
@@ -37,7 +29,6 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
 import com.drgarbage.ast.ASTPanel;
 import com.drgarbage.core.CoreMessages;
-import com.drgarbage.core.CorePlugin;
 
 /**
  * Abstract syntax tree view page.
@@ -88,21 +79,7 @@ public class ASTViewPage extends Page {
 	 * @param part the reference to the editor
 	 */
 	public void setInput(IEditorPart part) {
-		ITypeRoot typeRoot = EditorUtility.getEditorInputJavaElement(part, false);
-		try {
-			if(typeRoot instanceof ICompilationUnit){
-				astPanel.setSource((ICompilationUnit)typeRoot);
-			}
-			else if(typeRoot instanceof IClassFile){
-				astPanel.setSource((IClassFile)typeRoot);
-			}
-			astPanel.setEditorPart((AbstractDecoratedTextEditor) part);
-			
-		} catch (InterruptedException e1) {
-			CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,CorePlugin.PLUGIN_ID, e1.getMessage(), e1));
-		} catch (InvocationTargetException e2) {
-			CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,CorePlugin.PLUGIN_ID, e2.getMessage(), e2));
-		}
+		astPanel.setEditorInput((AbstractDecoratedTextEditor) part);
 	}
 	
 	/**

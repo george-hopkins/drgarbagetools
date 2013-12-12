@@ -20,13 +20,23 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
@@ -46,6 +56,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
@@ -75,7 +86,42 @@ public class ASTPanel extends Composite {
 	private TreeViewer treeViewer;
 	private TreeModel selectedModelElement = null;	
 	
-	private String treeName = "ASTtree";
+	private String treeName = "ast-tree"; //$NON-NLS-1$
+	
+	/**
+	 * A resource change listener is notified of changes to resources
+	 * in the workspace. 
+	 * These changes arise from direct manipulation of resources, or 
+	 * indirectly through re-synchronization with the local file system.
+	 * 
+	 * @see IResourceDelta
+	 * @see IWorkspace#addResourceChangeListener(IResourceChangeListener, int)
+	 */
+	private IResourceChangeListener resourceChangeListener = new IResourceChangeListener(){
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent)
+		 */
+		public void resourceChanged(IResourceChangeEvent event) {
+			IResourceDelta mainDelta = event.getDelta();
+            if (mainDelta != null && editorPart != null) {
+				ITypeRoot typeRoot = EditorUtility.getEditorInputJavaElement(editorPart, false);
+            	IPath path = typeRoot.getResource().getFullPath();
+                IResourceDelta affectedElement = mainDelta.findMember(path);
+                if (affectedElement != null) {
+                	if(affectedElement.getFullPath().equals(path)){
+                		if ((IResourceDelta.CONTENT & affectedElement.getFlags()) != 0) {
+                			/* 
+                			 * Process the delta and provide updates 
+                			 * to the viewer, inside the UI thread.
+                		     */
+                			updateTreeViewer();
+                		}
+                	}
+                }
+            }
+		}
+	};
 	
 	/**
 	 * Constructs a control panel with a tree object..
@@ -202,8 +248,75 @@ public class ASTPanel extends Composite {
 		mm.add(action);
 		Menu menu = mm.createContextMenu(treeViewer.getControl());
 		treeViewer.getControl().setMenu(menu);
+		
+		/* 
+		 * Add a resource listener to refresh the content 
+		 * if the input resource has been modified. 
+		 */
+		JavaCore.addPreProcessingResourceChangedListener(resourceChangeListener, 
+				IResourceChangeEvent.POST_CHANGE);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.swt.widgets.Widget#dispose()
+	 */
+	public void dispose () {
+		
+		/* Remove the resource listener */
+		JavaCore.removePreProcessingResourceChangedListener(resourceChangeListener);
+		
+		super.dispose();
+	}
+	
+	/**
+	 * Provide updates to the viewer, inside the UI thread.
+	 */
+	private void updateTreeViewer(){
+		
+		/* Are we in the UIThread? If so spin it until we are done */
+		if (getDisplay().getThread() == Thread.currentThread()) {
+			updateViewerInput();
+			
+		} else {
+
+			final Control ctrl = this;
+			getDisplay().asyncExec(new Runnable(){
+				
+				/* (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				public void run() {
+					/* Abort if this happens after disposes */
+
+					if (ctrl == null || ctrl.isDisposed()) {
+						return;
+					}
+
+					updateViewerInput();
+				}
+			});
+		}
+	}
+	
+	/**
+	 * @see #updateTreeViewer()
+	 */
+	private void updateViewerInput(){
+		ITypeRoot typeRoot = EditorUtility.getEditorInputJavaElement(editorPart, false);
+		try{
+			if(typeRoot instanceof ICompilationUnit){
+				setInput((ICompilationUnit)typeRoot);
+			}
+			else if(typeRoot instanceof IClassFile){
+				setInput((IClassFile)typeRoot);
+			}
+
+		} catch (InterruptedException e1) {
+			CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,CorePlugin.PLUGIN_ID, e1.getMessage(), e1));
+		} catch (InvocationTargetException e2) {
+			CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,CorePlugin.PLUGIN_ID, e2.getMessage(), e2));
+		}
+	}
 	
 	/**
 	 * Simple implementation of the Tree content provider.
@@ -286,38 +399,39 @@ public class ASTPanel extends Composite {
 
 	}
 	
-	
 	/**
-	 * Sets the active editor part reference.
+	 * Sets active editor part reference and updates 
+	 * the input of the tree view.  
 	 * 
 	 * @param ep the editor part
 	 */
-	public void setEditorPart(AbstractDecoratedTextEditor ep) {
+	public void setEditorInput(AbstractDecoratedTextEditor ep) {
 		editorPart = ep;
+		updateTreeViewer();
 	}
 		
 	/**
-	 * Sets the source for the tree control. 
-	 * @param source the compilation unit object.
+	 * Sets the input for the tree control. 
+	 * @param input the compilation unit object.
 	 * 
 	 * @throws InterruptedException
 	 * @throws InvocationTargetException
 	 */
-	public void setSource(ICompilationUnit source) throws InterruptedException, InvocationTargetException {
-		treeName = source.getElementName();
-		createContent(source, null);
+	protected void setInput(ICompilationUnit input) throws InterruptedException, InvocationTargetException {
+		treeName = input.getElementName();
+		createContent(input, null);
 	}
 	
 	/**
-	 * Sets the source for the tree control.
-	 * @param source the class file object.
+	 * Sets the input for the tree control.
+	 * @param input the class file object.
 	 * 
 	 * @throws InterruptedException
 	 * @throws InvocationTargetException
 	 */
-	public void setSource(IClassFile source) throws InterruptedException, InvocationTargetException {
-		treeName = source.getElementName();
-		createContent(null, source);
+	protected void setInput(IClassFile input) throws InterruptedException, InvocationTargetException {
+		treeName = input.getElementName();
+		createContent(null, input);
 	}
 	
 	/**

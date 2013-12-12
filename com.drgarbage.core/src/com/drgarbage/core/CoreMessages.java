@@ -129,5 +129,6 @@ public class CoreMessages extends NLS {
 	public static String ASTViewPage_Hide_FIELDS;
 	public static String ASTViewPage_Hide_FIELDS_tooltip;
 	public static String ASTView_Action_Generate_AST_Graph;
+	public static String ASTView_lbl_not_available;
 	
 }

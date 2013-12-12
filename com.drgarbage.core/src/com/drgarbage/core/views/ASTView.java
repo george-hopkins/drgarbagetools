@@ -15,20 +15,17 @@
  */
 package com.drgarbage.core.views;
 
-import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
-import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.internal.views.ViewsPlugin;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.part.IPageBookViewPage;
 import org.eclipse.ui.part.MessagePage;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.PageBookView;
 
-import com.drgarbage.core.CoreConstants;
+import com.drgarbage.core.CoreMessages;
 
 
 /**
@@ -52,19 +49,8 @@ public class ASTView extends PageBookView {
 //				equals(CoreConstants.BYTECODE_VISUALIZER_EDITOR_ID)
 				){
 
-			ASTViewPage page = null;
-			
-			//FIXME: Implement adapter pattern in the editor classes 
-        	Object obj = ViewsPlugin.getAdapter(part, ASTViewPage.class, false);
-            if (obj instanceof ASTViewPage) {
-            	page = (ASTViewPage) obj;
-            }
-            else {
-            	//FIXME: The page is created here so long the adapter pattern is missing 
-            	/* should never happen */
-            	page = new ASTViewPage();
-            }
-        	
+			ASTViewPage page = new ASTViewPage();
+
 			initPage((IPageBookViewPage) page);
             page.createControl(getPageBook());
             
@@ -107,7 +93,7 @@ public class ASTView extends PageBookView {
 		page = new MessagePage();
         initPage(page);
         page.createControl(book);
-        page.setMessage("AST view is not available");//TODO: define constant for default page
+        page.setMessage(CoreMessages.ASTView_lbl_not_available);
         
         return page;
 	}
