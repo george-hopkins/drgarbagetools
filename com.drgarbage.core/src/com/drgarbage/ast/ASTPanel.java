@@ -211,21 +211,21 @@ public class ASTPanel extends Composite {
 	 */
 	public class TreeContentProvider implements ITreeContentProvider {
 		/**
-		 * 
+		 * Holds ASTNode Types which shall be hidden from Tree
 		 */
 		List<Integer> hiddenItems = new ArrayList<Integer>();
 		
 		/**
-		 * TODO: describe method
-		 * @param e
+		 * Hide an ASTNode Type
+		 * @param e ASTNode Type
 		 */
 		public void hide(int e){
 			hiddenItems.add(e);
 		}
 		
 		/**
-		 * TODO: describe method
-		 * @param e
+		 * Unhide an ASTNode Type
+		 * @param e ASTNode Type
 		 */
 		public void show(int e){
 			if(hiddenItems.contains(e)){
