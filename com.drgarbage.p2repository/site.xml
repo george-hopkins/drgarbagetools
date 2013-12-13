@@ -6,7 +6,7 @@
    <feature url="features/com.drgarbage.bytecodevisualizer_4.3.4.qualifier.jar" id="com.drgarbage.bytecodevisualizer" version="4.3.4.qualifier">
       <category name="Bytecode Visualizer"/>
    </feature>
-   <feature url="features/com.drgarbage.controlflowgraphfactory_4.3.1.201311221336.jar" id="com.drgarbage.controlflowgraphfactory" version="4.3.1.201311221336">
+   <feature url="features/com.drgarbage.controlflowgraphfactory_4.3.1.qualifier.jar" id="com.drgarbage.controlflowgraphfactory" version="4.3.1.qualifier">
       <category name="Control Flow Graph Factory"/>
    </feature>
    <category-def name="Bytecode Visualizer" label="Bytecode Visualizer">
