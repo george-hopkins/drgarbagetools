@@ -1418,9 +1418,10 @@ public class BytecodeEditor extends JavaEditor
 					IPath classFilePath = new Path(f.getAbsolutePath()); 
 
 					/* make path relative /<project>/<bin folder>/<package>/<class> */
-					classFilePath = classFilePath.removeFirstSegments(projectPath.segmentCount() + 1);
+					IPath workspace = project.getWorkspace().getRoot().getLocation();
+					classFilePath = classFilePath.removeFirstSegments(workspace.segmentCount());
 
-					/* find the resource and set the new editor input */
+					/* Find the resource and set the new editor input */
 					final IFile classFile = ResourcesPlugin.getWorkspace().getRoot().getFile(classFilePath);
 					doSetInput(new FileEditorInput(classFile));
 				}
