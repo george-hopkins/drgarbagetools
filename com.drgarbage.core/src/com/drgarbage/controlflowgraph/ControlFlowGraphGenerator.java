@@ -972,10 +972,10 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 
 				/* create second arc only if the instruction not a goto*/
 				if(!ControlFlowGraphUtils.isJumpInstruction(currentInstruction.getOpcode())){
-					newEdge.setData("false");
+					newEdge.setData("true");
 					currentInstruction = (AbstractInstruction)instructions.get(i);
 					newEdge = GraphExtentionFactory.createEdgeExtention(hashTable.get(start), hashTable.get(currentInstruction.getOffset()));
-					newEdge.setData("true");
+					newEdge.setData("false");
 					edges.add(newEdge);				
 					if(debug) debug("addArc: source=" + start + " target=" + currentInstruction.getOffset());		
 				}
