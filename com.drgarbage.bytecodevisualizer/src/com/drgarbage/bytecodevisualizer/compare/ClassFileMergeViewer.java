@@ -326,7 +326,7 @@ public class ClassFileMergeViewer extends TextMergeViewer{
 	/**
 	 * Returns an java element if the resource is a java object,
 	 * otherwise <code>null</code>.
-	 * @param resource object
+	 * @param res
 	 * @return java element
 	 */
 	public static IJavaElement getJavaElementFromResource(IResource res) {

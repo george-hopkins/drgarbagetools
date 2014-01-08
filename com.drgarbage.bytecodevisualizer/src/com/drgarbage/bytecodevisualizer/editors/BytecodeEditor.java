@@ -460,7 +460,7 @@ public class BytecodeEditor extends JavaEditor
 
 	/**
 	 * Set the reference to the action contributor. 
-	 * @param actionContributor
+	 * @param contributor
 	 */
 	public void setActionContributor( BytecodevizualizerActionBarContributor contributor) {
 		actionContributor = contributor;
@@ -533,7 +533,7 @@ public class BytecodeEditor extends JavaEditor
 	
 	/**
 	 * Adds Line Selection change listener.
-	 * @param lineSelectionListener
+	 * @param listener
 	 */
 	public void addtLineSelectionListener(IClassFileEditorSelectionListener listener) {
 		lineSelectionListener.add(listener);
@@ -1584,7 +1584,6 @@ public class BytecodeEditor extends JavaEditor
 
 	/**
 	 * @param textSelection
-	 * @return
 	 */
 	protected String getClassName(TextSelection textSelection){
 
@@ -2264,7 +2263,10 @@ public class BytecodeEditor extends JavaEditor
 
 	/**
 	 * Selects the given line and revaluate visible position.
-	 * @param the number of the line to be selected. 
+	 * @param bytecodeDocumentLine
+	 * @param elementName
+	 * @param elementType
+	 * The number of the line to be selected. 
 	 */
 	public void selectBytecodeLineAndReveal(int bytecodeDocumentLine, String elementName, int elementType) {
 		IDocument document = byteCodeDocumentProvider.getBytecodeDocument(getBytecodeEditorInput());
@@ -2310,7 +2312,8 @@ public class BytecodeEditor extends JavaEditor
 
 	/**
 	 * Selects the given line.
-	 * @param a 0-based number of the line to be selected. 
+	 * @param line
+	 * a 0-based number of the line to be selected. 
 	 */
 	public void selectLine(int line) {
 		
@@ -2361,7 +2364,8 @@ public class BytecodeEditor extends JavaEditor
 
 	/**
 	 * Selects the given line and reval
-	 * @param a 0-based number of the line to be selected. 
+	 * @param bytecodeLine
+	 * a 0-based number of the line to be selected. 
 	 */
 	public void selectLineAndReveal(int bytecodeLine) {
 		

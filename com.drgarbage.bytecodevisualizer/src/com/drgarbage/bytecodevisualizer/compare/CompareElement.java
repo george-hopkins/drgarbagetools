@@ -65,10 +65,7 @@ public class CompareElement extends BufferedContent implements ITypedElement, IS
 
     /**
      * Constructor for CompareElement.
-     * @param className
-     * @param type
-     * @param javaElement
-     * @param modes
+     * @param javaElement  
      */
     public CompareElement(IJavaElement javaElement) {
         super();

@@ -122,10 +122,13 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 	     * Appends an internal name, a type descriptor or a type signature to
 	     * {@link #buf buf}.
 	     * 
-	     * @param type indicates if desc is an internal name, a field descriptor, a
-	     *        method descriptor, a class signature, ...
-	     * @param desc an internal name, type descriptor, or type signature. May be
-	     *        <tt>null</tt>.
+	     * @param type
+	     * type indicates if desc is an internal name, a field descriptor, a
+	     * method descriptor, a class signature, ...
+	     * 
+	     * @param desc
+	     * desc an internal name, type descriptor, or type signature. May be
+	     * <tt>null</tt>.
 	     */
 	    protected void appendDescriptor(final int type, final String desc) {
 	        //TODO: test this
@@ -2780,7 +2783,8 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 	 * Appends a string representation of the given access modifiers to {@link
 	 * #buf buf}.
 	 * 
-	 * @param access some access modifiers.
+	 * @param access
+	 * Access some access modifiers.
 	 */
 	protected void appendAccess(final int access) {
 		appendIndentationIfNeeded();
@@ -3447,8 +3451,9 @@ public abstract class AbstractClassFileDocument extends ClassVisitor
 	/**
 	 * Returns the number of characters in the internal {@link StringBuilder}.
 	 * 
-	 * @return
+	 * @return true, false
 	 */
+
 	public int length() {
 		return sb.length();
 	}

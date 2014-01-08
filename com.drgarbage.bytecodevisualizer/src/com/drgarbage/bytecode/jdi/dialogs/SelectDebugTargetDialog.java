@@ -87,8 +87,11 @@ public class SelectDebugTargetDialog extends MessageDialog {
 	/**
      * Creates a new clean dialog.
      * 
-     * @param window the window to create it in
-     * @param selection the currently selected projects (may be empty)
+     * @param className
+     * Window the window to create it in.
+     * 
+     * @param displayCandidates
+     * Selection the currently selected projects (may be empty).
      */
     public SelectDebugTargetDialog(String className, ArrayList<IJavaType[]> displayCandidates) {
         super(

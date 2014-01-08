@@ -235,10 +235,10 @@ public class ClassFileSourcecodeViewer extends ClassFileEditor implements
 
 	/**
 	 * Checks if the class file input has no source attached. If so, a source attachment form is shown.
-	 * 
-	 * @param input the editor input
+	 * Input the editor input.
 	 * @throws JavaModelException if an exception occurs while accessing its corresponding resource
 	 */
+	
 	public void verifyInput() throws JavaModelException {
 		IEditorInput input = getEditorInput();
 		

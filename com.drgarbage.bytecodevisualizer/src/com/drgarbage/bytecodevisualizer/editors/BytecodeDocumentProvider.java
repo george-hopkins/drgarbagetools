@@ -114,7 +114,7 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 
 	/**
 	 * Constructor.
-	 * @param editor part
+	 * @param part
 	 */
 	public BytecodeDocumentProvider(BytecodeEditor part) {
 		super();
@@ -123,7 +123,7 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 	
 	/**
 	 * Returns the reference to the outline element.
-	 * @return the classFileOutlineElement
+	 * @return classFileOutlineElement
 	 */
 	public IJavaElement getClassFileOutlineElement() {
 		return classFileOutlineElement;
@@ -526,7 +526,7 @@ public class BytecodeDocumentProvider extends FileDocumentProvider {
 	/**
 	 * Creates a class file based model.
 	 * @param classFileEditorInput
-	 * @return
+	 * @return model
 	 * @throws CoreException
 	 */
 	private IAnnotationModel createClassFileAnnotationModel(IClassFileEditorInput classFileEditorInput) throws CoreException {

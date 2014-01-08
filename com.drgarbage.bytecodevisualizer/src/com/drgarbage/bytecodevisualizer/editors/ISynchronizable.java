@@ -33,7 +33,7 @@ public interface ISynchronizable {
 	
 	/**
 	 * Enable or disable the cursor update handler.
-	 * @param true or false
+	 * @param b
 	 */
 	public void setHandleCursorPositionChanged(boolean b);
 }

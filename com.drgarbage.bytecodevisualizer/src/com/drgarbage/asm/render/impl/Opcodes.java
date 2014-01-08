@@ -19,10 +19,10 @@ package com.drgarbage.asm.render.impl;
 import com.drgarbage.bytecode.ByteCodeConstants;
 
 /**
-  *  Opcode constants. Use the {@link ByteCodeConstants#MNEMONICS} to map 
+  *  Opcode constants. Use the {@link ByteCodeConstants} to map 
   *  the numeric opcodes to their textual mnemonics. 
   *
-  *  @see ByteCodeConstants#MNEMONICS
+  *  @see ByteCodeConstants
   *
   * @author Sergej Alekseev and Peter Palaga
   *  @version $Revision:81 $

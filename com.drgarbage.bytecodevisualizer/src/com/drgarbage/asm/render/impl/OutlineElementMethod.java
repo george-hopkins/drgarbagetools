@@ -127,7 +127,7 @@ public class OutlineElementMethod extends OutlineElement implements IMethod {
 	
 	/**
 	 * Sets the method descriptor.
-	 * @param methodDescriptor the methodDescriptor to set
+	 * @param signature the method signature to set
 	 */
 	public void setMethodDescriptor(String signature) {
 		this.signature = signature;
@@ -224,8 +224,9 @@ public class OutlineElementMethod extends OutlineElement implements IMethod {
 
 	/**
 	 * Sets the flag constructor.
-	 * @param true or false
+	 * @param b
 	 */
+	
 	public void setConstructor(boolean b) {
 		this.constructor = b;
 	}
@@ -239,7 +240,7 @@ public class OutlineElementMethod extends OutlineElement implements IMethod {
 
 	/**
 	 * Sets the main method flag.
-	 * @param true or false
+	 * @param b
 	 */
 	public void setMainMethod(boolean b) {
 		this.mainMethod = b;

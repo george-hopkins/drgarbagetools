@@ -53,7 +53,7 @@ public class ClassFileParser {
 	/**
 	 * Creates a class file representation.
 	 * @param bytes
-	 * @return
+	 * @return buf.toString
 	 * @throws ParseException
 	 */
 	public String parseClassFile(byte[] bytes) throws ParseException {

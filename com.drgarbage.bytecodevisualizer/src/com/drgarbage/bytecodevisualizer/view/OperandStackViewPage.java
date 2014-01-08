@@ -194,7 +194,6 @@ public abstract class OperandStackViewPage extends Page {
 
 	/**
 	 * Constructs an outline.
-	 * @param editor
 	 */
 	public OperandStackViewPage() {
 		super();
@@ -612,7 +611,7 @@ public abstract class OperandStackViewPage extends Page {
 	/**
 	 * Sets the input - the list of the byte code instructions
 	 * for the table Viewer. 
-	 * @param methodSection
+	 * @param m
 	 */
 	public void setInput(IMethodSection m) {
 		if(m == null && methodInput == null){

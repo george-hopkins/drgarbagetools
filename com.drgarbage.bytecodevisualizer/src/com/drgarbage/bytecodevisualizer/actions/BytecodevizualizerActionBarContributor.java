@@ -173,7 +173,7 @@ public class BytecodevizualizerActionBarContributor extends BasicTextEditorActio
 	
 	/**
 	 * Call back method which is called if the page in the nested editor has been clicked.
-	 * @param index page index
+	 * @param newPageIndex
 	 */
 	public void pageChanged(int newPageIndex){
 		
