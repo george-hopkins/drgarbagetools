@@ -53,7 +53,7 @@ public class ClassFileDocumentsUtils {
 	 * @param type type representing a class
 	 * @param methodName method name
 	 * @param methodSignature method signature in java class file format
-	 * @return
+	 * @return m
 	 * @throws JavaModelException
 	 * @see IType
 	 */

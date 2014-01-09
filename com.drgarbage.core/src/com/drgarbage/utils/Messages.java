@@ -146,12 +146,14 @@ public class Messages {
      * 						the message
      * @param buttons 
      * 						the labels of the buttons to appear in the button bar
-     * @param classList
-     * 						the list of elements have to be displayed in the selection list
+     * @param elementList
+     * 						the list of elements have to be displayed in the selection list 
+     * @param selectionListImage
      * 
      * @return selected text if the user presses the OK button,
      *         <code>null</code> otherwise
      */
+ 
     public static String openSelectDialog(Shell parentShell, 
     		String title, 
     		String message, 
@@ -172,7 +174,10 @@ public class Messages {
     }
     
     /**
-     * @see  #openSelectDialog(Shell, String, String, String[], List)
+     * @param message
+     * @param selectionListImage
+     * @param elementList
+     * @return penSelectDialog
      */
     public static String openSelectDialog(String message,
     		Image selectionListImage,
@@ -180,9 +185,14 @@ public class Messages {
     	return openSelectDialog(null, CoreMessages.MessageDialogQuestion, message, selectionListImage, elementList);
     }
     
+        
     /**
-     * @see  #openSelectDialog(Shell, String, String, String[], List)
-     */    
+     * @param title
+     * @param message
+     * @param selectionListImage
+     * @param elementList
+     * @return openSelectDialog
+     */
     public static String openSelectDialog(String title, 
     		String message, 
     		Image selectionListImage,
@@ -191,7 +201,12 @@ public class Messages {
     }
     
     /**
-     * @see  #openSelectDialog(Shell, String, String, String[], List)
+     * @param parent
+     * @param title
+     * @param message
+     * @param selectionListImage
+     * @param elementList
+     * @return openSelectDialog
      */
     public static String openSelectDialog(Shell parent, 
     		String title, 

@@ -59,7 +59,7 @@ public interface IEdgeExt {
 	/** 
 	 * Sets visited flag.
 	 * NOTE: For internal use only
-	 * @param visited flag to set
+	 * @param b
 	 */
 	public void setVisited(boolean b);
 
@@ -89,7 +89,6 @@ public interface IEdgeExt {
 	 * Returns the counter of the edge.
 	 * For graph algorithms.
 	 * NOTE: For internal use only
-	 * @return
 	 */
 	public int getCounter();
 	

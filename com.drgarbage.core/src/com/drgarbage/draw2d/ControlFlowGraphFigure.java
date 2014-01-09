@@ -292,9 +292,11 @@ public class ControlFlowGraphFigure extends LayeredPane {
 	
 	/**
 	 * Create control flow graph view.
-	 * @param the size of the line in the text editor.
-	 * @param array of synchronized instructions, see {@link ILineInstructionSynchronizer}.
+	 * @param lineH
+	 * @param method 
+	 * @see {@link ILineInstructionSynchronizer}
 	 */
+	
 	public ControlFlowGraphFigure(int lineH, IMethodSection method) {
 		super();
 
@@ -508,7 +510,7 @@ public class ControlFlowGraphFigure extends LayeredPane {
 
 	/**
 	 * Visualize the graph.
-	 * @param control flow graph
+	 * @param graph
 	 */
 	protected void visualizeGraph(IDirectedGraphExt graph){
 		ByteCodeSimpleLayout byteCodeSimpleLayout = null;
@@ -640,8 +642,8 @@ public class ControlFlowGraphFigure extends LayeredPane {
 	
 	/**
 	 * Create verticesLayer for nodes of the control flow graph.
-	 * @param the node of the control flow graph, {@link Node}
-	 * @param the node type
+	 * @param node
+	 * @param nodeType
 	 */
 	protected IFigure createVisualNode(INodeExt node, int nodeType){
 		IFigure f = null;
@@ -696,7 +698,7 @@ public class ControlFlowGraphFigure extends LayeredPane {
  	
 	/**
 	 * Create an visual edges of the control flow graph.
-	 * @param the edge of the control flow graph, {@link Edge}
+	 * @param edge
 	 */
 	protected void createEdge(IEdgeExt edge) {		
 		INodeExt sourceNode = edge.getSource();
@@ -817,7 +819,7 @@ public class ControlFlowGraphFigure extends LayeredPane {
 	
 	/**
 	 * Create an visual edges of the control flow graph.
-	 * @param the edge of the control flow graph, {@link Edge}
+	 * @param edge
 	 */
 	protected void createBackEdge(IEdgeExt edge) {
 

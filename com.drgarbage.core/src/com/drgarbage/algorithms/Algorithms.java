@@ -141,9 +141,10 @@ public class Algorithms {
 	/**
 	 * <tt>edgeMap</tt> is mapping of byte code addresses to edge objects.
 	 * @param graph
-	 * @param counters
-	 * @param edgeMap
+	 * @param configuredBreakpoints
+	 * @param coveredBreakpoints
 	 */
+	
 	public static void propagateEdgeCounts(IDirectedGraphExt graph, int[] configuredBreakpoints, int[][] coveredBreakpoints){
 		
 		if(debug)log("-- propagateCounts ---");

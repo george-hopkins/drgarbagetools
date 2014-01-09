@@ -130,7 +130,7 @@ public class ASTVisitorImpl extends ASTVisitor {
 	/**
 	 * Constructs an AST visitor and initialize the tree object.
 	 * @param treeModel the tree to be filled
-	 * @param monitor progress monitor
+	 * @param m progress monitor
 	 * @see IProgressMonitor
 	 */
 	public ASTVisitorImpl(TreeModel treeModel, IProgressMonitor m) {

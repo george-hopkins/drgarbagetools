@@ -53,7 +53,6 @@ public abstract class AbstractCodeVisitor extends MethodVisitor implements ICode
 	 * @param name
 	 * @param desc
 	 * @param constantPool
-	 * @return
 	 */
 	public abstract boolean accept(String name, String desc, AbstractConstantPoolEntry[] constantPool);
 

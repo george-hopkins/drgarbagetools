@@ -89,7 +89,7 @@ public abstract class BFSBase {
 	
 	/**
 	 * Traverses the graph from the given node.
-	 * @param start node
+	 * @param startnode
 	 */
 	protected void bfs(INodeExt startnode){
 		Queue<INodeExt> queue = new LinkedList<INodeExt>();

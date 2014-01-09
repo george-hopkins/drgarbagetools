@@ -307,14 +307,20 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 		return cfg;
 	}
 
-	/** 
+
+	/**
 	 * Generates a control flow graph for the defined method.
-	 * @param classpath
-	 * @param package name
-	 * @param class name
-	 * @param method name
-	 * @param method signature
-	 * @return the control flow graph 
+	 * @param classPath
+	 * @param packageName
+	 * @param className
+	 * @param methodName
+	 * @param methodSig
+	 * @param createStartVertex
+	 * @param createExitvertex
+	 * @param createBackEdge
+	 * @return the control flow graph
+	 * @throws ControlFlowGraphException
+	 * @throws IOException
 	 */
 	public static IDirectedGraphExt generateControlFlowGraph(String classPath[],
 			String packageName,
@@ -330,15 +336,20 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 		return ControlFlowGraphGenerator.generateControlFlowGraph(codeVisitor.getInstructions(), codeVisitor.getLineNumberTable(), createStartVertex, createExitvertex, createBackEdge);
 	}
 
+	
 	/**
 	 * Generates a source code graph for the defined method.
-	 * @param classpath
-	 * @param package name
-	 * @param class name
-	 * @param method name
-	 * @param method signature
+	 * @param classPath
+	 * @param packageName
+	 * @param className
+	 * @param methodName
+	 * @param methodSig
+	 * @param createStartVertex
+	 * @param createExitvertex
+	 * @param createBackEdge
 	 * @return the control flow graph
-	 * @throws ControlFlowGraphException, IOException, InvalidByteCodeException
+	 * @throws ControlFlowGraphException
+	 * @throws IOException
 	 */
 	public static IDirectedGraphExt generateSourceCodeGraph(String classPath[],
 			String packageName,
@@ -355,14 +366,18 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 
 	}
 
-	/** 
+	   
+	/**
 	 * Generates a source code graph for the defined method.
-	 * @param List of instructions
-	 * @param code of the methode
-	 * @return the control flow graph 
+	 * @param instructions
+	 * @param lineNumberTable
+	 * @param createStartVertex
+	 * @param createExitvertex
+	 * @param createBackEdge
+	 * @return  the control flow graph 
 	 * @throws ControlFlowGraphException
-	 * @throws IOException 
-	 */    
+	 * @throws IOException
+	 */
 	@SuppressWarnings("unchecked")
 	public static IDirectedGraphExt generateSourceCodeGraph (List<AbstractInstruction> instructions,
 			LineNumberTableEntry[] lineNumberTable,
@@ -574,7 +589,7 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	 * @param classList
 	 * @param classPath
 	 * @param packageName
-	 * @return
+	 * @return graphs
 	 * @throws IOException
 	 * @throws ControlFlowGraphException
 	 */
@@ -626,14 +641,18 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 		return graphs;
 	}
 
-	
-	/** 
+	 
+	/**
 	 * Generates a basic block graph graph from an instruction list.
-	 * @param List of synchronized instructions
+	 * @param instructions
+	 * @param lineNumberTable
+	 * @param createStartVertex
+	 * @param createExitVertex
+	 * @param createBackEdge
 	 * @return the control flow graph 
-	 * @throws IOException 
-	 * @throws ControlFlowGraphException 
-	 */    
+	 * @throws ControlFlowGraphException
+	 * @throws IOException
+	 */
 	public static IDirectedGraphExt generateBasicBlockGraph(List<AbstractInstruction> instructions,
 			LineNumberTableEntry[] lineNumberTable,
 			boolean createStartVertex,
@@ -730,11 +749,11 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	
 	/** 
 	 * Generates a control flow graph for the defined method.
-	 * @param classpath
-	 * @param package name
-	 * @param class name
-	 * @param method name
-	 * @param method signature
+	 * @param classPath
+	 * @param packageName
+	 * @param className
+	 * @param methodName
+	 * @param methodSig
 	 * @return the control flow graph 
 	 */
 	public static IDirectedGraphExt generateBasicBlockGraph(String classPath[],
@@ -756,7 +775,7 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	 * Returns a code visitor instance. Used for generation 
 	 * all graphs of a class.
 	 * @param in
-	 * @return
+	 * @return codeVisitor
 	 * @throws IOException
 	 */
 	public static AllCodeVisitor getClassFileVisitor(InputStream in) throws IOException{
@@ -1048,7 +1067,7 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	 * Create key of the edge.
 	 * @param sourceNode
 	 * @param targetNode
-	 * @return
+	 * @return buf.toString
 	 */
 	private static String createKey(INodeExt sourceNode, INodeExt targetNode){
 		StringBuffer buf = new StringBuffer();

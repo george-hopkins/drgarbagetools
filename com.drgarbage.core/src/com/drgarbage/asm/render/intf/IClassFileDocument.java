@@ -32,7 +32,7 @@ public interface IClassFileDocument extends Appendable {
 	
 	/**
 	 * Adds a field Section to the document.
-	 * @param the field section
+	 * @param f
 	 */
 	public void addFieldSection(IFieldSection f);
 
@@ -59,7 +59,7 @@ public interface IClassFileDocument extends Appendable {
 
 	/**
 	 * Search for a a {@link IFieldSection} by field name. 
-	 * @param field name
+	 * @param fieldName
 	 * @return a {@link IFieldSection} or <code>null</code> if no such exists.
 	 */
 	public IFieldSection findFieldSection(String fieldName);
@@ -69,7 +69,6 @@ public interface IClassFileDocument extends Appendable {
 	 * or null if none found.
 	 * 
 	 * @param sourceCodeLine 0-based line number
-	 * @return 
 	 */
 	public IInstructionLine findInstructionLine(int sourceCodeLine);
 
@@ -85,8 +84,8 @@ public interface IClassFileDocument extends Appendable {
 
 	/**
 	 * Search for a a {@link IMethodSection} by method name and method signature.
-	 * @param method name
-	 * @param method signature
+	 * @param methodName
+	 * @param methodSignature
 	 * @return a {@link IMethodSection} or <code>null</code> if no such exists.
 	 */
 	public IMethodSection findMethodSection(String methodName, String methodSignature);
@@ -110,9 +109,6 @@ public interface IClassFileDocument extends Appendable {
 	public String getClassSimpleName();
 
 	/**
-	 * Returns a {@link List} of {@link IFeldSection}s representing
-	 * the fields of this {@link IClassFileDocument}.
-	 *  
 	 * @return {@link List} of {@link IFieldSection}s representing
 	 * the fields of this {@link IClassFileDocument}.
 	 */
@@ -126,7 +122,6 @@ public interface IClassFileDocument extends Appendable {
 	
 	/**
 	 * Returns the number of lines in this {@link IClassFileDocument}.
-	 * @return
 	 */
 	public int getLineCount();
 

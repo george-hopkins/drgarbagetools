@@ -59,7 +59,7 @@ public interface INodeExt {
 	
 	/**
 	 * Sets the node's width.
-	 * @param the wigth
+	 * @param w
 	 */
 	public void setWidth(int w);
 	
@@ -71,7 +71,7 @@ public interface INodeExt {
 
 	/**
 	 * Sets the node's height..
-	 * @param the height
+	 * @param h
 	 */
 	public void setHeight(int h);
 	
@@ -109,7 +109,8 @@ public interface INodeExt {
 	/** 
 	 * Sets visited flag.
 	 * NOTE: used for graph algorithms.
-	 * @param visited status
+	 * @param b
+	 * visited status
 	 */
 	public void setVisited(boolean b);
 
@@ -123,7 +124,7 @@ public interface INodeExt {
 	/** 
 	 * Sets the node figure.
 	 * NOTE: used for graph visualisation.
-	 * @param the figure object
+	 * @param f
 	 */	
 	public void setFigure(IFigure f);
 	
@@ -174,13 +175,13 @@ public interface INodeExt {
 	/** 
 	 * Sets the basicblocks reference.
 	 * NOTE: used for basic block graph creation.
-	 * @param the basic block object
+	 * @param bb
 	 */	
 	public void setBasicBlockReference(IBasicBlock bb);
 
 	/** 
 	 * Sets the bytecode adress of the node.
-	 * @param the bytecode adress
+	 * @param byteCodeOffset
 	 * */
 	public void setByteCodeOffset(int byteCodeOffset);
 	
@@ -192,7 +193,7 @@ public interface INodeExt {
 
 	/** 
 	 * Sets the bytecode string. For example iload_1, iload_2 ...
-	 * @param the bytecode string
+	 * @param byteCodeString
 	 */
 	public void setByteCodeString(String byteCodeString);
 

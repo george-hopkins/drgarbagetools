@@ -165,7 +165,6 @@ public class KnuthStevensonTransformation extends BFSBase {
 	/**
 	 * Creates a new node which represents an equivalence class.
 	 * @param node
-	 * @return
 	 */
 	private void  createEquivalenceClassNode(){
 		if(debug)log("KST: createEquivalenceClassNode");

@@ -42,7 +42,7 @@ public class ControlFlowGraphViewPage extends Page implements IControlFlowGraphV
 	
 	/**
 	 * Constructs an outline.
-	 * @param editor
+	 * @param controlFlowGraphCanvas
 	 */
 	public ControlFlowGraphViewPage(FigureCanvas controlFlowGraphCanvas) {
 		super();

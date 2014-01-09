@@ -93,7 +93,7 @@ public class BytecodeUtils {
 	 * @see MethodVisitor#visitIntInsn(int, int)
 	 * 
 	 * @param operand
-	 * @return
+	 * @return JavaKeywords
 	 */
 	public static String getJavaTypeName(int operand) {
 		switch (operand) {
@@ -345,7 +345,7 @@ public class BytecodeUtils {
 	 * returns always <code>null</code>.
 	 * 
 	 * @param classFileResource
-	 * @return
+	 * @return null
 	 */
 	public static String toFullyQualifiedTypeName(IResource classFileResource) {
 		IProject project = classFileResource.getProject();
@@ -389,7 +389,6 @@ public class BytecodeUtils {
 	 * returns the type name of the given {@link ConstantClassInfo}
 	 * @param constantClassInfo the {@link ConstantClassInfo} to check
 	 * @param constantPool the associated ConstantPool
-	 * @return
 	 */
 	public static String resolveConstantPoolTypeName(
 			ConstantClassInfo constantClassInfo,
