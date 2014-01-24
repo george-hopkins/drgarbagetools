@@ -10,7 +10,7 @@
             default="true"
             extensions="class"
             icon="img/enabled16/bytecode-viewer-16x16.png"
-            id="com.drgarbage.bytecodevisualizer.editor"
+            id="com.drgarbage.bytecodevisualizer.plugin.editor"
             name="%pluginName">
          <contentTypeBinding
                contentTypeId="org.eclipse.jdt.core.javaClass">
