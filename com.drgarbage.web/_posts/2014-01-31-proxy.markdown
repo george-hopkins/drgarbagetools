@@ -1,0 +1,30 @@
+---
+layout: page
+title:  "Eclipse proxy configuration guide"
+date:   2014-01-31 21:00
+categories: howto
+---
+
+To [download Dr. Garbage Eclipse plugins][downandinstall] trough Eclipse
+update manager, you need to have access to the internet from within
+Eclipse. If your computer is behind a proxy server, you need to
+configure Eclipse accordingly.
+
+
+
+How to tell Eclipse you are behind ha proxy?
+--------------------------------------------
+
+Go to
+
+`Window > Preferences`
+
+![screenshot]({{ site.imgurl }}{{ page.url }}winpref.png)
+
+Select
+
+`General > Network Connections`
+
+and enter the host name or IP address and port of your proxy server.
+
+![screenshot]({{ site.imgurl }}{{ page.url }}connections.png)

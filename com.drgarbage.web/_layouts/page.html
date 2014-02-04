@@ -1,0 +1,23 @@
+---
+layout: default
+---
+
+  <div id="rightmenu">
+    <h1><a href="{{ site.url }}/bytecode-visualizer/">Bytecode Visualizer</a></h1>
+    Inspect, understand and debug Java bytecode, no matter if you have the corresponding source.
+    <hr />
+    <h1><a href="{{ site.url }}/sourcecode-visualizer/">Sourcecode Visualizer</a></h1>
+    Draws a control flow graph alongside of Java source code.
+    <hr />
+    <h1><a href="{{ site.url }}/control-flow-graph-factory/">
+        Control Flow Graph Factory
+    </a></h1>
+    Eclipse plugin for generating, editing and exporting control flow graphs.
+    <hr />
+  </div>
+  <div id="post">
+    <h1>{{ page.title }}</h1><a name="top"></a>
+    {{ content }}
+
+    <p id="meta">{% if page.author %} Written by {{ page.author }} on {{ page.date | date_to_string }}. {% endif %}</p>
+  </div>

@@ -1,0 +1,30 @@
+---
+layout: page
+title:	"About Dr. Garbage"
+date:	2013-12-18 18:35
+categories:
+---
+
+Dr. Garbage specializes in debugging and development tools for Java. It was
+founded in february 2008 by Sergej Alekseev, Peter Palaga and Sebastian
+Reschke.
+
+Sergej Alekseev has worked as a system software developer at Siemens
+Communication and Nokia Siemens Networks. 2006 Sergej Alekseev obtained his PhD
+in Computer Science from the University of Oldenburg in Germany. His research
+interests and professional experience include graph theoretical algorithms and
+control flow analysis of time critical software systems.
+
+Peter Palaga has graduated in linguistics and computer science at Technical
+University Berlin and in philosophy at Comenius University Bratislava. His
+professional experience includes jobs at Siemens Communications and Humboldt
+University, Knowledge Management in Bioinformatics.
+
+Sebastian Reschke has graduated in Communication and Information Engineering at
+the University of Applied Sciences – Beuth Hochschule für Technik Berlin. His
+professional experience includes jobs at Siemens Communications and AVM.
+Sebastian is still active developer of embedded systems and Certified Tester
+Foundation Level (International Software Quality Institute - iSQI). Since 2008
+Sebastian is an external lecturer in Modeling and Testing of Communication
+Systems at the University of Applied Sciences – Beuth Hochschule für Technik
+Berlin.

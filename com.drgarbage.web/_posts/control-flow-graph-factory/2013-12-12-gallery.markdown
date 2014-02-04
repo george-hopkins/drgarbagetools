@@ -1,0 +1,81 @@
+---
+layout: page
+title:	"Control Flow Graph Factory gallery"
+date:	2013-12-12 19:32
+categories: control-flow-graph-factory
+---
+
+To see the full image just click on the graph picture.
+
+* [Bytecode graph examples](#bcge)
+* [Source code graph examples](#scge)
+* [Basic block graph examples](#bbge)
+
+
+
+
+Bytecode graph examples  <a name="bcge"></a>
+-----------------------
+
+<table class="gallery">
+<tr>
+<td><a href="{{ site.imgurl }}{{ page.url }}p11keygenerator-engineinit.png">
+<img src="{{ site.imgurl }}{{ page.url }}p11keygenerator-engineinit-small.png" />
+</a></td>
+<td><a href="{{ site.imgurl }}{{ page.url }}corbabaseimpl-meta.png">
+<img src="{{ site.imgurl }}{{ page.url }}corbabaseimpl-meta-small.png" />
+</a></td>
+</tr>
+<tr>
+<td>P11Keygenerator.engineInit()</td>
+<td>CorbaBaseImpl.meta()</td>
+</tr>
+</table>
+
+[Back to top](#top)
+
+
+
+
+Source code graph examples  <a name="scge"></a>
+--------------------------
+
+<table class="gallery">
+<tr>
+<td><a href="{{ site.imgurl }}{{ page.url }}openaction-src.png">
+<img src="{{ site.imgurl }}{{ page.url }}openaction-src-small.png" />
+</a></td>
+<td><a href="{{ site.imgurl }}{{ page.url }}method-tobytearray-src.png">
+<img src="{{ site.imgurl }}{{ page.url }}method-tobytearray-src-small.png" />
+</a></td>
+</tr>
+<tr>
+<td>OpenAction.open()</td>
+<td>Method.toByteArray()</td>
+</tr>
+</table>
+
+[Back to top](#top)
+
+
+
+
+Basic block graph examples  <a name="bbge"></a>
+--------------------------
+
+<table class="gallery">
+<tr>
+<td><a href="{{ site.imgurl }}{{ page.url }}p11keygenerator-engineinit-bb.png">
+<img src="{{ site.imgurl }}{{ page.url }}p11keygenerator-engineinit-bb-small.png" />
+</a></td>
+<td><a href="{{ site.imgurl }}{{ page.url }}method-tobytearray-bb.png">
+<img src="{{ site.imgurl }}{{ page.url }}method-tobytearray-bb-small.png" />
+</a></td>
+</tr>
+<tr>
+<td>P11Keygenerator.engineInit()</td>
+<td>Method.toByteArray()</td>
+</tr>
+</table>
+
+[Back to top](#top)

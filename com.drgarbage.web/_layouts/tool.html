@@ -1,0 +1,25 @@
+---
+layout: page
+---
+
+<table class="pluginDescription">
+<tr>
+<td>
+  <img src="{{ site.imgurl }}{{ page.url }}icon.png" />
+  {{ page.eclipsedl }}
+</td>
+<td>
+  {{ page.desc }}
+</td>
+{% if page.download %}
+<td>
+	<ul>
+		<a href="{{ site.url }}/download/"><li>Download</li></a>
+		<a href="http://sourceforge.net/projects/drgarbagetools/"><li>Source</li></a>
+	</ul>
+</td>
+{% endif %}
+</tr>
+</table>
+
+{{ content }}

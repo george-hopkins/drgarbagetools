@@ -1,0 +1,26 @@
+---
+layout:	page
+title:	"Downloads"
+date:	2013-12-18 18:24
+categories:
+---
+
+You can download Dr. Garbage plugins via [Eclipse Marketplace Client][emc] or
+[Eclipse Update Manager][eum].
+
+To install Dr. Garbage plugins via [Eclipse Marketplace Client][emc] drag and drop
+the install button from the plugin page into a running Eclipse workspace.
+
+To install Dr. Garbage plugins via [Eclipse Update Manager][eum] use the
+following update site URLs:
+
+* **http://sourceforge.net/projects/drgarbagetools/files/eclipse/4.3/stable** for Kepler
+* **http://sourceforge.net/projects/drgarbagetools/files/eclipse/4.2/stable** for Juno
+* **http://sourceforge.net/projects/drgarbagetools/files/eclipse/3.7/stable** for Indigo
+
+For more details, please refer to [How to download and install Dr. Garbage
+plugins][howto].
+
+[emc]: http://marketplace.eclipse.org/marketplace-client-intro
+[eum]: http://www.drgarbage.com/how-to-download-and-install-dr-garbage-plugins.html
+[howto]: {{ site.url }}/howto/install/

@@ -1,0 +1,359 @@
+/*****************************************************************************/
+/*
+/* Common
+/*
+/*****************************************************************************/
+
+/* Global Reset */
+/** {*/
+/*margin: 0;*/
+/*padding: 0;*/
+/*}*/
+
+html, body { height: 100%; }
+
+body {
+  background-color: #FFF;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 10.5pt;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 120%; }
+
+p { margin: 1em 0; }
+
+a         {
+    color: #00a;
+    text-decoration: none;
+}
+a:hover   { text-decoration: underline; }
+/*a:visited { color: #a0a; }*/
+
+/*****************************************************************************/
+/*
+/* Layout
+/*
+/*****************************************************************************/
+#container {
+    width: 71em;
+    margin: 10px auto;
+    border: 1px solid #CCC;
+}
+
+#head {
+    background: #ffffff; /* Old browsers */
+    background: -moz-linear-gradient(top, #ffffff 46%, #f0f0ff 54%, #f0f0ff 96%, #ffffff 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(46%,#ffffff), color-stop(54%,#f0f0ff), color-stop(96%,#f0f0ff), color-stop(100%,#ffffff));
+    background: -webkit-linear-gradient(top, #ffffff 46%,#f0f0ff 54%,#f0f0ff 96%,#ffffff 100%);
+    background: -o-linear-gradient(top, #ffffff 46%,#f0f0ff 54%,#f0f0ff 96%,#ffffff 100%);
+    background: -ms-linear-gradient(top, #ffffff 46%,#f0f0ff 54%,#f0f0ff 96%,#ffffff 100%);
+    background: linear-gradient(to bottom, #ffffff 46%,#f0f0ff 54%,#f0f0ff 96%,#ffffff 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );
+    text-align: left;
+}
+#head img {padding: 0.8em;} 
+
+#content {
+    padding: 0em 1em;
+    margin: 1em 0em 1em 12.2em;
+    border-left: solid 0.1em #CCC;
+}
+div#content {
+min-height:400px;
+height:expression(this.scrollHeight > 400 ? "auto":"400px");
+}
+
+#menu {
+    float: left;
+    margin: 0px;
+    padding: 1em 0.1em;
+    text-align: left;
+    width: 12em;
+}
+#menu ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+#menu ul li {
+    background: #ffffff; /* Old browsers */
+    background: -moz-linear-gradient(top, #ffffff 46%, #f0f0ff 54%, #f0f0ff 96%, #ffffff 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(46%,#ffffff), color-stop(54%,#f0f0ff), color-stop(96%,#f0f0ff), color-stop(100%,#ffffff));
+    background: -webkit-linear-gradient(top, #ffffff 46%,#f0f0ff 54%,#f0f0ff 96%,#ffffff 100%);
+    background: -o-linear-gradient(top, #ffffff 46%,#f0f0ff 54%,#f0f0ff 96%,#ffffff 100%);
+    background: -ms-linear-gradient(top, #ffffff 46%,#f0f0ff 54%,#f0f0ff 96%,#ffffff 100%);
+    background: linear-gradient(to bottom, #ffffff 46%,#f0f0ff 54%,#f0f0ff 96%,#ffffff 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );
+    padding: 8px 16px;
+}
+
+#foot {
+    clear: both;
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
+
+/*****************************************************************************/
+/*
+/* Home
+/*
+/*****************************************************************************/
+#home #title {
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+    text-align: center;
+    border-bottom: 0.1em solid #CCC;
+}
+
+#home h1 {
+    margin: 0em;
+}
+
+#home table {
+   width: 100%;
+}
+
+#home td {
+    padding: 1em;
+    border-right: 0.1em solid #CCC;
+}
+
+#home td:last-child {
+    border-right: none;
+}
+
+#home .atwork {
+    position: relative;
+    height: 250px;
+    width: 245px;
+}
+
+#home .atwork .bubble {
+    position: absolute;
+    right: 0px;
+    top: 125px;
+}
+
+#home .atwork .foss-label {
+    position: absolute;
+    right: 50px;
+    top: 146px;
+    text-align: center;
+}
+
+/*****************************************************************************/
+/*
+/* Post
+/*
+/*****************************************************************************/
+#rightmenu {
+    float: right;
+    width: 10em;
+    padding: 0em 1em;
+    margin-top: -0.5em;
+}
+#rightmenu h1 {
+    font-size: 100%;
+}
+#rightmenu hr {
+    color: #CCC;
+    height: 0.1em;
+}
+
+#post {
+    margin-right: 11.5em;
+    padding-right: 1em;
+    min-height: 30em;
+    border-right: 0.1em solid #CCC;
+}
+
+.pluginDescription td {
+    vertical-align: top;
+}
+.pluginDescription ul {
+    list-style: none;
+    margin: 0;
+    padding: 0.1em;
+    border: 0.1em solid #666;
+}
+.pluginDescription li {
+    margin: 0.1em;
+    padding: 0.1em 0.5em;
+    background-color: #666;
+    color: #FFF;
+    text-align: center;
+    font-weight: bold;
+}
+
+.example-screenshot {
+    position: relative;
+}
+
+.flag {
+    position: absolute;
+    float:left;
+    width: 180px;
+    background-color: #fdfd9c;
+    border: 0.1em solid #CCC;
+    padding: 0.5em;
+    font-size: 85%;
+}
+.flag .notch-tl {
+    position: absolute;
+    top: -10px;
+    left: 30px;
+    margin: 0;
+    border-top: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #fdfd9c;
+    padding: 0;
+    width: 0;
+    height: 0;
+    /* ie6 height fix */
+    font-size: 0;
+    line-height: 0;
+    /* ie6 transparent fix */
+    _border-right-color: pink;
+    _border-left-color: pink;
+    _filter: chroma(color=pink);
+}
+.flag .notch-tr {
+    position: absolute;
+    top: -10px;
+    right: 30px;
+    margin: 0;
+    border-top: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #fdfd9c;
+    padding: 0;
+    width: 0;
+    height: 0;
+    /* ie6 height fix */
+    font-size: 0;
+    line-height: 0;
+    /* ie6 transparent fix */
+    _border-right-color: pink;
+    _border-left-color: pink;
+    _filter: chroma(color=pink);
+}
+.flag .notch-bl {
+    position: absolute;
+    bottom: -10px;
+    left: 30px;
+    margin: 0;
+    border-bottom: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #fdfd9c;
+    padding: 0;
+    width: 0;
+    height: 0;
+    /* ie6 height fix */
+    font-size: 0;
+    line-height: 0;
+    /* ie6 transparent fix */
+    _border-right-color: pink;
+    _border-left-color: pink;
+    _filter: chroma(color=pink);
+}
+.flag .notch-br {
+    position: absolute;
+    bottom: -10px;
+    right: 30px;
+    margin: 0;
+    border-bottom: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #fdfd9c;
+    padding: 0;
+    width: 0;
+    height: 0;
+    /* ie6 height fix */
+    font-size: 0;
+    line-height: 0;
+    /* ie6 transparent fix */
+    _border-right-color: pink;
+    _border-left-color: pink;
+    _filter: chroma(color=pink);
+}
+.flag .notch-l {
+    position: absolute;
+    top: 10px;
+    left: -10px;
+    margin: 0;
+    border-left: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #fdfd9c;
+    padding: 0;
+    width: 0;
+    height: 0;
+    /* ie6 height fix */
+    font-size: 0;
+    line-height: 0;
+    /* ie6 transparent fix */
+    _border-right-color: pink;
+    _border-left-color: pink;
+    _filter: chroma(color=pink);
+}
+.flag .notch-r {
+    position: absolute;
+    top: 10px;
+    right: -10px;
+    margin: 0;
+    border-right: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #fdfd9c;
+    padding: 0;
+    width: 0;
+    height: 0;
+    /* ie6 height fix */
+    font-size: 0;
+    line-height: 0;
+    /* ie6 transparent fix */
+    _border-right-color: pink;
+    _border-left-color: pink;
+    _filter: chroma(color=pink);
+}
+.flag .notch-tl {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    margin: 0;
+    border-top: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #fdfd9c;
+    padding: 0;
+    width: 0;
+    height: 0;
+    /* ie6 height fix */
+    font-size: 0;
+    line-height: 0;
+    /* ie6 transparent fix */
+    _border-right-color: pink;
+    _border-left-color: pink;
+    _filter: chroma(color=pink);
+}
+.flag ul {
+    margin: 0;
+    padding-left: 2em;
+}
+
+.clear { clear: both; }
+.clear-l { clear: left; }
+.clear-r { clear: right; }
+
+img {
+    max-width: 44em;
+}
+
+.gallery td {
+    padding: 3em;
+    text-align: center;
+}

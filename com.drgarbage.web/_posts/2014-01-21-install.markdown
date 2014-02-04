@@ -1,0 +1,27 @@
+---
+layout: page
+title: "How to download and install Dr. Garbage Plugins"
+date: 2014-01-21 12:10
+categories: howto
+---
+
+Install via Eclipse Marketplace
+-------------------------------
+
+Drag and drop "install"-icon into a running Eclipse workspace:
+
+*	Bytecode Visualizer [![InstallIcon](http://marketplace.eclipse.org/misc/installbutton.png)](http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=678)
+*	Sourcecode Visualizer [![InstallIcon](http://marketplace.eclipse.org/misc/installbutton.png)](http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=1163)
+
+*	Control Flow Graph Factory [![InstallIcon](http://marketplace.eclipse.org/misc/installbutton.png)](http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=679)
+
+
+
+
+
+Manual installation
+----------------------------------
+
+Point your Eclipse Update Manager to:
+**http://sourceforge.net/projects/drgarbagetools/files/eclipse/_\<EclipseVersion\>_/stable**
+

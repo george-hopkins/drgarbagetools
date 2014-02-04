@@ -1,0 +1,11 @@
+name: Dr. Garbage Tools
+url: http://localhost:4000
+imgurl: /img
+fileurl: /files
+timezone: Europe/Berlin
+encoding: UTF-8
+markdown: redcarpet
+pygments: true
+permalink: /:categories/:title/
+redcloth:
+        hard_breaks: false

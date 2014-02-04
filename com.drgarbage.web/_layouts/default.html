@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>{{ page.title }}</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="{{ site.url }}/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="{{ site.url }}/css/main.css">
+
+    </head>
+    <body>
+    <div id="container">
+      <div id="head">
+        <a href="{{ site.url }}/"><img src="{{ site.imgurl }}/logo.gif" alt="{{ site.name }}" /></a>
+      </div>
+      <div id="menu">
+        <ul>
+          <li><a href="{{ site.url }}/">Home</a></li>
+          <li><a href="{{ site.url }}/download/">Downloads</a></li>
+          <li><a href="{{ site.url }}/faq/">FAQ</a></li>
+          <li><a href="{{ site.url }}/contact/">Contact&nbsp;Us</a></li>
+          <li><a href="{{ site.url }}/about/">About&nbsp;Dr.&nbsp;Garbage</a></li>
+        </ul>
+      </div>
+      <div id="content">
+        {{ content }}
+      </div>
+    </div>
+      <div id="foot">
+        &copy; 2008 - {{ site.time | date: "%Y" }} Dr. Garbage Community | 
+        <a href="{{ site.url }}/termsofuse/">Terms of Use</a>
+      </div>
+    </body>
+</html>

@@ -1,0 +1,73 @@
+---
+layout: page
+title:	"FAQ"
+date:	2013-12-18 18:40
+categories:
+---
+
+How do I download or install the plugin x?
+------------------------------------------
+
+See [How to download and install Dr. Garbage plugins][install]
+
+
+
+
+What are the prerequisites for plugin x?
+----------------------------------------
+
+See [How to download and install Dr. Garbage plugins][install]
+
+
+
+
+After I have installed plugin x I see no change in Eclipse. How do I use plugin x after I have installed it?
+------------------------------------------------------------------------------------------------------------
+
+See
+
+* [First steps with Bytecode Visualizer][fsbv]
+* [First steps with Sourcecode Visualizer][fssv]
+* [First steps with Control Flow Graph Factory][fscfgf]
+
+
+
+
+I am behind a proxy. How do I configure it in Eclipse?
+------------------------------------------------------
+
+See [Eclipse proxy configuration guide][proxy]
+
+
+
+
+Eclipse tells me that the debug functionality is disabled in this context. What should I do?
+--------------------------------------------------------------------------------------------
+
+Please read [How to debug bytecode with Bytecode Visualizer][debug]
+
+
+
+
+I'm not able to set breakpoints using the Bytecode Visualizer. What should I do?
+--------------------------------------------------------------------------------
+
+Please read [How to debug bytecode with Bytecode Visualizer][debug]
+
+
+
+
+I have a question not answered here...
+--------------------------------------
+
+Please [contact us][contact]
+
+
+
+[install]: {{ site.url }}/howto/install/
+[fsbv]: {{ site.url }}/bytecode-visualizer/first-steps/
+[fssv]: {{ site.url }}/sourcecode-visualizer/first-steps/
+[fscfgf]: {{ site.url }}/control-flow-graph-factory/first-steps/
+[proxy]: {{ site.url }}/howto/proxy/
+[debug]: {{ site.url }}/howto/debug-bytecode/
+[contact]: {{ site.url }}/contact/

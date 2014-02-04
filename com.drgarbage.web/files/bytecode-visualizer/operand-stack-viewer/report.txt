@@ -1,0 +1,69 @@
+Size based analysis: testabc(II)I
+max_stack:  2
+max_locals: 3
+
+Offset  Bytecode        Stack Size
+----------------------------------
+0       iload_1              1
+1       iload_2              2
+2       if_icmple            0
+5       iload_1              1
+6       iload_2              2
+7       iadd                 1
+8       ireturn              0
+9       iload_1              1
+10      iconst_2             2
+11      iadd                 1
+12      ireturn              0
+----------------------------------
+Size based analysis successfully passed.
+
+
+Type based analysis: testabc(II)I
+Offset  Bytecode        Stack before              Stack after               
+----------------------------------------------------------------------------
+0       iload_1         <empty>                   I                         
+1       iload_2         I                         I, I                      
+2       if_icmple       I, I                      <empty>                   
+5       iload_1         <empty>                   I                         
+6       iload_2         I                         I, I                      
+7       iadd            I, I                      I                         
+8       ireturn         I                         <empty>                   
+9       iload_1         <empty>                   I                         
+10      iconst_2        I                         I, I                      
+11      iadd            I, I                      I                         
+12      ireturn         I                         <empty>                   
+----------------------------------------------------------------------------
+Type based analysis successfully passed.
+
+
+Content based analysis: testabc(II)I
+Offset  Bytecode        Stack before              Stack after               
+----------------------------------------------------------------------------
+0       iload_1         <empty>                   a                         
+1       iload_2         a                         a, b                      
+2       if_icmple       a, b                      <empty>                   
+5       iload_1         <empty>                   a                         
+6       iload_2         a                         a, b                      
+7       iadd            a, b                      (a+b)                     
+8       ireturn         (a+b)                     <empty>                   
+9       iload_1         <empty>                   a                         
+10      iconst_2        a                         a, 2                      
+11      iadd            a, 2                      (a+2)                     
+12      ireturn         (a+2)                     <empty>                   
+----------------------------------------------------------------------------
+Content based analysis successfully passed.
+
+
+Statistics: 
+----------------------------------------------------------------
+Elapsed time of the operand stack generation:   749 ms
+Memory consumption:                             267912 Bytes
+Max Number of stack combinations:               1
+Max Number of assined stacks to an instruction: 1
+Max Number of stack etries:                     2
+Number of method instructions:                  11
+Number of if instructions:                      1
+Number of switch instructions:                  0
+----------------------------------------------------------------
+
