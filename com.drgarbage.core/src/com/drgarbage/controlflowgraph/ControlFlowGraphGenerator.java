@@ -310,17 +310,17 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 
 	/**
 	 * Generates a control flow graph for the defined method.
-	 * @param classPath
-	 * @param packageName
-	 * @param className
-	 * @param methodName
-	 * @param methodSig
-	 * @param createStartVertex
-	 * @param createExitvertex
-	 * @param createBackEdge
+	 * @param classPath class path
+	 * @param packageName package name
+	 * @param className class name
+	 * @param methodName method name
+	 * @param methodSig method signature
+	 * @param createStartVertex <code>true</code> if the virtual start vertex has to be created, <code>false</code> otherwise
+	 * @param createExitvertex <code>true</code> if the virtual exit vertex has to be created, <code>false</code> otherwise
+	 * @param createBackEdge <code>true</code> if the virtual back edge has to be created, <code>false</code> otherwise
 	 * @return the control flow graph
-	 * @throws ControlFlowGraphException
-	 * @throws IOException
+	 * @throws ControlFlowGraphException if the graph could not be created.
+	 * @throws IOException if the class file could not be opened.
 	 */
 	public static IDirectedGraphExt generateControlFlowGraph(String classPath[],
 			String packageName,
@@ -339,17 +339,17 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	
 	/**
 	 * Generates a source code graph for the defined method.
-	 * @param classPath
-	 * @param packageName
-	 * @param className
-	 * @param methodName
-	 * @param methodSig
-	 * @param createStartVertex
-	 * @param createExitvertex
-	 * @param createBackEdge
+	 * @param classPath class path
+	 * @param packageName package name
+	 * @param className class name
+	 * @param methodName method name
+	 * @param methodSig method signature
+	 * @param createStartVertex <code>true</code> if the virtual start vertex has to be created, <code>false</code> otherwise
+	 * @param createExitvertex <code>true</code> if the virtual exit vertex has to be created, <code>false</code> otherwise
+	 * @param createBackEdge <code>true</code> if the virtual back edge has to be created, <code>false</code> otherwise
 	 * @return the control flow graph
-	 * @throws ControlFlowGraphException
-	 * @throws IOException
+	 * @throws ControlFlowGraphException if the graph could not be created.
+	 * @throws IOException if the class file could not be opened.
 	 */
 	public static IDirectedGraphExt generateSourceCodeGraph(String classPath[],
 			String packageName,
@@ -369,14 +369,14 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	   
 	/**
 	 * Generates a source code graph for the defined method.
-	 * @param instructions
-	 * @param lineNumberTable
-	 * @param createStartVertex
-	 * @param createExitvertex
-	 * @param createBackEdge
-	 * @return  the control flow graph 
-	 * @throws ControlFlowGraphException
-	 * @throws IOException
+	 * @param instructions List of instructions
+	 * @param lineNumberTable the line number table
+	 * @param createStartVertex <code>true</code> if the virtual start vertex has to be created, <code>false</code> otherwise
+	 * @param createExitvertex <code>true</code> if the virtual exit vertex has to be created, <code>false</code> otherwise
+	 * @param createBackEdge <code>true</code> if the virtual back edge has to be created, <code>false</code> otherwise
+	 * @return the control flow graph
+	 * @throws ControlFlowGraphException if the graph could not be created.
+	 * @throws IOException if the class file could not be opened.
 	 */
 	@SuppressWarnings("unchecked")
 	public static IDirectedGraphExt generateSourceCodeGraph (List<AbstractInstruction> instructions,
@@ -586,12 +586,12 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	 * 
 	 * Calls {@link #generateSourceCodeGraph(List)} for each method of each class from the given <code>classList</code>
 	 * 
-	 * @param classList
-	 * @param classPath
-	 * @param packageName
+	 * @param classList list of classes. All classes have to be located in the same package.
+	 * @param classPath class path
+	 * @param packageName package name
 	 * @return graphs
-	 * @throws IOException
-	 * @throws ControlFlowGraphException
+	 * @throws ControlFlowGraphException if the graph could not be created.
+	 * @throws IOException if the class file could not be opened.
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<IDirectedGraphExt> generateSourceCodeGraphs (
@@ -644,14 +644,14 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	 
 	/**
 	 * Generates a basic block graph graph from an instruction list.
-	 * @param instructions
-	 * @param lineNumberTable
-	 * @param createStartVertex
-	 * @param createExitVertex
-	 * @param createBackEdge
-	 * @return the control flow graph 
-	 * @throws ControlFlowGraphException
-	 * @throws IOException
+	 * @param instructions the instruction list
+	 * @param lineNumberTable th eline number table
+	 * @param createStartVertex <code>true</code> if the virtual start vertex has to be created, <code>false</code> otherwise
+	 * @param createExitvertex <code>true</code> if the virtual exit vertex has to be created, <code>false</code> otherwise
+	 * @param createBackEdge <code>true</code> if the virtual back edge has to be created, <code>false</code> otherwise
+	 * @return the control flow graph
+	 * @throws ControlFlowGraphException if the graph could not be created.
+	 * @throws IOException if the class file could not be opened.
 	 */
 	public static IDirectedGraphExt generateBasicBlockGraph(List<AbstractInstruction> instructions,
 			LineNumberTableEntry[] lineNumberTable,
@@ -749,11 +749,11 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	
 	/** 
 	 * Generates a control flow graph for the defined method.
-	 * @param classPath
-	 * @param packageName
-	 * @param className
-	 * @param methodName
-	 * @param methodSig
+	 * @param classPath the class path
+	 * @param packageName the package name
+	 * @param className the class name
+	 * @param methodName th emethod name
+	 * @param methodSig the method signature
 	 * @return the control flow graph 
 	 */
 	public static IDirectedGraphExt generateBasicBlockGraph(String classPath[],
@@ -1065,9 +1065,10 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 	
 	/**
 	 * Create key of the edge.
-	 * @param sourceNode
-	 * @param targetNode
-	 * @return buf.toString
+	 * @param sourceNode vertex object
+	 * @param targetNode vertex object
+	 * @return key as a string
+	 * @see INodeExt
 	 */
 	private static String createKey(INodeExt sourceNode, INodeExt targetNode){
 		StringBuffer buf = new StringBuffer();

@@ -35,6 +35,8 @@ public interface IMethodSection {
 	 * or null if none found.
 	 * 
 	 * @param sourceCodeLine 0-based line number
+	 * @return the instruction line object
+	 * @see IInstructionLine
 	 */
 	public IInstructionLine findInstructionLine(int sourceCodeLine);
 	
@@ -47,8 +49,8 @@ public interface IMethodSection {
 	
 	/**
 	 * Returns 0-based bytecode document line number for the given source code.
-	 * @param sourceCodeLine
-	 * @return 0-based bytecode document line.
+	 * @param sourceCodeLine the source code line number
+	 * @return the 0-based bytecode document line.
 	 */
 	public int getBytecodeLine(int sourceCodeLine);
 	

@@ -173,7 +173,7 @@ public class ByteCodeSimpleLayout extends DFSBase {
 	}
 
 	/**
-	 * @param offsetX
+	 * @param offsetX offset the offset to set
 	 */
 	public void setOffset(int offsetX) {
 		this.offset = offsetX;

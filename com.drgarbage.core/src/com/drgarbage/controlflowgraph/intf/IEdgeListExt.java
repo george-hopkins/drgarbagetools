@@ -35,7 +35,7 @@ public interface IEdgeListExt {
 
 	/**
 	 * Adds a new element to the list
-	 * @param obj
+	 * @param obj new element of the list
 	 */
 	public boolean add(Object obj);
 

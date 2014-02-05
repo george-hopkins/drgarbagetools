@@ -35,7 +35,7 @@ public interface IBasicBlock extends INodeExt {
 	
 	/**
 	 * Add vertex to the basicblock.
-	 * @param v
+	 * @param v vertex to add
 	 */	
 	public void addVertex(INodeExt v);
 

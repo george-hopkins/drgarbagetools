@@ -282,8 +282,9 @@ public class CorePlugin extends AbstractUIPlugin {
 
 	/**
 	 * Adds an external communication interface object.
-	 * @param key
-	 * @param communicationObject
+	 * @param key the key
+	 * @param communicationObject the communication interface object
+	 * @see IExternalCommunication
 	 */
 	public void addExternalComunicationObject(String key, IExternalCommunication communicationObject) {
 		externalCommunicationTable.put(key, communicationObject);

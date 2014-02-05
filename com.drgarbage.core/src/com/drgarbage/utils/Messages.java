@@ -146,9 +146,10 @@ public class Messages {
      * 						the message
      * @param buttons 
      * 						the labels of the buttons to appear in the button bar
+     * @param selectionListImage
+	 *                       the image
      * @param elementList
      * 						the list of elements have to be displayed in the selection list 
-     * @param selectionListImage
      * 
      * @return selected text if the user presses the OK button,
      *         <code>null</code> otherwise
@@ -174,10 +175,7 @@ public class Messages {
     }
     
     /**
-     * @param message
-     * @param selectionListImage
-     * @param elementList
-     * @return penSelectDialog
+     * @see  #openSelectDialog(Shell, String, String, String[], List)
      */
     public static String openSelectDialog(String message,
     		Image selectionListImage,
@@ -187,12 +185,8 @@ public class Messages {
     
         
     /**
-     * @param title
-     * @param message
-     * @param selectionListImage
-     * @param elementList
-     * @return openSelectDialog
-     */
+     * @see  #openSelectDialog(Shell, String, String, String[], List)
+     */    
     public static String openSelectDialog(String title, 
     		String message, 
     		Image selectionListImage,
@@ -201,12 +195,7 @@ public class Messages {
     }
     
     /**
-     * @param parent
-     * @param title
-     * @param message
-     * @param selectionListImage
-     * @param elementList
-     * @return openSelectDialog
+     * @see  #openSelectDialog(Shell, String, String, String[], List)
      */
     public static String openSelectDialog(Shell parent, 
     		String title, 
