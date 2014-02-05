@@ -280,7 +280,7 @@ public class OperandStack implements Opcodes{
 
 	/**
 	 * getter for the maximum stack size
-	 * @return maxStackSize
+	 * @return the max stack size
 	 */
 	public int getMaxStackSize() {
 		return maxStackSize;
@@ -1538,8 +1538,8 @@ public class OperandStack implements Opcodes{
 	 * the Java virtual machine internally converts values of types 
 	 * boolean, byte, char, and short to type int.
 	 * 
-	 * @param arg
-	 * @return arg
+	 * @param arg a type list
+	 * @return the new type list
 	 */
 	static public String replaceTypes(String arg){
 		
@@ -1577,9 +1577,9 @@ public class OperandStack implements Opcodes{
 	
 	/**
 	 * TODO: A better handling has to be implemented
-	 * @param s
-	 * @param offset
-	 * @return buf.toString
+	 * @param s the string to parse
+	 * @param offset the offset
+	 * @return text as a string
 	 */
 	
 	static private String replaceArrayTypes(String s, int offset){

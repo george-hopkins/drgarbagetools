@@ -27,9 +27,9 @@ public interface IClassFileEditorSelectionListener {
 
 	/**
 	 * Line Selection event. The method can be null if
-	 * The current line is not within a valid method. 
-	 * @param newLine 
-	 * @param o
+	 * the current line is not within a valid method. 
+	 * @param newLine 0-based new line 
+	 * @param o object
 	 */
 	//FIXME check if all implementors see that newLine is 0-based
 	public void lineSelectionChanged(int newLine, Object o);

@@ -43,11 +43,8 @@ public class DebugFunctionalityInfoDialog extends AbstractMessageDialog {
 
     
 	/**
-     * Creates a new clean dialog. 
-     * Window the window to create it in.
-     * Selection the currently selected projects (may be empty).
+     * Creates a new clean dialog.
      */
-  
     public DebugFunctionalityInfoDialog() {
         super(
                 null,

@@ -232,10 +232,8 @@ public class JavaTextEditor extends TextEditor {
 	
 	/**
 	 * Selects the given line.
-	 * the number of the line to be selected
-	 * @param line
+	 * @param line the number of the line to be selected. 
 	 */
-	
 	public void selectLine(int line) {
  
 		try {

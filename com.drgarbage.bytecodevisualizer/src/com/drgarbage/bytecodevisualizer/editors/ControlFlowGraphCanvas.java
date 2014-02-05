@@ -137,9 +137,8 @@ public class ControlFlowGraphCanvas extends FigureCanvas implements IDocumentUpd
 	}
 	
 	/**
-	 * Selects the given line.
-	 * The number of the line to be selected. 
-	 * @param line
+	 * Selects the given line. 
+	 * @param line the number of the line to be selected.
 	 */
 	public void selectLine(int line){
 		lineSelector.setLocation(new Point(0, line * lineHight));

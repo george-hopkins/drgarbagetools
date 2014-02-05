@@ -194,9 +194,10 @@ public class ClassFileDocument extends AbstractClassFileDocument {
 		this(null);
 	}
 	/**
-	 * Constructs a new {@link TraceClassVisitor}.
-	 * pw the print writer to be used to print the class.
-	 * @param classVisitor
+	 * Constructs a new class file document.
+	 * 
+	 * @param classVisitor the class visitor.
+	 * @see ClassVisitor
 	 */
 	public ClassFileDocument(ClassVisitor classVisitor) {
 	    //this.pw = pw;

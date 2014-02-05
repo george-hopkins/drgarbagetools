@@ -611,7 +611,8 @@ public abstract class OperandStackViewPage extends Page {
 	/**
 	 * Sets the input - the list of the byte code instructions
 	 * for the table Viewer. 
-	 * @param m
+	 * @param m the method section object
+	 * @see IMethodSection
 	 */
 	public void setInput(IMethodSection m) {
 		if(m == null && methodInput == null){

@@ -1154,7 +1154,7 @@ public class OperandStackAnalysis {
 	 * Return the list of types for the given stack in Java class file format.
 	 * 
 	 * @param stack
-	 * @return buf.toString
+	 * @return stack types as a string
 	 */
 	public static String getStackTypes(Stack<OperandStackEntry> stack) {
 		StringBuffer buf = new StringBuffer();
@@ -1243,9 +1243,9 @@ public class OperandStackAnalysis {
 	 * Generate a number of spaces for formatting purposes in byte code String
 	 * column
 	 * 
-	 * @param colWidth
-	 * @param dataLength
-	 * @return spaces
+	 * @param colWidth the width of the column
+	 * @param dataLength the length of the line
+	 * @return formated text line
 	 */
 	public static String formatCol(int colWidth, int dataLength) {
 		StringBuffer buf = new StringBuffer();

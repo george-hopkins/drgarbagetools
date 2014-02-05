@@ -224,9 +224,8 @@ public class OutlineElementMethod extends OutlineElement implements IMethod {
 
 	/**
 	 * Sets the flag constructor.
-	 * @param b
+	 * @param b <code>true</code> or <code>false</code>
 	 */
-	
 	public void setConstructor(boolean b) {
 		this.constructor = b;
 	}
@@ -240,7 +239,7 @@ public class OutlineElementMethod extends OutlineElement implements IMethod {
 
 	/**
 	 * Sets the main method flag.
-	 * @param b
+	 * @param b <code>true</code> or <code>false</code>
 	 */
 	public void setMainMethod(boolean b) {
 		this.mainMethod = b;

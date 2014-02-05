@@ -47,8 +47,8 @@ public interface ISourceCodeViewer extends ISynchronizable {
 	
 	/**
 	 * Set the new editor input.
-	 * @param input
-	 * @throws CoreException
+	 * @param input the editor inout.
+	 * @throws CoreException if th einput could not be set.
 	 */
 	public void doSetInputInternal(IEditorInput input) throws CoreException;
 	
@@ -131,8 +131,8 @@ public interface ISourceCodeViewer extends ISynchronizable {
 	
 	/**
 	 * Returns the action
-	 * @param text
-	 * @return action
+	 * @param text action id
+	 * @return the action
 	 */
 	public IAction getAction(String text);
 	

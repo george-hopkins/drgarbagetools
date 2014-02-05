@@ -460,7 +460,7 @@ public class BytecodeEditor extends JavaEditor
 
 	/**
 	 * Set the reference to the action contributor. 
-	 * @param contributor
+	 * @param contributor action contributor
 	 */
 	public void setActionContributor( BytecodevizualizerActionBarContributor contributor) {
 		actionContributor = contributor;
@@ -533,7 +533,7 @@ public class BytecodeEditor extends JavaEditor
 	
 	/**
 	 * Adds Line Selection change listener.
-	 * @param listener
+	 * @param listener line selection listener
 	 */
 	public void addtLineSelectionListener(IClassFileEditorSelectionListener listener) {
 		lineSelectionListener.add(listener);
@@ -1584,6 +1584,7 @@ public class BytecodeEditor extends JavaEditor
 
 	/**
 	 * @param textSelection
+	 * @return class name as a string
 	 */
 	protected String getClassName(TextSelection textSelection){
 
@@ -2263,10 +2264,11 @@ public class BytecodeEditor extends JavaEditor
 
 	/**
 	 * Selects the given line and revaluate visible position.
-	 * @param bytecodeDocumentLine
-	 * @param elementName
-	 * @param elementType
-	 * The number of the line to be selected. 
+	 * @param bytecodeDocumentLine the line number of the bytecode document
+	 * @param elementName 
+	 * @param elementType the element type one of {@link IJavaElement IJavaElement.CLASS_FILE},
+	 * 		{@link IJavaElement IJavaElement.FIELD} or {@link IJavaElement IJavaElement.METHOD}.
+	 * @see IJavaElement
 	 */
 	public void selectBytecodeLineAndReveal(int bytecodeDocumentLine, String elementName, int elementType) {
 		IDocument document = byteCodeDocumentProvider.getBytecodeDocument(getBytecodeEditorInput());
@@ -2312,8 +2314,7 @@ public class BytecodeEditor extends JavaEditor
 
 	/**
 	 * Selects the given line.
-	 * @param line
-	 * a 0-based number of the line to be selected. 
+	 * @param line a 0-based number of the line to be selected. 
 	 */
 	public void selectLine(int line) {
 		
@@ -2364,8 +2365,7 @@ public class BytecodeEditor extends JavaEditor
 
 	/**
 	 * Selects the given line and reval
-	 * @param bytecodeLine
-	 * a 0-based number of the line to be selected. 
+	 * @param bytecodeLine a 0-based number of the line to be selected. 
 	 */
 	public void selectLineAndReveal(int bytecodeLine) {
 		

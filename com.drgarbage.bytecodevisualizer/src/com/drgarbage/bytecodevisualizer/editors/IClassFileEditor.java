@@ -30,6 +30,7 @@ public interface IClassFileEditor {
 
 	/**
 	 * Returns the class file editor.
+	 * @return the class file editor.
 	 */
 	public BytecodeEditor getClassFileEditor();
 }

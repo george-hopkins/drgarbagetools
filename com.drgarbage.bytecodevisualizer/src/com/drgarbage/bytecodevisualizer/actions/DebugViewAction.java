@@ -92,7 +92,7 @@ public class DebugViewAction extends BaseAction implements
 	/**
 	 * Returns the context service this action linked to.
 	 * 
-	 * @return false
+	 * @return the debug context service object
 	 */
 	protected IDebugContextService getDebugContextService() {
 		return DebugUITools.getDebugContextManager().getContextService(window);
