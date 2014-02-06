@@ -32,6 +32,7 @@ GraphXML export -- plain  <a name="gpe"></a>
 The Control Flow Graph Factory export of the graph C1.t() without visual or
 geometric information is presented below:
 
+<div style="height: 400px; overflow: auto;">
 {% highlight xml %}
 <?xml version="1.0"?>
 <!DOCTYPE GraphXML SYSTEM "GraphXML.dtd">
@@ -130,6 +131,7 @@ geometric information is presented below:
  </graph>
 </GraphXML>
 {% endhighlight %}
+</div>
 
 Each node has a unique ID (`name`) and a label. The label includes information
 about the original code `label="29 putstatic"`. In this example the information
@@ -149,6 +151,7 @@ GraphXML export with visual information  <a name="gevi"></a>
 The GraphXML export of the graph C1.t() with visual information is presented
 below:
 
+<div style="height: 400px; overflow: auto">
 {% highlight xml %}
 <?xml version="1.0"?>
 <!DOCTYPE GraphXML SYSTEM "GraphXML.dtd">
@@ -337,6 +340,7 @@ below:
  </graph>
 </GraphXML>
 {% endhighlight %}
+</div>
 
 [Back to the top](#top)
 
@@ -349,6 +353,7 @@ GraphXML export with visual and geometric information  <a name="gevgi"></a>
 The export of the graph C1.t() with visual and geometric information is
 presented below:
 
+<div style="height: 400px; overflow: auto;">
 {% highlight xml %}
 <?xml version="1.0"?>
 <!DOCTYPE GraphXML SYSTEM "GraphXML.dtd">
@@ -565,6 +570,7 @@ presented below:
  </graph>
 </GraphXML>
 {% endhighlight %}
+</div>
 
 [Back to the top](#top)
 

@@ -34,7 +34,7 @@ Bytecode Graph  <a name="bcg"></a>
 The vertices in this graph are Java bytecode instructions and arcs are the
 possible control transitions beetween these instructions.
 
-<div style="width: 20em; float: left">
+<div style="width: 25em; float: left">
 {% highlight java %}
 public static void test3(int i) {
 	0 iload_0;      /* i */
@@ -72,7 +72,7 @@ Important consequences of this are:
 * The source code graph can be only generated for classes which have
   LineNumberTable Attribute compiled-in.
 
-<div style="width: 20em; float: left">
+<div style="width: 25em; float: left">
 {% highlight java %}
 public static void test3(int i) {
 	0 iload_0;        /* i */
@@ -118,7 +118,7 @@ Basic blocks are usually the units to which compiler optimizations are applied.
 Control Flow Graph Factory generates Basic Block Graphs through transformation
 from Bytecode Graphs using DFS algorithm.
 
-<div style="width: 20em; float: left">
+<div style="width: 25em; float: left">
 {% highlight java %}
 public static void test3(int i) {
 	B1 {
