@@ -1,0 +1,30 @@
+---
+layout: none
+permalink: .htaccess
+---
+Redirect 301 /about-us.html {{ site.url }}/about/
+Redirect 301 /bytecode-visualizer.html  {{ site.url }}/bytecode-visualizer/
+Redirect 301 /class-file-compare.html {{ site.url }}/bytecode-visualizer/class-file-compare/
+Redirect 301 /class-file-editor.html {{ site.url }}/bytecode-visualizer/class-file-editor/
+Redirect 301 /contact-us.html {{ site.url }}/contact/
+Redirect 301 /control-flow-factory-graphxml-export-example.html {{ site.url }}/control-flow-graph-factory/graphxml-examples/
+Redirect 301 /control-flow-graph-factory-dot-export-example.html {{ site.url }}/control-flow-graph-factory/dot-examples/
+Redirect 301 /control-flow-graph-factory-graph-gallery.html {{ site.url }}/control-flow-graph-factory/gallery/
+Redirect 301 /control-flow-graph-factory-terminology.html {{ site.url }}/control-flow-graph-factory/terminology/
+Redirect 301 /control-flow-graph-factory-tutorial.html {{ site.url }}/howto/cfgf-tutorial/
+Redirect 301 /control-flow-graph-factory.html {{ site.url }}/control-flow-graph-factory/
+Redirect 301 /downloads.html {{ site.url }}/download/
+Redirect 301 /eclipse-proxy-configuration-guide.html {{ site.url }}/howto/proxy/
+Redirect 301 /faq.html {{ site.url }}/faq/
+Redirect 301 /first-steps-with-bytecode-visualizer.html {{ site.url }}/bytecode-visualizer/first-steps/
+Redirect 301 /first-steps-with-control-flow-graph-factory.html {{ site.url }}/control-flow-graph-factory/first-steps/
+Redirect 301 /first-steps-with-sourcecode-visualizer.html {{ site.url }}/sourcecode-visualizer/first-steps/
+Redirect 301 /how-to-debug-bytecode-with-bytecode-visualizer.html {{ site.url }}/howto/debug-bytecode/
+Redirect 301 /how-to-download-and-install-dr-garbage-plugins-in-eclipse-3-6-helios.html {{ site.url }}/howto/install/
+Redirect 301 /how-to-download-and-install-dr-garbage-plugins.html {{ site.url }}/howto/install/
+Redirect 301 /operand-stack-viewer.html {{ site.url }}/bytecode-visualizer/operand-stack-viewer/
+Redirect 301 /read-class-from-jvm.html {{ site.url }}/bytecode-visualizer/read-class-from-jvm/
+Redirect 301 /sourcecode-visualizer-ast.html {{ site.url }}/sourcecode-visualizer/abstract-syntax-tree/
+Redirect 301 /sourcecode-visualizer.html {{ site.url }}/sourcecode-visualizer/
+Redirect 301 /terms-of-use.html {{ site.url }}/termsofuse/
+Redirect 301 /visualizing-classes-as-they-appear-in-a-running-jvm.html {{ site.url }}/bytecode-visualizer/visualizing-from-running-jvm/
