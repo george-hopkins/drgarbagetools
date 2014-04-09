@@ -353,4 +353,12 @@ public class ByteCodeSimpleLayout extends DFSBase {
 	public void visitEdge(IEdgeExt edge) {
 		/* default implementation */
 	}
+
+	/* (non-Javadoc)
+	 * @see com.drgarbage.algorithms.DFSBase#postVisitEdge(com.drgarbage.controlflowgraph.intf.IEdgeExt)
+	 */
+	@Override
+	public void postVisitEdge(IEdgeExt edge) {
+		/* nothing to do */
+	}
 }

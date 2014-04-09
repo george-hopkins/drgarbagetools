@@ -94,6 +94,7 @@ public abstract class DFSBase {
 	public abstract void visitNode(INodeExt node);
 	public abstract void postVisitNode(INodeExt node);
 	public abstract void visitEdge(IEdgeExt edge);
+	public abstract void postVisitEdge(IEdgeExt edge);
 	
 
 

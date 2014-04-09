@@ -51,8 +51,19 @@ public abstract class DFSBackward extends DFSBase {
 			visitEdge(e);
 
 			dfs(e.getSource());
+			
+			/* edge post visitor hook */
+			postVisitEdge(e);
 		}
 		
 		postVisitNode(node);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.drgarbage.algorithms.DFSBase#postVisitEdge(com.drgarbage.controlflowgraph.intf.IEdgeExt)
+	 */
+	@Override
+	public void postVisitEdge(IEdgeExt edge) {
+		/* nothing to do */
 	}
 }
