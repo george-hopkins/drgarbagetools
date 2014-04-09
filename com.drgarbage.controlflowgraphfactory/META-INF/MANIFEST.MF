@@ -26,5 +26,3 @@ Bundle-Activator: com.drgarbage.controlflowgraphfactory.ControlFlowFac
  toryPlugin
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: com.drgarbage.controlflowgraphfactory.plugin;singleton:=true
-Import-Package: com.drgarbage.bytecodevisualizer
-

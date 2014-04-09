@@ -16,10 +16,10 @@
 
 package com.drgarbage.visualgraphic.model;
 
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-
 import org.eclipse.draw2d.Graphics;
 
 /**
@@ -42,11 +42,17 @@ public class Connection extends ModelElement implements IDirectEditLabelModel {
 	 */
 	public static final Integer DASHED_CONNECTION = new Integer(Graphics.LINE_DASH);
 	
+	/** Color of the connection */
+	private Color connectionColor = null;
+	
 	/** Property ID to use when the line style of this connection is modified. */
 	public static final String LINESTYLE_PROP = "LineStyle";
 	
 	/** Property ID to use when the text label of this edge is modified. */
 	public static final String TEXT_LABEL_PROP = "Edge.TextLabel";
+	
+	/** Property ID to use then the color of this connection is modified. */
+	public static final String COLOR_PROP = "Conection.Color";
 
 	private static IPropertyDescriptor[] descriptors;
 	private static final String SOLID_STR = "Solid";
@@ -226,6 +232,26 @@ public class Connection extends ModelElement implements IDirectEditLabelModel {
 	public void setLabel(String label) {
 		this.label = label;
 		firePropertyChange(TEXT_LABEL_PROP, null, label); //$NON-NLS-2$//$NON-NLS-1$
+	}
+	
+	/**
+	 * Sets the Color of this connection.
+	 * Will not modify the color if newColor is null.
+	 * @param newColor a non-null Color instance or null
+	 */
+	public void setColor(Color newColor) {
+		if (newColor != null) {
+			connectionColor = newColor;
+			firePropertyChange(COLOR_PROP, null, connectionColor);
+		}
+	}
+	
+	/**
+	 * Returns the color of this connection.
+	 * @return a non-null Color instance
+	 */
+	public Color getColor() {
+		return connectionColor;
 	}
 	
 	/* (non-Javadoc)

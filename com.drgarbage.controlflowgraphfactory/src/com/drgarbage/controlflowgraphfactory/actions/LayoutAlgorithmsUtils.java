@@ -131,6 +131,7 @@ public class LayoutAlgorithmsUtils {
 			source = hashTable.get(con.getSource());
 			target = hashTable.get(con.getTarget());
 			edge = GraphExtentionFactory.createEdgeExtention(source, target);
+			edge.setData(con);
 			edges.add(edge);
 		}
 		

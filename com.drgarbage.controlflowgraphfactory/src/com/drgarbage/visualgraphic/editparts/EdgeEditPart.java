@@ -32,6 +32,7 @@ import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
+import org.eclipse.swt.graphics.Color;
 
 import com.drgarbage.visualgraphic.commands.ConnectionDeleteCommand;
 import com.drgarbage.visualgraphic.model.Connection;
@@ -158,6 +159,9 @@ class EdgeEditPart extends AbstractConnectionEditPart implements PropertyChangeL
 		if (Connection.LINESTYLE_PROP.equals(property)) {
 			((PolylineConnection) getFigure()).setLineStyle(getCastedModel().getLineStyle());
 		}
+		else if (Connection.COLOR_PROP.equals(property)) {
+			refreshColors();
+		}
 		else if(Connection.TEXT_LABEL_PROP.equals(property)){
 			String s = (String) event.getNewValue();
 			getLabel().setText(s);
@@ -169,6 +173,14 @@ class EdgeEditPart extends AbstractConnectionEditPart implements PropertyChangeL
 	 */
 	public IDirectEditLabelModel getDirectEditModel() {
 		return (IDirectEditLabelModel) getModel();
+	}
+	
+	/**
+	 * Notifies parent container of changed color.
+	 */
+	protected void refreshColors() {
+		Color c = getCastedModel().getColor();
+		getFigure().setForegroundColor(c);
 	}
 
 }

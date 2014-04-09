@@ -148,6 +148,15 @@
             name="%page.GenerateGraphOPtion">
       </page>
    </extension>
+     <extension 
+     	point="org.eclipse.compare.contentMergeViewers">
+     <viewer
+           class="com.drgarbage.controlflowgraphfactory.compare.GraphMergeViewerCreator"
+           extensions="graph, graph.dot"
+           id="com.drgarbage.bytecodevisualizer.compare.GraphMergeViewer"
+           label="Graph Compare">
+     </viewer>
+   </extension>
    <!--
    <extension
          point="org.eclipse.ui.exportWizards">

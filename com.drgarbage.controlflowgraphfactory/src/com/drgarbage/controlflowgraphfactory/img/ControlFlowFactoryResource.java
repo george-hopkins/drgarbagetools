@@ -26,6 +26,14 @@ import org.eclipse.jface.resource.ImageDescriptor;
  * $Id:ControlFlowFactoryResource.java 279 2007-07-07 15:39:32Z aleks $
  */
 public class ControlFlowFactoryResource {
+	/* compare algorithm icons */
+	public static final ImageDescriptor graph_compare_top_down_16x16 = ImageDescriptor.createFromFile(ControlFlowFactoryResource.class, "top-down-subtree-16x16.png");
+	public static final ImageDescriptor graph_compare_bottom_up_16x16 = ImageDescriptor.createFromFile(ControlFlowFactoryResource.class, "bottom-up-subtree-16x16.png");
+	public static final ImageDescriptor graph_compare_top_down_max_common_subtree_16x16 = ImageDescriptor.createFromFile(ControlFlowFactoryResource.class, "top-down-max-common-subtree-16x16.png");
+	public static final ImageDescriptor graph_compare_bottom_up_max_common_subtree_16x16 = ImageDescriptor.createFromFile(ControlFlowFactoryResource.class, "bottom-up-max-common-subtree-16x16.png");
+	
+	public static final ImageDescriptor graph_compare_ResetGraphsView_16x16 = ImageDescriptor.createFromFile(ControlFlowFactoryResource.class, "clear-subtree-16x16.png");
+	
 	/* placing algorithm icons */
 	public static final ImageDescriptor positioning_serial_16x16 = ImageDescriptor.createFromFile(ControlFlowFactoryResource.class, "positioning-serial-16x16.png");
 	public static final ImageDescriptor positioning_hierarchical_16x16 = ImageDescriptor.createFromFile(ControlFlowFactoryResource.class, "positioning-hierarchical-16x16.png");
@@ -56,6 +64,7 @@ public class ControlFlowFactoryResource {
 	
 	/* Resources for the outline view */
 	public static final ImageDescriptor icon_overview_16x16 = ImageDescriptor.createFromFile(ControlFlowFactoryResource.class, "overview.gif");
+	public static final ImageDescriptor icon_swap_graphs_16x16 = ImageDescriptor.createFromFile(ControlFlowFactoryResource.class, "swap-graphs.png");
 	public static final ImageDescriptor icon_outline_16x16 = ImageDescriptor.createFromFile(ControlFlowFactoryResource.class, "outline.gif");
 	
 	/* 16x16 pictograms of models. */

@@ -22,6 +22,7 @@ import java.util.List;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.jface.viewers.ICellEditorValidator;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
@@ -72,6 +73,9 @@ public abstract class VertexBase extends ModelElement implements IDirectEditLabe
 
 	/** ID for the Y property value (used for by the corresponding property descriptor).  */
 	private static final String YPOS_PROP = "VertexBase.yPos";
+	
+	/** Property ID to use then the color of this vertex is modified. */
+	public static final String COLOR_PROP = "VertexBase.Color";
 
 	/** Property ID to use when the text label of this vertex is modified. */
 	public static final String TEXT_LABEL_PROP = "VertexBase.TextLabel";
@@ -110,6 +114,9 @@ public abstract class VertexBase extends ModelElement implements IDirectEditLabe
 
 	/** Size of this vertex. */
 	private Dimension size = new Dimension(50, 50);
+	
+	/** Color of the vertex */
+	private Color vertexColor = null;
 
 	/** List of outgoing Connections. */
 	private List<Connection> sourceConnections = new ArrayList<Connection>();
@@ -204,6 +211,26 @@ public abstract class VertexBase extends ModelElement implements IDirectEditLabe
 	 */
 	public void setToolTip(String toolTip) {
 		this.toolTip = toolTip;
+	}
+	
+	/**
+	 * Sets the Color of this vertex.
+	 * Will not modify the color if newColor is null.
+	 * @param newColor a non-null Color instance or null
+	 */
+	public void setColor(Color newColor) {
+		if (newColor != null) {
+			vertexColor = newColor;
+			firePropertyChange(COLOR_PROP, null, vertexColor);
+		}
+	}
+	
+	/**
+	 * Returns the color of this vertex.
+	 * @return a non-null Color instance
+	 */
+	public Color getColor() {
+		return vertexColor;
 	}
 	
 	/**

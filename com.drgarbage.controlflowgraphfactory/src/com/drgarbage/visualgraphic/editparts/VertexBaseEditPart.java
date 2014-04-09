@@ -34,6 +34,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.graphics.Color;
 
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryPlugin;
 import com.drgarbage.controlflowgraphfactory.preferences.ControlFlowFactoryPreferenceConstants;
@@ -253,7 +254,10 @@ public class VertexBaseEditPart extends AbstractGraphicalEditPart
 		String prop = evt.getPropertyName();
 		if (VertexBase.SIZE_PROP.equals(prop) || VertexBase.LOCATION_PROP.equals(prop)) {
 			refreshVisuals();
-		} else if (VertexBase.SOURCE_CONNECTIONS_PROP.equals(prop)) {
+		} else if (VertexBase.COLOR_PROP.equals(prop)) {
+			refreshColors();
+		}
+		else if (VertexBase.SOURCE_CONNECTIONS_PROP.equals(prop)) {
 			refreshSourceConnections();
 		} else if (VertexBase.TARGET_CONNECTIONS_PROP.equals(prop)) {
 			refreshTargetConnections();
@@ -273,6 +277,14 @@ public class VertexBaseEditPart extends AbstractGraphicalEditPart
 		Rectangle bounds = new Rectangle(getCastedModel().getLocation(),
 				getCastedModel().getSize());
 		((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), bounds);
+	}
+	
+	/**
+	 * Notifies parent container of changed color.
+	 */
+	protected void refreshColors() {
+		Color c = getCastedModel().getColor();
+		getFigure().setBackgroundColor(c);
 	}
 	
 	/* (non-Javadoc)

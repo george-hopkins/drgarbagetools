@@ -16,6 +16,8 @@
 
 package com.drgarbage.controlflowgraphfactory;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.framework.internal.core.AbstractBundle;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
@@ -101,5 +103,31 @@ public class ControlFlowFactoryPlugin extends AbstractUIPlugin {
 	 */
 	public static ControlFlowFactoryPlugin getDefault() {
 		return plugin;
+	}
+	/**
+	 * 
+	 * @param Throwable e
+	 */
+	public static void log(Throwable t) {
+		log(createErrorStatus("Error logged from ControlFlowFactory", t));
+	}
+	
+	/**
+	 * Returns a new error status for this plug-in with the given message
+	 * @param message the message to be included in the status
+	 * @param exception the exception to be included in the status or <code>null</code> if none
+	 * @return a new error status
+	 */
+	public static IStatus createErrorStatus(String message, Throwable exception) {
+		return new Status(IStatus.ERROR, PLUGIN_ID, CoreConstants.INTERNAL_ERROR, message, exception);
+	}
+	
+	/**
+	 * Logs the specified status with this plug-in's log.
+	 * 
+	 * @param status status to log
+	 */
+	public static void log(IStatus status) {
+		getDefault().getLog().log(status);
 	}
 }
