@@ -3,7 +3,7 @@
    <feature url="features/com.drgarbage.bytecodevisualizer_4.3.5.qualifier.jar" id="com.drgarbage.bytecodevisualizer" version="4.3.5.qualifier">
       <category name="com.drgarbage.bytecodevisualizer"/>
    </feature>
-   <feature url="features/com.drgarbage.controlflowgraphfactory_4.3.1.qualifier.jar" id="com.drgarbage.controlflowgraphfactory" version="4.3.1.qualifier">
+   <feature url="features/com.drgarbage.controlflowgraphfactory_4.3.2.qualifier.jar" id="com.drgarbage.controlflowgraphfactory" version="4.3.2.qualifier">
       <category name="com.drgarbage.controlflowgraphfactory"/>
    </feature>
    <feature url="features/com.drgarbage.sourcecodevisualizer_4.3.3.qualifier.jar" id="com.drgarbage.sourcecodevisualizer" version="4.3.3.qualifier">
