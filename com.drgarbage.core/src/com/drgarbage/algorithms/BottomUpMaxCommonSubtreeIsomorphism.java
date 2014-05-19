@@ -156,7 +156,11 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 	public Map<INodeExt, INodeExt> bottomUpUnorderedMaxCommonSubtreeIsomorphism(
 			IDirectedGraphExt leftGraph, INodeExt leftRoot,
 			IDirectedGraphExt rightGraph, INodeExt rightRoot) {
-				
+		
+		/*create spanning tree to avoid loops */
+		IDirectedGraphExt leftSpanningTree = Algorithms.doSpanningTreeAlgorithm(leftGraph, false);
+		IDirectedGraphExt rightSpanningTree = Algorithms.doSpanningTreeAlgorithm(rightGraph, false);
+		
 		/* clear tree graphs */
 		GraphUtils.clearGraph(leftGraph);
 		GraphUtils.clearGraphColorMarks(leftGraph);
@@ -169,7 +173,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 		
 		/* find largest common subtree */
 		Map<INodeExt, INodeExt> M;
-		M = findLargestCommonSubtreeRoot(leftGraph, leftNodeToClassMap, rightGraph, rightNodeToClassMap);
+		M = findLargestCommonSubtreeRoot(leftSpanningTree, leftNodeToClassMap, rightSpanningTree, rightNodeToClassMap);
 		
 		/* if no common subtree root was found */
 		if (M == null) {
@@ -177,7 +181,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 		}
 		
 		/* fill map with equivalent nodes */
-		mapIsomorphicNodes(leftGraph, leftNodeToClassMap, rightNodeToClassMap, M);
+		mapIsomorphicNodes(leftSpanningTree, leftNodeToClassMap, rightNodeToClassMap, M);
 		
 		return M;
 	}
