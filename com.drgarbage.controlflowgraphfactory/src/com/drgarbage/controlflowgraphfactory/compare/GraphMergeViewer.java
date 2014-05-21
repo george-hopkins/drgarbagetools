@@ -16,6 +16,7 @@
 
 package com.drgarbage.controlflowgraphfactory.compare;
 
+import java.awt.Scrollbar;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,12 +25,15 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import javax.swing.JScrollPane;
+
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.contentmergeviewer.ContentMergeViewer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
@@ -37,8 +41,13 @@ import org.eclipse.jdt.core.dom.Message;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Scrollable;
 
 import com.drgarbage.algorithms.BottomUpMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.BottomUpSubtreeIsomorphism;
@@ -122,7 +131,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 
 		ScalableFreeformRootEditPart root = new ScalableFreeformRootEditPart();
 		fLeft.setRootEditPart(root);
-
+		
 		/* creates the right viewer */
 		fRight = new ScrollingGraphicalViewer();
 		fRight.createControl(composite);
@@ -132,6 +141,33 @@ public class GraphMergeViewer extends ContentMergeViewer {
 
 		ScalableFreeformRootEditPart root2 = new ScalableFreeformRootEditPart();
 		fRight.setRootEditPart(root2);
+		
+		/*synchronize sub-windows*/
+		FigureCanvas scrolledCanvasLeft = (FigureCanvas)fLeft.getControl();
+		FigureCanvas scrolledCanvasRight = (FigureCanvas)fRight.getControl();	
+		synchronizeScrollBars(scrolledCanvasLeft, scrolledCanvasRight);
+	}
+	
+	/**
+	 * Method to synchronize two graph-compare view presentation
+	 * @param scrolledCanvasLeft
+	 * @param scrolledCanvasRight
+	 */
+	private void synchronizeScrollBars(final FigureCanvas scrolledCanvasLeft, FigureCanvas scrolledCanvasRight)
+	{
+		final ScrollBar scrollBarRight = scrolledCanvasRight.getVerticalBar();
+		final ScrollBar scrollBarLeft = scrolledCanvasLeft.getVerticalBar();
+		
+		SelectionListener listener = new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				//TODO: left scroll is moving but the picture(left graph) is not
+				int position =  scrollBarRight.getSelection();
+				scrollBarLeft.setSelection(position);
+				
+			}
+		};
+
+		scrollBarRight.addSelectionListener (listener);
 	}
 	
 	/* (non-Javadoc)
@@ -388,7 +424,6 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		GraphUtils.clearGraphColorMarks(cfgLeft);
 		GraphUtils.clearGraphColorMarks(cfgRight);
 		
-		//TopDownSubtreeIsomorphism  compare = new TopDownSubtreeIsomorphism();
 		TopDownMaxCommonSubTreeIsomorphism compare = new TopDownMaxCommonSubTreeIsomorphism();
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
