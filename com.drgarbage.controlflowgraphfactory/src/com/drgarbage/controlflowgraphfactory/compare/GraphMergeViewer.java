@@ -51,8 +51,10 @@ import org.eclipse.swt.widgets.Scrollable;
 
 import com.drgarbage.algorithms.BottomUpMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.BottomUpSubtreeIsomorphism;
+import com.drgarbage.algorithms.GetGraphToTree;
 import com.drgarbage.algorithms.TopDownMaxCommonSubTreeIsomorphism;
 import com.drgarbage.algorithms.TopDownSubtreeIsomorphism;
+import com.drgarbage.algorithms.Algorithms;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
@@ -426,7 +428,6 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		IDirectedGraphExt cfgLeft = LayoutAlgorithmsUtils.generateGraph(diagramLeft);		
 		IDirectedGraphExt cfgRight = LayoutAlgorithmsUtils.generateGraph(diagramRight);
 		
-		
 		GraphUtils.clearGraphColorMarks(cfgLeft);
 		GraphUtils.clearGraphColorMarks(cfgRight);
 		
@@ -503,21 +504,26 @@ public class GraphMergeViewer extends ContentMergeViewer {
 	}
 	
 	/**
-	 * Executes the bottom up maximum common subtree algorithm.
+	 * Executes the bottom up maximum common subtree algorithm
+	 * @throws ControlFlowGraphException 
 	 */
 	@SuppressWarnings("restriction")
-	public void doBottomUpMaxCommonAlg() {
+	public void doBottomUpMaxCommonAlg() throws ControlFlowGraphException {
 		
 		doResetViewer();
 		IDirectedGraphExt cfgLeft = LayoutAlgorithmsUtils.generateGraph(diagramLeft);		
 		IDirectedGraphExt cfgRight = LayoutAlgorithmsUtils.generateGraph(diagramRight);
 		
 		BottomUpMaxCommonSubtreeIsomorphism compare = new BottomUpMaxCommonSubtreeIsomorphism();
+		GetGraphToTree getSpanningtree = new GetGraphToTree();
+		
+		IDirectedGraphExt leftTree = getSpanningtree.ConvertInputGraphsToTree(cfgLeft);
+		IDirectedGraphExt rightTree = getSpanningtree.ConvertInputGraphsToTree(cfgRight);
 		
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
 		try {
-			map = compare.bottomUpUnorderedMaxCommonSubreeIsomorphism(cfgLeft, cfgRight);
+			map = compare.bottomUpUnorderedMaxCommonSubreeIsomorphism(leftTree, rightTree);
 		} catch (ControlFlowGraphException e) {
 			ControlFlowFactoryPlugin.log(e);
 			Messages.error(e.getMessage());

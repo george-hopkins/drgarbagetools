@@ -16,6 +16,7 @@
 
 package com.drgarbage.controlflowgraphfactory.compare.actions;
 
+import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryMessages;
 import com.drgarbage.controlflowgraphfactory.compare.GraphMergeViewer;
 import com.drgarbage.controlflowgraphfactory.img.ControlFlowFactoryResource;
@@ -48,6 +49,10 @@ public class BottomUpMaxCommonAlgAction extends BaseCompareAction {
 	 */
 	@Override
 	public void run() {
-		viewer.doBottomUpMaxCommonAlg();
+		try {
+			viewer.doBottomUpMaxCommonAlg();
+		} catch (ControlFlowGraphException e) {
+			e.printStackTrace();
+		}
 	}
 }

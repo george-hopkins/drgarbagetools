@@ -101,47 +101,47 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 			return pt2.size - pt1.size;
 		}
 	}
+	/**
+	 * gets a root from tree
+	 * @param tree
+	 * @return
+	 * @throws ControlFlowGraphException
+	 */
+	public INodeExt getRootFromTree(IDirectedGraphExt tree) throws ControlFlowGraphException{
+		
+		INodeExt root = null;
+		for (int i = 0; i < tree.getNodeList().size(); i++) {
+			INodeExt n = tree.getNodeList().getNodeExt(i);
+			if (n.getIncomingEdgeList().size() == 0) {
+				root = n;
+			}
+		}
+
+		if (root == null) {
+			throw new ControlFlowGraphException(
+					"The left tree has no root. The graph is propably not a tree.");
+		}
+		
+		return root;
+	}
 	
 	/**
 	 * Executes the Bottom-Up Unordered Maximum Common Subtree Isomorphism Algorithm.
 	 * 
-	 * @param leftGraph the graph <code>T_1</code>
-	 * @param rightGraph the graph <code>T_2</code>
+	 * @param leftTree the graph <code>T_1</code>
+	 * @param rightTree the graph <code>T_2</code>
 	 * @return the map of matched nodes
 	 * @throws ControlFlowGraphException
 	 */
 	public Map<INodeExt, INodeExt> bottomUpUnorderedMaxCommonSubreeIsomorphism(
-			IDirectedGraphExt leftGraph, IDirectedGraphExt rightGraph)
+			IDirectedGraphExt leftTree, IDirectedGraphExt rightTree)
 			throws ControlFlowGraphException {
 
 		/* get root nodes */
-		INodeExt leftRoot = null;
-		for (int i = 0; i < leftGraph.getNodeList().size(); i++) {
-			INodeExt n = leftGraph.getNodeList().getNodeExt(i);
-			if (n.getIncomingEdgeList().size() == 0) {
-				leftRoot = n;
-			}
-		}
-
-		if (leftRoot == null) {
-			throw new ControlFlowGraphException(
-					"The left tree has no root. The graph is propably not a tree.");
-		}
-
-		INodeExt rightRoot = null;
-		for (int i = 0; i < rightGraph.getNodeList().size(); i++) {
-			INodeExt n = rightGraph.getNodeList().getNodeExt(i);
-			if (n.getIncomingEdgeList().size() == 0) {
-				rightRoot = n;
-			}
-		}
-
-		if (rightRoot == null) {
-			throw new ControlFlowGraphException(
-					"The right tree has no root. The graph is propably not a tree.");
-		}
+		INodeExt leftRoot = getRootFromTree(leftTree);
+		INodeExt rightRoot = getRootFromTree(rightTree);
 		
-		return bottomUpUnorderedMaxCommonSubtreeIsomorphism(leftGraph, leftRoot, rightGraph, rightRoot);
+		return bottomUpUnorderedMaxCommonSubtreeIsomorphism(leftTree, leftRoot, rightTree, rightRoot);
 	}
 
 	/**
@@ -154,22 +154,12 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 	 * @return the map of matched nodes
 	 */
 	public Map<INodeExt, INodeExt> bottomUpUnorderedMaxCommonSubtreeIsomorphism(
-			IDirectedGraphExt leftGraph, INodeExt leftRoot,
-			IDirectedGraphExt rightGraph, INodeExt rightRoot) {
-		
-		/*create spanning tree to avoid loops */
-		IDirectedGraphExt leftSpanningTree = Algorithms.doSpanningTreeAlgorithm(leftGraph, false);
-		IDirectedGraphExt rightSpanningTree = Algorithms.doSpanningTreeAlgorithm(rightGraph, false);
-		
-		/* clear tree graphs */
-		GraphUtils.clearGraph(leftGraph);
-		GraphUtils.clearGraphColorMarks(leftGraph);
-		GraphUtils.clearGraph(rightGraph);
-		GraphUtils.clearGraphColorMarks(rightGraph);
+			IDirectedGraphExt leftSpanningTree, INodeExt leftRoot,
+			IDirectedGraphExt rightSpanningTree, INodeExt rightRoot) {
 		
 		/* partition the sets of nodes of both graphs in bottom-up subtree isomorphism equivalence classes */
-		HashMap<INodeExt, Integer> leftNodeToClassMap = partitionInIsomorphismEquivalenceClasses(leftGraph);
-		HashMap<INodeExt, Integer> rightNodeToClassMap = partitionInIsomorphismEquivalenceClasses(rightGraph);
+		HashMap<INodeExt, Integer> leftNodeToClassMap = partitionInIsomorphismEquivalenceClasses(leftSpanningTree);
+		HashMap<INodeExt, Integer> rightNodeToClassMap = partitionInIsomorphismEquivalenceClasses(rightSpanningTree);
 		
 		/* find largest common subtree */
 		Map<INodeExt, INodeExt> M;
