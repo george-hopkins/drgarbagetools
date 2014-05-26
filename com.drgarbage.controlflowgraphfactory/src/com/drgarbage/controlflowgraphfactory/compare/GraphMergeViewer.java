@@ -144,30 +144,36 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		
 		/*synchronize sub-windows*/
 		FigureCanvas scrolledCanvasLeft = (FigureCanvas)fLeft.getControl();
-		FigureCanvas scrolledCanvasRight = (FigureCanvas)fRight.getControl();	
+		FigureCanvas scrolledCanvasRight = (FigureCanvas)fRight.getControl();
 		synchronizeScrollBars(scrolledCanvasLeft, scrolledCanvasRight);
 	}
 	
 	/**
-	 * Method to synchronize two graph-compare view presentation
+	 * Method to synchronize two graph-compare view presentation during scrolling
 	 * @param scrolledCanvasLeft
 	 * @param scrolledCanvasRight
 	 */
-	private void synchronizeScrollBars(final FigureCanvas scrolledCanvasLeft, FigureCanvas scrolledCanvasRight)
+	private void synchronizeScrollBars(final FigureCanvas scrolledCanvasLeft, final FigureCanvas scrolledCanvasRight)
 	{
-		final ScrollBar scrollBarRight = scrolledCanvasRight.getVerticalBar();
-		final ScrollBar scrollBarLeft = scrolledCanvasLeft.getVerticalBar();
+		final ScrollBar verticalScrollBarRight = scrolledCanvasRight.getVerticalBar();
+		final ScrollBar horizontalScrollBarRight = scrolledCanvasRight.getHorizontalBar();
 		
-		SelectionListener listener = new SelectionAdapter () {
+		SelectionListener verticalListener = new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {
-				//TODO: left scroll is moving but the picture(left graph) is not
-				int position =  scrollBarRight.getSelection();
-				scrollBarLeft.setSelection(position);
-				
+				int verticalPosition =  verticalScrollBarRight.getSelection();
+				scrolledCanvasLeft.scrollSmoothTo(scrolledCanvasLeft.getHorizontalBar().getSelection(), verticalPosition);
+			}
+		};
+		
+		SelectionListener horizontalListener = new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				int horizontalPosition =  scrolledCanvasRight.getHorizontalBar().getSelection();
+				scrolledCanvasLeft.scrollSmoothTo(horizontalPosition, scrolledCanvasLeft.getVerticalBar().getSelection());
 			}
 		};
 
-		scrollBarRight.addSelectionListener (listener);
+		horizontalScrollBarRight.addSelectionListener(horizontalListener);
+		verticalScrollBarRight.addSelectionListener(verticalListener);
 	}
 	
 	/* (non-Javadoc)
