@@ -4,7 +4,7 @@
       label="%featureName"
       version="4.3.5.qualifier"
       provider-name="%providerName"
-      plugin="com.drgarbage.bytecodevisualizer">
+      plugin="com.drgarbage.bytecodevisualizer.plugin">
    <install-handler/>
 
    <description url="%productPageUrl">

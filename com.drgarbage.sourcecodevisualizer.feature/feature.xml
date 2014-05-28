@@ -3,7 +3,8 @@
       id="com.drgarbage.sourcecodevisualizer"
       label="%featureName"
       version="4.3.3.qualifier"
-      provider-name="%providerName">
+      provider-name="%providerName"
+      plugin="com.drgarbage.sourcecodevisualizer.plugin">
 
    <description url="%productPageUrl">
       %description

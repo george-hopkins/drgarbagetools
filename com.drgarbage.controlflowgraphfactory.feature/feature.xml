@@ -4,7 +4,7 @@
       label="%featureName"
       version="4.3.2.qualifier"
       provider-name="%providerName"
-      plugin="com.drgarbage.controlflowgraphfactory">
+      plugin="com.drgarbage.controlflowgraphfactory.plugin">
 
    <description url="%productPageUrl">
       %description
