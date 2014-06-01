@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
+import com.drgarbage.controlflowgraph.intf.GraphUtils;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
@@ -467,4 +468,22 @@ public class Algorithms {
 		System.out.println("}");
 	}
 	
+	/**
+	 * transforms graph into tree structure 
+	 * @param IDiredctedGraph
+	 * @return IDirectedGraphExt
+	 * @throws ControlFlowGraphException
+	 */
+	public static IDirectedGraphExt ConvertInputGraphsToTree(
+			IDirectedGraphExt IDiredctedGraph)
+			throws ControlFlowGraphException {
+		
+		GraphUtils.clearGraph(IDiredctedGraph);
+		GraphUtils.clearGraphColorMarks(IDiredctedGraph);
+		
+		/*create spanning tree to avoid loops */
+		IDirectedGraphExt spanningTree = Algorithms.doSpanningTreeAlgorithm(IDiredctedGraph, false);
+		
+		return spanningTree;
+	}
 }

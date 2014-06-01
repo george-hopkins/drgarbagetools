@@ -51,7 +51,6 @@ import org.eclipse.swt.widgets.Scrollable;
 
 import com.drgarbage.algorithms.BottomUpMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.BottomUpSubtreeIsomorphism;
-import com.drgarbage.algorithms.GetGraphToTree;
 import com.drgarbage.algorithms.TopDownMaxCommonSubTreeIsomorphism;
 import com.drgarbage.algorithms.TopDownSubtreeIsomorphism;
 import com.drgarbage.algorithms.Algorithms;
@@ -151,8 +150,8 @@ public class GraphMergeViewer extends ContentMergeViewer {
 	}
 	
 	/**
-	 * Method to synchronize two graph-compare view presentation during scrolling
-	 * @param scrolledCanvasLeft
+	 * Method to synchronize scrolling of two graph-compare view presentations.
+	 * @param scrolledCanvasLeft 
 	 * @param scrolledCanvasRight
 	 */
 	private void synchronizeScrollBars(final FigureCanvas scrolledCanvasLeft, final FigureCanvas scrolledCanvasRight)
@@ -160,6 +159,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		final ScrollBar verticalScrollBarRight = scrolledCanvasRight.getVerticalBar();
 		final ScrollBar horizontalScrollBarRight = scrolledCanvasRight.getHorizontalBar();
 		
+		/*get control under vertical scrolling */
 		SelectionListener verticalListener = new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {
 				int verticalPosition =  verticalScrollBarRight.getSelection();
@@ -167,6 +167,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 			}
 		};
 		
+		/*get control under horizontal scrolling */
 		SelectionListener horizontalListener = new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {
 				int horizontalPosition =  scrolledCanvasRight.getHorizontalBar().getSelection();
@@ -515,10 +516,10 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		IDirectedGraphExt cfgRight = LayoutAlgorithmsUtils.generateGraph(diagramRight);
 		
 		BottomUpMaxCommonSubtreeIsomorphism compare = new BottomUpMaxCommonSubtreeIsomorphism();
-		GetGraphToTree getSpanningtree = new GetGraphToTree();
-		
-		IDirectedGraphExt leftTree = getSpanningtree.ConvertInputGraphsToTree(cfgLeft);
-		IDirectedGraphExt rightTree = getSpanningtree.ConvertInputGraphsToTree(cfgRight);
+
+		/*convert graphs to trees */
+		IDirectedGraphExt leftTree = Algorithms.ConvertInputGraphsToTree(cfgLeft);
+		IDirectedGraphExt rightTree = Algorithms.ConvertInputGraphsToTree(cfgRight);
 		
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
