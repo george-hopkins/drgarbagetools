@@ -22,12 +22,14 @@ Features
   	+ [bytecode graphs][term-bcg]
 	+ [soure code graphs][term-scg]
 	+ [basic block graphs][term-bbg]
+	
 
 * Editing of control flow graphs 
 	+ Move, create, delete, rename, ... nodes
 
 * Multiple algorithms for automatic layout (serial, hierarchical)
 * Export in GraphXML, DOT format or as an image (JPEG, BMP, ICO, PNG)
+* Possibility to compare trees and investigate the subtree similarity (See more: [graph comparison][cfgc-compare])
 * Printing support
 
 
@@ -93,3 +95,4 @@ Tutorial
 [tut-pre]: {{ site.url }}/howto/cfgf-tutorial/#pre
 [tut-gen]: {{ site.url }}/howto/cfgf-tutorial/#gen
 [tut-editexport]: {{ site.url }}/howto/cfgf-tutorial/#editexport
+[cfgc-compare]: {{ site.url }}/control-flow-graph-factory/graph-compare/
