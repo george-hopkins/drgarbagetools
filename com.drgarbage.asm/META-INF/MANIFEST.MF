@@ -6,7 +6,7 @@ Ant-Version: Apache Ant 1.7.1
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: com.drgarbage.asm_4.0.jar,com.drgarbage.asm.util_4.0
  .jar
-Bundle-Version: 4.2.0.qualifier
+Bundle-Version: 4.4.0.qualifier
 Bundle-Name: Dr. Garbage ASM Distribution
 Bundle-ManifestVersion: 2
 Created-By: 14.0-b16 (Sun Microsystems Inc.)
