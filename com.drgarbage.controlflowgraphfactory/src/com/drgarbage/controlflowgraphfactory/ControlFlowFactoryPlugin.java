@@ -18,7 +18,7 @@ package com.drgarbage.controlflowgraphfactory;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.osgi.framework.internal.core.AbstractBundle;
+import org.eclipse.osgi.internal.framework.EquinoxBundle;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -67,8 +67,8 @@ public class ControlFlowFactoryPlugin extends AbstractUIPlugin {
 		super.start(context);
 		
 		Bundle bundle = context.getBundle();
-		if(bundle instanceof AbstractBundle){
-			AbstractBundle aBundle = (AbstractBundle) bundle;
+		if(bundle instanceof EquinoxBundle){
+			EquinoxBundle aBundle = (EquinoxBundle) bundle;
 			PLUGIN_VERSION = aBundle.getVersion().toString();
 		}
 

@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.osgi.framework.internal.core.AbstractBundle;
+import org.eclipse.osgi.internal.framework.EquinoxBundle;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
@@ -187,8 +187,8 @@ public class BytecodeVisualizerPlugin extends AbstractUIPlugin implements Byteco
 		super.start(context);
 		
 		Bundle bundle = context.getBundle();
-		if(bundle instanceof AbstractBundle){
-			AbstractBundle aBundle = (AbstractBundle) bundle;
+		if(bundle instanceof EquinoxBundle){
+			EquinoxBundle aBundle = (EquinoxBundle) bundle;
 			PLUGIN_VERSION = aBundle.getVersion().toString();
 		}
 	}

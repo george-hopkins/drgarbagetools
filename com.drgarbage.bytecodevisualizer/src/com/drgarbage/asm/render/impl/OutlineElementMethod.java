@@ -44,6 +44,10 @@ import com.drgarbage.bytecode.ByteCodeConstants;
  */
 public class OutlineElementMethod extends OutlineElement implements IMethod {
 	
+	public boolean isLambdaMethod() {
+		return false;
+	}
+	
 	private IClassFileDocument classFileDocument;
 	
 	/**

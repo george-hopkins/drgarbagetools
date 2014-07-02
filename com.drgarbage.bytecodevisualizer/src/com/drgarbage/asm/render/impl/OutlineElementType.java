@@ -52,6 +52,10 @@ import com.drgarbage.bytecode.BytecodeUtils;
  * $Id$
  */
 public class OutlineElementType extends OutlineElement implements IType {
+	
+	public boolean isLambda() {
+		return false;
+	}
 
 	/* flags */
 	private int flags = 0;
