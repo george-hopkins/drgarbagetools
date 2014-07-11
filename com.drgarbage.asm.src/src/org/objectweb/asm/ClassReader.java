@@ -32,6 +32,10 @@ package org.objectweb.asm;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.drgarbage.asm_ext.ICodeVisitor;
+import com.drgarbage.asm_ext.IConstantPoolVisitor;
+import com.drgarbage.asm_ext.ILocalVariableTableVisitor;
+
 /**
  * A Java class parser to make a {@link ClassVisitor} visit an existing class.
  * This class parses a byte array conforming to the Java class file format and
@@ -150,9 +154,14 @@ public class ClassReader {
      *            the bytecode of the class to be read.
      */
     public ClassReader(final byte[] b) {
-        this(b, 0, b.length);
+        this(b, 0, b.length, null);
     }
 
+    /* Dr. Garbage specific constructor */
+    public ClassReader(final byte[] b, IConstantPoolVisitor constantPoolEntryVisitor) {
+        this(b, 0, b.length, constantPoolEntryVisitor);
+    }
+    
     /**
      * Constructs a new {@link ClassReader} object.
      * 
@@ -162,8 +171,10 @@ public class ClassReader {
      *            the start offset of the class data.
      * @param len
      *            the length of the class data.
+     *            
+     * @param constantPoolVisitor Dr. Garbage specific object
      */
-    public ClassReader(final byte[] b, final int off, final int len) {
+    public ClassReader(final byte[] b, final int off, final int len, IConstantPoolVisitor constantPoolVisitor) {
         this.b = b;
         // checks the class version
         if (readShort(off + 6) > Opcodes.V1_8) {
@@ -175,6 +186,13 @@ public class ClassReader {
         strings = new String[n];
         int max = 0;
         int index = off + 10;
+        
+        /* Dr. Garbage specific extension */
+        if (constantPoolVisitor != null) {
+        	constantPoolVisitor.visitConstantPool(b, off + 10, items.length);
+        }
+        /* Dr. Garbage specific extension */
+        
         for (int i = 1; i < n; ++i) {
             items[i] = index + 1;
             int size;
@@ -423,7 +441,12 @@ public class ClassReader {
     public ClassReader(final InputStream is) throws IOException {
         this(readClass(is, false));
     }
-
+    
+    /* Dr. Garbage specific constructor */
+    public ClassReader(final InputStream is, IConstantPoolVisitor constantPoolEntryVisitor) throws IOException {
+        this(readClass(is, false), constantPoolEntryVisitor);
+    }
+    
     /**
      * Constructs a new {@link ClassReader} object.
      * 
@@ -1496,7 +1519,15 @@ public class ClassReader {
                 }
             }
             u = varTable + 2;
-            for (int i = readUnsignedShort(varTable); i > 0; --i) {
+            		
+            /* Dr. Garbage specific extension */
+            int i = readUnsignedShort(varTable);
+            if (mv instanceof ILocalVariableTableVisitor) {
+            	((ILocalVariableTableVisitor)mv).visitLocalVariableTable(b, u, i);
+            }
+            /* Dr. Garbage specific extension */
+            
+            for (; i > 0; --i) {
                 int start = readUnsignedShort(u);
                 int length = readUnsignedShort(u + 2);
                 int index = readUnsignedShort(u + 8);
@@ -1515,6 +1546,13 @@ public class ClassReader {
                 u += 10;
             }
         }
+        
+        /* Dr. Garbage specific extension */
+        if (mv instanceof ICodeVisitor) {
+            ICodeVisitor cv = (ICodeVisitor) mv;
+            cv.visitCode(b, codeStart, codeLength);
+        }
+        /* Dr. Garbage specific extension */
 
         // visits the local variables type annotations
         if (tanns != null) {
