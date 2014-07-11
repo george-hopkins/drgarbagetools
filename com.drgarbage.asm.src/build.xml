@@ -189,6 +189,7 @@
 
   <target name="shrink" depends="compile-debug" if="product.shrink">
     <echo message="Shrinking"/>
+  	<!--
     <java classname="org.objectweb.asm.optimizer.Shrinker">
       <classpath>
         <pathelement location="${out.build}/tmp"/>
@@ -202,6 +203,7 @@
       <arg value="${out.build}/tmp"/>
       <arg value="${out.build}"/>
     </java>
+  	-->
   </target>
 
   <target name="noshrink" depends="compile-debug" if="product.noshrink">
@@ -314,14 +316,15 @@
     
   <target name="jar" depends="dist.init,dist.version,compile,shrink">
     <multipleAnt dir="${archive}"/>
+  	<!--
     <java classname="org.objectweb.asm.optimizer.JarOptimizer">
       <classpath>
         <pathelement location="${out.build}/tmp"/>
       </classpath>
-      <!--arg value="${src}/org/objectweb/asm/optimizer/jdk1.2.2_017.txt.gz"/-->
       <arg value="${src}/org/objectweb/asm/optimizer/jdk1.3.1_19.txt.gz"/>
       <arg value="${out.dist.lib}"/>
     </java>
+  	-->
   </target>
 
   <target name="jdoc" depends="init,dist.init">
