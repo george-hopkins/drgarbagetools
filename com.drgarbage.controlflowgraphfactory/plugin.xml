@@ -22,22 +22,6 @@
       </editor>
    </extension>
    <extension
-         id="com.drgarbage.controlflowgraphfactory.plugin.wizards"
-         point="org.eclipse.ui.newWizards">
-      <category
-            id="com.drgarbage.plugin.wizards.category.controlflowgraph"
-            name="%category.Control_Flow_Graph"
-            />
-      <wizard
-            category="com.drgarbage.plugin.wizards.category.controlflowgraph"
-            class="com.drgarbage.controlflowgraphfactory.wizards.ControlFlowGraphCreationWizard"
-            icon="$nl$/com/drgarbage/controlflowgraphfactory/img/create-bytecodegraph-16x16.png"
-            id="com.drgarbage.plugin.wizards.CreationWizard"
-            name="%wizard.Control_Flow_Graph">
-         <selection class="org.eclipse.core.resources.IResource"/>
-      </wizard>
-   </extension>
-   <extension
          id="com.drgarbage.controlflowgraphfactory.plugin.popupmenu"
          point="org.eclipse.ui.popupMenus">
       <objectContribution
