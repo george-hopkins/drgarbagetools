@@ -18,11 +18,9 @@ package com.drgarbage.controlflowgraphfactory;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.osgi.internal.framework.EquinoxBundle;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-
 import com.drgarbage.controlflowgraphfactory.actions.ExternalActionGenerateGraph;
 import com.drgarbage.controlflowgraphfactory.preferences.ControlFlowFactoryPreferenceConstants;
 import com.drgarbage.core.CoreConstants;
@@ -67,11 +65,10 @@ public class ControlFlowFactoryPlugin extends AbstractUIPlugin {
 		super.start(context);
 		
 		Bundle bundle = context.getBundle();
-		if(bundle instanceof EquinoxBundle){
-			EquinoxBundle aBundle = (EquinoxBundle) bundle;
-			PLUGIN_VERSION = aBundle.getVersion().toString();
+		if(bundle != null){
+			PLUGIN_VERSION = bundle.getVersion().toString();
 		}
-
+		
 		// FIXME: use org.eclipse.core.runtime.preferences extension for this
 		initPreferenceStore();
 	}

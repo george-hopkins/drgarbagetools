@@ -26,7 +26,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.osgi.internal.framework.EquinoxBundle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorReference;
@@ -79,9 +78,8 @@ public class SourcecodeVisualizerPlugin extends AbstractUIPlugin {
 		super.start(context);
 		
 		Bundle bundle = context.getBundle();
-		if(bundle instanceof EquinoxBundle){
-			EquinoxBundle aBundle = (EquinoxBundle) bundle;
-			PLUGIN_VERSION = aBundle.getVersion().toString();
+		if(bundle != null){
+			PLUGIN_VERSION = bundle.getVersion().toString();
 		}
 		
 		/*own properties */
