@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ASM Library
 Bundle-SymbolicName: com.drgarbage.asm.src
-Bundle-Version: 3.7.4
+Bundle-Version: 5.0.3
 Bundle-Vendor: Dr. Garbage
