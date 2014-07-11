@@ -14,12 +14,12 @@ Require-Bundle: org.eclipse.core.filesystem;bundle-version="[1.3.0,1.5.0)",
  org.eclipse.jface.text;bundle-version="[3.7.0,3.10.0)",
  org.eclipse.ui;bundle-version="[3.7.0,3.107.0)",
  org.eclipse.ui.editors;bundle-version="[3.7.0,3.10.0)",
- org.eclipse.ui.ide;bundle-version="[3.10.0,3.11.0)",
+ org.eclipse.ui.ide;bundle-version="[3.9.0,3.11.0)",
  org.eclipse.ui.views;bundle-version="[3.5.0,3.8.0)",
  org.eclipse.compare,
- com.drgarbage.asm;bundle-version="[4.2.0,4.4.0)",
+ com.drgarbage.asm;bundle-version="[5.0.3,5.1.0)",
  com.drgarbage.core.plugin;bundle-version="[4.4.0,5.0.0)",
- org.eclipse.osgi;bundle-version="[3.10.0,3.11.0)"
+ org.eclipse.osgi;bundle-version="[3.9.0,3.11.0)"
 Ant-Version: Apache Ant 1.7.0
 Bundle-Vendor: %providerName
 Bundle-Version: 4.4.0.qualifier
