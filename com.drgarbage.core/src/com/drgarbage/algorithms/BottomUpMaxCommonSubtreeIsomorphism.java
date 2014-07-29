@@ -440,7 +440,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 	 * Debugging flag. Set <code>true</code> to enable printing the
 	 * debugging messages.
 	 */
-	protected static boolean DEBUG = true;
+	protected static boolean DEBUG = false;
 	
 	/**
 	 * Prints a message for debugging purposes.
