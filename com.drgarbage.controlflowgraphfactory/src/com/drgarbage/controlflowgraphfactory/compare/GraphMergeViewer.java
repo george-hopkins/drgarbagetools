@@ -423,20 +423,21 @@ public class GraphMergeViewer extends ContentMergeViewer {
 	/**
 	 * Executes the top down subtree algorithm.
 	 */
-	public void doTopDownMaxCommonAlg() {
+	public void doTopDownMaxCommonAlg() throws ControlFlowGraphException {
 		
 		doResetViewer();
 		IDirectedGraphExt cfgLeft = LayoutAlgorithmsUtils.generateGraph(diagramLeft);		
 		IDirectedGraphExt cfgRight = LayoutAlgorithmsUtils.generateGraph(diagramRight);
 		
-		GraphUtils.clearGraphColorMarks(cfgLeft);
-		GraphUtils.clearGraphColorMarks(cfgRight);
+		/*convert graphs to trees */
+		IDirectedGraphExt leftTree = Algorithms.ConvertInputGraphsToTree(cfgLeft);
+		IDirectedGraphExt rightTree = Algorithms.ConvertInputGraphsToTree(cfgRight);
 		
 		TopDownMaxCommonSubTreeIsomorphism compare = new TopDownMaxCommonSubTreeIsomorphism();
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
 		try {
-			map = compare.topDownMaxCommonUnorderedSubtreeIsomorphism(cfgLeft, cfgRight);
+			map = compare.topDownMaxCommonUnorderedSubtreeIsomorphism(leftTree, rightTree);
 		} catch (ControlFlowGraphException e) {
 			ControlFlowFactoryPlugin.log(e);
 			Messages.error(e.getMessage());

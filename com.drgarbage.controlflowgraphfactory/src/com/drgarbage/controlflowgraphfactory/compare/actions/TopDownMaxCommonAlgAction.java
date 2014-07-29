@@ -15,9 +15,12 @@
  */
 package com.drgarbage.controlflowgraphfactory.compare.actions;
 
+import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryMessages;
+import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryPlugin;
 import com.drgarbage.controlflowgraphfactory.compare.GraphMergeViewer;
 import com.drgarbage.controlflowgraphfactory.img.ControlFlowFactoryResource;
+import com.drgarbage.utils.Messages;
 
 /**
  * <p>
@@ -47,7 +50,12 @@ public class TopDownMaxCommonAlgAction  extends BaseCompareAction {
 	 */
 	@Override
 	public void run() {
-		viewer.doTopDownMaxCommonAlg();
+		try {
+			viewer.doTopDownMaxCommonAlg();
+		} catch (ControlFlowGraphException e) {
+			ControlFlowFactoryPlugin.log(e);
+			Messages.error(e.getMessage());
+		}
 	}
 
 }
