@@ -57,7 +57,7 @@
             allowMultiple="false"
             category="com.drgabage.bytecodevisualizer.category.controlflowgraph_view"
             class="com.drgarbage.core.views.ControlFlowGraphView"
-            icon="$nl$/com/drgarbage/core/img//bytecode-viewer-16x16.png"
+            icon="$nl$/com/drgarbage/core/img/bytecode-viewer-16x16.png"
             id="com.drgabage.bytecodevisualizer.view.controlflowgraph_view"
             name="%ControlFlowGraphView_title">
       </view>
