@@ -10,5 +10,5 @@
 		<relativePath>../com.drgarbage.build</relativePath>
 	</parent>
 
-	<version>4.4.0-SNAPSHOT</version>
+	<version>4.4.1-SNAPSHOT</version>
 </project>
