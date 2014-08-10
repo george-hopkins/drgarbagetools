@@ -41,17 +41,17 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  * The following example from this book is used as a reference:
  * <pre>
  *   T_1                            T_2
- *        ____v12___                   _____ w18 ____________ 
- *       /          \                /        |               \
- *      v6          v11            w4        w12              w17
- *     /            /  \           /  \      /  \          /   |  \
- *    v5           v9   v10      w1    w3  w5   w11    w13   w14   w16
- *   /  \         /  \                  |       /  \                |
- * v1    v4      v7  v8                 w2     w9   w10            w15
- *     /  \                             |
- *    v2   v3                           w8
- *                                     / \
- *                                   w6   w7
+ *         ____(v12)____                  ______ (w18) _____________ 
+ *        /             \                /         |                \
+ *      (v6)            (v11)           w4       (w12)            __(w17)__
+ *      /               /   \          /  \      /  \            /    |    \
+ *    (v5)            (v9)  (v10)    w1    w3  w5   (w11)      w13  (w14) (w16)
+ *    /  \            /  \                  |       /   \                    |
+ * (v1)  (v4)       (v7)  v8               w2     (w9)  (w10)              (w15)
+ *       /  \                                      |
+ *     (v2)  v3                              	  (w8)
+ *                                     			  /  \
+ *                                              w6    w7
  * </pre>  
  * 
  * @author Artem Garishin
