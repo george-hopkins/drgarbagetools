@@ -126,14 +126,18 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 	}
 	
 	/**
-	 * Executes the Bottom-Up Unordered Maximum Common Subtree Isomorphism Algorithm.
+	 * Starts the Bottom-Up Unordered Maximum Common Subtree Isomorphism Algorithm.
+	 * 
+	 * The Algorithm works only with trees.
+	 * Gets root of input trees
+	 * Invokes method {@link #executeBottomUpUnorderedMaxCommonSubtreeIsomorphism(IDirectedGraphExt, INodeExt, IDirectedGraphExt, INodeExt)}
 	 * 
 	 * @param leftTree the graph <code>T_1</code>
 	 * @param rightTree the graph <code>T_2</code>
 	 * @return the map of matched nodes
 	 * @throws ControlFlowGraphException
 	 */
-	public Map<INodeExt, INodeExt> bottomUpUnorderedMaxCommonSubreeIsomorphism(
+	public Map<INodeExt, INodeExt> start(
 			IDirectedGraphExt leftTree, IDirectedGraphExt rightTree)
 			throws ControlFlowGraphException {
 
@@ -141,7 +145,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 		INodeExt leftRoot = getRootFromTree(leftTree);
 		INodeExt rightRoot = getRootFromTree(rightTree);
 		
-		return bottomUpUnorderedMaxCommonSubtreeIsomorphism(leftTree, leftRoot, rightTree, rightRoot);
+		return executeBottomUpUnorderedMaxCommonSubtreeIsomorphism(leftTree, leftRoot, rightTree, rightRoot);
 	}
 
 	/**
@@ -153,7 +157,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 	 * @param rightRoot the root node of the right graph
 	 * @return the map of matched nodes
 	 */
-	public Map<INodeExt, INodeExt> bottomUpUnorderedMaxCommonSubtreeIsomorphism(
+	public Map<INodeExt, INodeExt> executeBottomUpUnorderedMaxCommonSubtreeIsomorphism(
 			IDirectedGraphExt leftSpanningTree, INodeExt leftRoot,
 			IDirectedGraphExt rightSpanningTree, INodeExt rightRoot) {
 		

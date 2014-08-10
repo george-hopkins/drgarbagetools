@@ -433,7 +433,7 @@ public class BottomUpMaxCommonSubtreeIsomorphismTest extends TestCase {
 		printGraph(t.treeLeft);
 		printGraph(t.treeRight);
 		
-		Map<INodeExt, INodeExt> map = bumcsi.bottomUpUnorderedMaxCommonSubreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = bumcsi.start(t.treeLeft, t.treeRight);
 		
 		printMap(map);
 		assertEquals(8, map.size());
@@ -453,7 +453,7 @@ public class BottomUpMaxCommonSubtreeIsomorphismTest extends TestCase {
 		printGraph(t.treeLeft);
 		printGraph(t.treeRight);
 		
-		Map<INodeExt, INodeExt> map = bumcsi.bottomUpUnorderedMaxCommonSubreeIsomorphism(t.treeRight, t.treeLeft);
+		Map<INodeExt, INodeExt> map = bumcsi.start(t.treeRight, t.treeLeft);
 		
 		printMap(map);
 		assertEquals(8, map.size());
@@ -471,7 +471,7 @@ public class BottomUpMaxCommonSubtreeIsomorphismTest extends TestCase {
 		printGraph(t.treeLeft);
 		printGraph(t.treeRight);
 		
-		Map<INodeExt, INodeExt> map = bumcsi.bottomUpUnorderedMaxCommonSubreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = bumcsi.start(t.treeLeft, t.treeRight);
 		printMap(map);
 
 		assertEquals(4, map.size());
@@ -490,7 +490,7 @@ public class BottomUpMaxCommonSubtreeIsomorphismTest extends TestCase {
 		printGraph(t.treeRight);
 
 		try {
-			bumcsi.bottomUpUnorderedMaxCommonSubreeIsomorphism(t.treeLeft, t.treeRight);
+			bumcsi.start(t.treeLeft, t.treeRight);
 		} catch (ControlFlowGraphException e) {
 			assertNotNull(e);
 			return;
@@ -509,7 +509,7 @@ public class BottomUpMaxCommonSubtreeIsomorphismTest extends TestCase {
 		BottomUpMaxCommonSubtreeIsomorphism bumcsi = new BottomUpMaxCommonSubtreeIsomorphism();
 		TestSet t = createTestSet5();
 		
-		Map<INodeExt, INodeExt> map = bumcsi.bottomUpUnorderedMaxCommonSubreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = bumcsi.start(t.treeLeft, t.treeRight);
 		
 		assertEquals(t.treeLeft.getNodeList().size(), map.size());
 	}

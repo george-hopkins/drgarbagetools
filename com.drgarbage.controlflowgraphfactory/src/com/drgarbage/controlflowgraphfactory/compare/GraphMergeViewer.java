@@ -437,7 +437,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
 		try {
-			map = compare.topDownMaxCommonUnorderedSubtreeIsomorphism(leftTree, rightTree);
+			map = compare.start(leftTree, rightTree);
 		} catch (ControlFlowGraphException e) {
 			ControlFlowFactoryPlugin.log(e);
 			Messages.error(e.getMessage());
@@ -525,7 +525,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
 		try {
-			map = compare.bottomUpUnorderedMaxCommonSubreeIsomorphism(leftTree, rightTree);
+			map = compare.start(leftTree, rightTree);
 		} catch (ControlFlowGraphException e) {
 			ControlFlowFactoryPlugin.log(e);
 			Messages.error(e.getMessage());

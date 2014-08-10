@@ -310,7 +310,7 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 		
 		TopDownMaxCommonSubTreeIsomorphism tdmcsi = new TopDownMaxCommonSubTreeIsomorphism();
 		TestSet t = createTestSet1();
-		Map<INodeExt, INodeExt> map = tdmcsi.topDownMaxCommonUnorderedSubtreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = tdmcsi.start(t.treeLeft, t.treeRight);
 		assertEquals(10, map.size());
 		printMap(map, "test1");
 	}
@@ -324,7 +324,7 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 		
 		TopDownMaxCommonSubTreeIsomorphism tdmcsi = new TopDownMaxCommonSubTreeIsomorphism();
 		TestSet t = createTestSet2();
-		Map<INodeExt, INodeExt> map = tdmcsi.topDownMaxCommonUnorderedSubtreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = tdmcsi.start(t.treeLeft, t.treeRight);
 		assertEquals(4, map.size());
 		printMap(map, "test2");
 	}
@@ -339,7 +339,7 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 		TestSet t = createTestSet3();
 
 		try {
-			tdmcsi.topDownMaxCommonUnorderedSubtreeIsomorphism(t.treeLeft, t.treeRight);
+			tdmcsi.start(t.treeLeft, t.treeRight);
 		} catch (ControlFlowGraphException e) {
 			assertNotNull(e);
 			return;
