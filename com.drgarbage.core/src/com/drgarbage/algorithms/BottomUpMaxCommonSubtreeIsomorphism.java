@@ -54,7 +54,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  *     (v2) (v3)                            (w6)  (w7)
  *      
  * </pre>
- * 
+ * Nodes with enclosed brackets are mapped according to the algorithm.
  * @author Adam Kajrys
  * 
  * @version $Revision$

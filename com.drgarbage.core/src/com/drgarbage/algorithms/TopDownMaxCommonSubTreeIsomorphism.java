@@ -49,11 +49,12 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  *    /  \            /  \                  |       /   \                    |
  * (v1)  (v4)       (v7)  v8               w2     (w9)  (w10)              (w15)
  *       /  \                                      |
- *     (v2)  v3                              	  (w8)
- *                                     			  /  \
+ *     (v2)  v3                                   (w8)
+ *                                                /  \
  *                                              w6    w7
  * </pre>  
  * 
+ * Nodes with enclosed brackets are mapped according to the algorithm.
  * @author Artem Garishin
  * 
  * @version $Revision$ 
