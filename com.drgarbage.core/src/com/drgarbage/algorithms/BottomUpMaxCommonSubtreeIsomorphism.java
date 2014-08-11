@@ -34,7 +34,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
 
 /**
- * The Bottom-Up Unordered Maximum Common Subtree Isomorphism algorithm.
+ * This class implements the Bottom-Up Unordered Maximum Common Subtree Isomorphism algorithm.
  * The implementation is based on the algorithm published by Gabriel
  * Valiente in his book "Algorithms on Trees and Graphs".
  * The following example from this book is used as a reference:
@@ -54,7 +54,15 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  *     (v2) (v3)                            (w6)  (w7)
  *      
  * </pre>
- * Nodes with enclosed brackets are mapped according to the algorithm.
+ * <pre>
+ * Nodes are numbered according to the order in which they are visited during a post order traversal.
+ * The maximum common bottom-up subtree of <i>T_1</i> and <i>T_2</i> is depicted with enclosed brackets 
+ * are mapped according to the algorithm. </pre>
+ * </br>
+ * 
+ * A maximal bottom-up common subtree of two unordered trees <i>T_1</i> and <i>T_2</i> is an unordered tree <i>T</i> such
+ * that there are bottom-up unordered subtree isomorphisms of T into <i>T_1</i> and into <i>T_2</i> with the largest number of nodes.
+ * 
  * @author Adam Kajrys
  * 
  * @version $Revision$
@@ -119,25 +127,23 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 
 		if (root == null) {
 			throw new ControlFlowGraphException(
-					"The left tree has no root. The graph is propably not a tree.");
+					"The tree has no root. The graph is propably not a tree.");
 		}
 		
 		return root;
 	}
 	
 	/**
-	 * Starts the Bottom-Up Unordered Maximum Common Subtree Isomorphism Algorithm.
+	 * Starts the bottom-up unordered maximum common subtree isomorphism algorithm.
+	 * The Algorithm works only with spanning trees. Gets root nodes from each input spanning tree
+	 * and proceeds bottom-up maximum common algorithm. 
 	 * 
-	 * The Algorithm works only with trees.
-	 * Gets root of input trees
-	 * Invokes method {@link #executeBottomUpUnorderedMaxCommonSubtreeIsomorphism(IDirectedGraphExt, INodeExt, IDirectedGraphExt, INodeExt)}
-	 * 
-	 * @param leftTree the graph <code>T_1</code>
-	 * @param rightTree the graph <code>T_2</code>
-	 * @return the map of matched nodes
+	 * @param leftTree spanning tree <i>T_1</i>
+	 * @param rightTree spanning tree <i>T_2</i>
+	 * @return map of matched nodes <i>T_1</i> to <i>T_2</i>
 	 * @throws ControlFlowGraphException
 	 */
-	public Map<INodeExt, INodeExt> start(
+	public Map<INodeExt, INodeExt> getMappedNodes(
 			IDirectedGraphExt leftTree, IDirectedGraphExt rightTree)
 			throws ControlFlowGraphException {
 
@@ -145,7 +151,10 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 		INodeExt leftRoot = getRootFromTree(leftTree);
 		INodeExt rightRoot = getRootFromTree(rightTree);
 		
-		return executeBottomUpUnorderedMaxCommonSubtreeIsomorphism(leftTree, leftRoot, rightTree, rightRoot);
+		Map<INodeExt, INodeExt> mappedNodes = null;
+		mappedNodes = executeBottomUpMaxCommon(leftTree, leftRoot, rightTree, rightRoot);
+		
+		return mappedNodes;
 	}
 
 	/**
@@ -157,7 +166,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 	 * @param rightRoot the root node of the right graph
 	 * @return the map of matched nodes
 	 */
-	public Map<INodeExt, INodeExt> executeBottomUpUnorderedMaxCommonSubtreeIsomorphism(
+	private Map<INodeExt, INodeExt> executeBottomUpMaxCommon(
 			IDirectedGraphExt leftSpanningTree, INodeExt leftRoot,
 			IDirectedGraphExt rightSpanningTree, INodeExt rightRoot) {
 		

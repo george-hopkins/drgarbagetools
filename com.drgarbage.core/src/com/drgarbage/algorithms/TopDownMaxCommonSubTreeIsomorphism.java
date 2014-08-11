@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2013, Dr. Garbage Community
+ * Copyright (c) 2008-2014, Dr. Garbage Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,11 +36,12 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
 
 
 /**
- * The Top-Down-MAX Common Subtree Isomorphism algorithm. The implementation is based 
+ * This class implements the Top-down maximum common Subtree Isomorphism algorithm. The implementation is based 
  * on the algorithm published by Gabriel Valiente in his book "Algorithms on Trees and Graphs". 
+ * 
  * The following example from this book is used as a reference:
  * <pre>
- *   T_1                            T_2
+ *   T_1                             T_2
  *         ____(v12)____                  ______ (w18) _____________ 
  *        /             \                /         |                \
  *      (v6)            (v11)           w4       (w12)            __(w17)__
@@ -53,8 +54,17 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  *                                                /  \
  *                                              w6    w7
  * </pre>  
+ * <pre>
+ * Nodes are numbered according to the order in which they are visited during a post order traversal.
+ * The maximum common top-down subtree of <i>T_1</i> and <i>T_2</i> is depicted with enclosed brackets 
+ * are mapped according to the algorithm.
+ * </pre>
  * 
- * Nodes with enclosed brackets are mapped according to the algorithm.
+ * A maximal top-down common subtree of two unordered trees <i>T_1</i> and <i>T_2</i> is an unordered tree <i>T</i> such
+ * that there are top-down unordered subtree isomorphisms of T into <i>T_1</i> and into <i>T_2</i> with the largest number of nodes.
+ * 
+ * 
+ *  
  * @author Artem Garishin
  * 
  * @version $Revision$ 
@@ -72,51 +82,52 @@ public class TopDownMaxCommonSubTreeIsomorphism {
 	}
 	
 	/**
-	 * Starts the Top Down Max Common Subtree isomorphism algorithm.
+	 * Starts the unordered top-down maximum common subtree isomorphism algorithm.
+	 * The Algorithm works only with spanning trees. Gets root nodes from each input spanning tree
+	 * and proceeds top-down maximum common algorithm.
 	 * 
-	 * The Algorithm works only with trees.
-	 * Gets root nodes of compared trees.
-	 * Invokes method {@link #executeTopDownMaxCommonSubtreeIsomorphism(IDirectedGraphExt, INodeExt, IDirectedGraphExt, INodeExt)}
-	 * 
-	 * @param leftTree the tree <code>T_1</code>
-	 * @param rightTree the tree <code>T_2</code>
-	 * @return the map of matched nodes
+	 * @param leftTree spanning tree <i>T_1</i>
+	 * @param rightTree spanning tree <i>T_2</i>
+	 * @return map of matched nodes <i>T_1</i> to <i>T_2</i>
 	 * @throws ControlFlowGraphException 
 	 */
-	public Map<INodeExt, INodeExt> start(
+	public Map<INodeExt, INodeExt> getMappedNodes(
 			IDirectedGraphExt leftTree, IDirectedGraphExt rightTree) throws ControlFlowGraphException {
 		
 		/* get root nodes */
-		INodeExt rootLeft = null;
-		for(int i = 0; i < leftTree.getNodeList().size(); i++){
-			INodeExt n = leftTree.getNodeList().getNodeExt(i);
-			if(n.getIncomingEdgeList().size() == 0){
-				rootLeft = n;
-			}
-		}
+		INodeExt rootLeft = getRoot(leftTree);
+		INodeExt rootRight = getRoot(rightTree);
 		
-		if(rootLeft == null){
-			throw new ControlFlowGraphException("The left tree has no root. The graph is propably not a tree.");
-		}
+		Map<INodeExt, INodeExt> mappedNodes = null;
+		mappedNodes = executeTopDownMaxCommon(leftTree, rootLeft, rightTree, rootRight);
 		
-		INodeExt rootRight = null;
-		for(int i = 0; i < rightTree.getNodeList().size(); i++){
-			INodeExt n = rightTree.getNodeList().getNodeExt(i);
-			if(n.getIncomingEdgeList().size() == 0){
-				rootRight = n;
-			}
-		}
-		
-		if(rootRight == null){
-			throw new ControlFlowGraphException("The right tree has no root. The graph is propably not a tree.");
-		}
-
-		return executeTopDownMaxCommonSubtreeIsomorphism(leftTree, rootLeft, rightTree, rootRight);
+		return mappedNodes;
 		
 	}
 	
 	/**
-	 * Executes the Top Down Subtree isomorphism algorithm.
+	 * gets root from spanning tree 
+	 * @param SpanningTree
+	 * @return INodeExt
+	 * @throws ControlFlowGraphException 
+	 */
+	private INodeExt getRoot(IDirectedGraphExt SpanningTree) throws ControlFlowGraphException{
+		INodeExt root = null;
+		for(int i = 0; i < SpanningTree.getNodeList().size(); i++){
+			INodeExt n = SpanningTree.getNodeList().getNodeExt(i);
+			if(n.getIncomingEdgeList().size() == 0){
+				root = n;
+			}
+		}
+		if(root == null){
+			throw new ControlFlowGraphException("This tree has no root. The graph is propably not a tree.");
+		}
+		return root;
+	}
+	
+	/**
+	 * Gets mapped nodes according to 
+	 * the Top Down Subtree isomorphism algorithm.
 	 * 
 	 * @param leftTree the tree <code>T_1</code>
 	 * @param rootLeft the root node of the left tree
@@ -124,7 +135,7 @@ public class TopDownMaxCommonSubTreeIsomorphism {
 	 * @param rootRight the root node of the right tree
 	 * @return the map of matched nodes
 	 */
-	public Map<INodeExt, INodeExt> executeTopDownMaxCommonSubtreeIsomorphism(
+	private Map<INodeExt, INodeExt> executeTopDownMaxCommon(
 			IDirectedGraphExt leftTree, 
 			INodeExt rootLeft, 
 			IDirectedGraphExt rightTree,

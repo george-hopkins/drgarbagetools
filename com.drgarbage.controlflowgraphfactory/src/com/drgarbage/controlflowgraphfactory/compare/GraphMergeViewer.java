@@ -437,7 +437,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
 		try {
-			map = compare.start(leftTree, rightTree);
+			map = compare.getMappedNodes(leftTree, rightTree);
 		} catch (ControlFlowGraphException e) {
 			ControlFlowFactoryPlugin.log(e);
 			Messages.error(e.getMessage());
@@ -525,7 +525,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
 		try {
-			map = compare.start(leftTree, rightTree);
+			map = compare.getMappedNodes(leftTree, rightTree);
 		} catch (ControlFlowGraphException e) {
 			ControlFlowFactoryPlugin.log(e);
 			Messages.error(e.getMessage());
