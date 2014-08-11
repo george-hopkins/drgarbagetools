@@ -107,7 +107,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 	 * @return
 	 * @throws ControlFlowGraphException
 	 */
-	public INodeExt getRootFromTree(IDirectedGraphExt tree) throws ControlFlowGraphException{
+	private INodeExt getRootFromTree(IDirectedGraphExt tree) throws ControlFlowGraphException{
 		
 		INodeExt root = null;
 		for (int i = 0; i < tree.getNodeList().size(); i++) {

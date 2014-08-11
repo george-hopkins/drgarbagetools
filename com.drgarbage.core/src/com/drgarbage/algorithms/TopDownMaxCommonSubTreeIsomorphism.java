@@ -76,7 +76,7 @@ public class TopDownMaxCommonSubTreeIsomorphism {
 	 * 
 	 * The Algorithm works only with trees.
 	 * Gets root nodes of compared trees.
-	 * Invokes method {@link #executeTopDownMaxCommonUnorderedSubtreeIsomorphism(IDirectedGraphExt, INodeExt, IDirectedGraphExt, INodeExt)}
+	 * Invokes method {@link #executeTopDownMaxCommonSubtreeIsomorphism(IDirectedGraphExt, INodeExt, IDirectedGraphExt, INodeExt)}
 	 * 
 	 * @param leftTree the tree <code>T_1</code>
 	 * @param rightTree the tree <code>T_2</code>
@@ -111,7 +111,7 @@ public class TopDownMaxCommonSubTreeIsomorphism {
 			throw new ControlFlowGraphException("The right tree has no root. The graph is propably not a tree.");
 		}
 
-		return execiteTopDownMaxCommonUnorderedSubtreeIsomorphism(leftTree, rootLeft, rightTree, rootRight);
+		return executeTopDownMaxCommonSubtreeIsomorphism(leftTree, rootLeft, rightTree, rootRight);
 		
 	}
 	
@@ -124,7 +124,7 @@ public class TopDownMaxCommonSubTreeIsomorphism {
 	 * @param rootRight the root node of the right tree
 	 * @return the map of matched nodes
 	 */
-	public Map<INodeExt, INodeExt> execiteTopDownMaxCommonUnorderedSubtreeIsomorphism(
+	public Map<INodeExt, INodeExt> executeTopDownMaxCommonSubtreeIsomorphism(
 			IDirectedGraphExt leftTree, 
 			INodeExt rootLeft, 
 			IDirectedGraphExt rightTree,
