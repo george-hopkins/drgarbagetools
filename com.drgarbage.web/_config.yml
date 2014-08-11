@@ -1,6 +1,6 @@
 name: Dr. Garbage Tools
-url: http://localhost:4000
-#url: http://www.drgarbage.com
+#url: http://localhost:4000
+url: http://www.drgarbage.com
 imgurl: /img
 fileurl: /files
 timezone: Europe/Berlin

@@ -1,6 +1,6 @@
 ---
 layout:	page
-title:	"Control Flow Graph Factory Comparison"
+title:	"Control Flow Graph Factory Tree Comparison"
 date:	2014-04-23 15:52
 categories: control-flow-graph-factory
 ---
@@ -14,10 +14,10 @@ which branches look same between two logical trees.
 The maximum common subtree isomorphism task consists in finding of largest common subtree between two trees.
 The trees can be derived either using Dr. Garbage graphical interface of graph development or extracted from byte/source code.
 
-Control Flow Graph Factory Comparison offers 2 options to investigate similarity between two trees graphically:
+The following algorithms are used in order to compare trees. Control Flow Graph Factory Comparison offers 2 options to investigate similarity between two trees graphically:
 
-* [Top-Down MaxCommon subtree algorithm](#tda)
-* [Bottom-Up MaxCommon subtree algorithm](#bua)
+* [Top-Down MaxCommon Subtree Algorithm](#tda) (see [JavaDoc][jdtd])
+* [Bottom-Up MaxCommon Subtree Algorithm](#bua) (see [JavaDoc][jdbu])
 
 How to compare trees <a name="how"></a>
 --------------
@@ -31,7 +31,7 @@ Top-Down MaxCommon Subtree Comparision  <a name="tda"></a>
 --------------
 The algorithm is based to find a maximum common subtree between two different trees starting from root. The largest common subtree that can be found is green highlighted.
 
-![sd]({{ site.imgurl }}{{ page.url }}top-down-maxcommon-tree-compare.png)
+![sd]({{ site.imgurl }}{{ page.url }}top-down-maxcommon-tree-compare-updated.png)
 
 <div class="clear"></div>
 
@@ -41,11 +41,12 @@ Bottom-Up MaxCommon Subtree Comparision  <a name="bua"></a>
 
 The algorithm is constructed by such way, that the maximum common subtree is being searched starting from the leaves. The maximum similar subtree from the bottom is green highlighted.
 
-![sd]({{ site.imgurl }}{{ page.url }}bottom-up-maxcommon-compare.png)
+![sd]({{ site.imgurl }}{{ page.url }}bottom-up-maxcommon-compare-updated.png)
 <div class="clear"></div>
 
 
 [Back to top](#top)
 
 [cfgf]: {{ site.url }}/control-flow-graph-factory/
-
+[jdbu]: http://www.drgarbage.com/javadoc/core/doc/com/drgarbage/algorithms/BottomUpMaxCommonSubtreeIsomorphism.html
+[jdtd]: http://www.drgarbage.com/javadoc/core/doc/com/drgarbage/algorithms/TopDownMaxCommonSubTreeIsomorphism.html

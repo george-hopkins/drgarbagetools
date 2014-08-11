@@ -14,9 +14,10 @@ the install button from the plugin page into a running Eclipse workspace.
 To install Dr. Garbage plugins via [Eclipse Update Manager][eum] use the
 following update site URLs:
 
-* **http://sourceforge.net/projects/drgarbagetools/files/eclipse/4.3/stable** for Kepler
-* **http://sourceforge.net/projects/drgarbagetools/files/eclipse/4.2/stable** for Juno
-* **http://sourceforge.net/projects/drgarbagetools/files/eclipse/3.7/stable** for Indigo
+* [**http://sourceforge.net/projects/drgarbagetools/files/eclipse/4.4/stable** ](http://sourceforge.net/projects/drgarbagetools/files/eclipse/4.4/stable ) for Luna
+* [**http://sourceforge.net/projects/drgarbagetools/files/eclipse/4.3/stable** ]( http://sourceforge.net/projects/drgarbagetools/files/eclipse/4.3/stable ) for Kepler
+* [**http://sourceforge.net/projects/drgarbagetools/files/eclipse/4.2/stable** ]( http://sourceforge.net/projects/drgarbagetools/files/eclipse/4.2/stable )for Juno
+* [**http://sourceforge.net/projects/drgarbagetools/files/eclipse/3.7/stable** ]( http://sourceforge.net/projects/drgarbagetools/files/eclipse/3.7/stable ) for Indigo
 
 For more details, please refer to [How to download and install Dr. Garbage
 plugins][howto].

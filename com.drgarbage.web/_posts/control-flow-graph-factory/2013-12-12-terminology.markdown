@@ -1,6 +1,6 @@
 ---
 layout:	page
-title:	"Control Flow Graph Factoy terminology"
+title:	"Control Flow Graph Factory terminology"
 date:	2013-12-12 18:38
 categories: control-flow-graph-factory
 ---
