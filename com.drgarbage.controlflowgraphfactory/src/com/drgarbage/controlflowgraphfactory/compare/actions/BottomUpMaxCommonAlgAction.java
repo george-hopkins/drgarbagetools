@@ -42,7 +42,7 @@ public class BottomUpMaxCommonAlgAction extends BaseCompareAction {
 	 */
 	public BottomUpMaxCommonAlgAction(GraphMergeViewer cmv) {
 		super(cmv);
-		setImageDescriptor(ControlFlowFactoryResource.graph_compare_bottom_up_max_common_subtree_16x16);
+		setImageDescriptor(ControlFlowFactoryResource.graph_compare_bottom_up_16x16);
 		setToolTipText(ControlFlowFactoryMessages.GraphCompare_BottomUpMaxCommonAlgorithm_Text);
 	}
 

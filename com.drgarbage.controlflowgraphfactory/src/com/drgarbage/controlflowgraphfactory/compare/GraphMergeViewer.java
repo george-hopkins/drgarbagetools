@@ -16,28 +16,39 @@
 
 package com.drgarbage.controlflowgraphfactory.compare;
 
-import java.awt.Scrollbar;
+
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import javax.swing.JScrollPane;
-
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.contentmergeviewer.ContentMergeViewer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.FreeformViewport;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.MouseEvent;
+import org.eclipse.draw2d.MouseMotionListener;
+import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.RootEditPart;
+import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
+import org.eclipse.gef.editparts.SimpleRootEditPart;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
-import org.eclipse.jdt.core.dom.Message;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
@@ -47,7 +58,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.eclipse.swt.widgets.Scrollable;
 
 import com.drgarbage.algorithms.BottomUpMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.BottomUpSubtreeIsomorphism;
@@ -55,6 +65,7 @@ import com.drgarbage.algorithms.TopDownMaxCommonSubTreeIsomorphism;
 import com.drgarbage.algorithms.TopDownSubtreeIsomorphism;
 import com.drgarbage.algorithms.Algorithms;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
+import com.drgarbage.controlflowgraph.figures.RectangleFigure;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
@@ -65,6 +76,7 @@ import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryPlugin;
 import com.drgarbage.controlflowgraphfactory.actions.LayoutAlgorithmsUtils;
 import com.drgarbage.controlflowgraphfactory.compare.actions.BottomUpMaxCommonAlgAction;
 import com.drgarbage.controlflowgraphfactory.compare.actions.BottomUpSubtreeAlgAction;
+import com.drgarbage.controlflowgraphfactory.compare.actions.CompareMouseActions;
 import com.drgarbage.controlflowgraphfactory.compare.actions.ResetCompareGraphsViewAction;
 import com.drgarbage.controlflowgraphfactory.compare.actions.CompareZoomInAction;
 import com.drgarbage.controlflowgraphfactory.compare.actions.CompareZoomOutAction;
@@ -76,7 +88,6 @@ import com.drgarbage.utils.Messages;
 import com.drgarbage.visualgraphic.editparts.DiagramEditPartFactory;
 import com.drgarbage.visualgraphic.model.ControlFlowGraphDiagram;
 import com.drgarbage.visualgraphic.model.VertexBase;
-
 
 /**
  * The graph merge viewer.
@@ -103,7 +114,10 @@ public class GraphMergeViewer extends ContentMergeViewer {
 	/* Color constants */
 	final static Color RED      		= new Color(null, 224, 0, 0);
 	final static Color GREEN      		= new Color(null, 0, 224, 0);
+	final static Color BLUE      		= new Color(null, 50, 0, 232);
+	final static Color YELLOW      		= new Color(null, 255, 255, 0);
 	
+	private ArrayList<CompareMouseActions> mouseEventsList = new ArrayList<CompareMouseActions>();
 	/**
 	 * Creates a graph merge viewer.
 	 * 
@@ -142,11 +156,12 @@ public class GraphMergeViewer extends ContentMergeViewer {
 
 		ScalableFreeformRootEditPart root2 = new ScalableFreeformRootEditPart();
 		fRight.setRootEditPart(root2);
-		
+	
 		/*synchronize sub-windows*/
 		FigureCanvas scrolledCanvasLeft = (FigureCanvas)fLeft.getControl();
 		FigureCanvas scrolledCanvasRight = (FigureCanvas)fRight.getControl();
 		synchronizeScrollBars(scrolledCanvasLeft, scrolledCanvasRight);
+	
 	}
 	
 	/**
@@ -177,6 +192,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 
 		horizontalScrollBarRight.addSelectionListener(horizontalListener);
 		verticalScrollBarRight.addSelectionListener(verticalListener);
+		
 	}
 	
 	/* (non-Javadoc)
@@ -375,53 +391,83 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		String lTmp = mp.getLeftLabel(getInput());
 		mp.setLeftLabel(mp.getRightLabel(getInput()));
 		mp.setRightLabel(lTmp);
-		
 		updateHeader();
 	}
 	
+	
+	/**
+	 * 
+	 * Adds mouse listeners to highlight mapped nodes according to input parameter MapEntry
+	 * @param MapEntry: mapped nodes
+	 * 
+	 */
+	public void mouseHighLightListeners(final Map<INodeExt, INodeExt> MapEntry ){
+		
+		/*get editable panel left part*/	
+		ScalableFreeformRootEditPart scalableRootEditPartLeft = (ScalableFreeformRootEditPart) fLeft.getRootEditPart();
+		final IFigure freeFormViewportLeft = (IFigure) scalableRootEditPartLeft.getFigure();
+
+		/*get editable panel left part*/	
+		ScalableFreeformRootEditPart scalableRootEditPartRight = (ScalableFreeformRootEditPart) fRight.getRootEditPart();
+		final IFigure freeFormViewportRight = (IFigure) scalableRootEditPartRight.getFigure();
+		
+		/*remove previous listeners, because nodes get mapped differently each time*/
+		removeListeners();
+		handleToopTips(freeFormViewportLeft, true);
+		handleToopTips(freeFormViewportRight, true);
+		
+		/*add mouse listen actions to the panel and mark them with respect of mapped nodes*/
+		
+		CompareMouseActions mouseActionsLeft = new CompareMouseActions(MapEntry, freeFormViewportLeft, true);
+		mouseActionsLeft.addMouseListener();
+		mouseActionsLeft.addMotionMouseListener();
+		mouseEventsList.add(mouseActionsLeft);
+		
+		/*add mouse listen actions to the panel and mark them with respect of mapped nodes*/
+		CompareMouseActions mouseActionsRight = new CompareMouseActions(MapEntry, freeFormViewportRight, false);
+		mouseActionsRight.addMouseListener();
+		mouseActionsRight.addMotionMouseListener();
+		mouseEventsList.add(mouseActionsRight);
+		
+	}
+
 	/**
 	 * Executes the top down subtree algorithm.
 	 */
+	
 	public void doTopDownAlg() {
 	
 		doResetViewer();
 		IDirectedGraphExt cfgLeft = LayoutAlgorithmsUtils.generateGraph(diagramLeft);		
 		IDirectedGraphExt cfgRight = LayoutAlgorithmsUtils.generateGraph(diagramRight);
 		
-		TopDownSubtreeIsomorphism  compare = new TopDownSubtreeIsomorphism();
-		
+		GraphUtils.clearGraphColorMarks(cfgLeft);
+		GraphUtils.clearGraphColorMarks(cfgRight);
+				
 		/* start to compare graphs */
-		Map<INodeExt, INodeExt> map = null;
+		TopDownSubtreeIsomorphism compareTD = new TopDownSubtreeIsomorphism();
+		Map<INodeExt, INodeExt> mapped = null;
 		try {
-			map = compare.topDownUnorderedSubtreeIsomorphism(cfgLeft, cfgRight);
+			mapped = compareTD.topDownUnorderedSubtreeIsomorphism(cfgLeft, cfgRight);
 		} catch (ControlFlowGraphException e) {
 			ControlFlowFactoryPlugin.log(e);
 			Messages.error(e.getMessage());
 		}
 		
-		if (map == null) {
-			Messages.info("Map containing equivalent nodes was null", 
-							"The left graph might have more nodes than the right graph.\n" + 
-							"Try swapping the graphs.");
-			
-			return;
-		}
-		
-		if (map.isEmpty()) {
-			Messages.info("No equivalent nodes found", 
-					"No equivalent nodes could be found.");
-	
-			return;
-		}
-		
-		for (Map.Entry<INodeExt, INodeExt> entry : map.entrySet()) {
+		/*highlight green mapped nodes according to the algorithms*/
+		for (Map.Entry<INodeExt, INodeExt> entry : mapped.entrySet()) {
 			((VertexBase) entry.getKey().getData()).setColor(GREEN);
 			((VertexBase) entry.getValue().getData()).setColor(GREEN);
 		}
+		
+		/*add mouse listeners to highlight mapped nodes*/
+		mouseHighLightListeners(mapped);
+		
 	}
 	
 	/**
 	 * Executes the top down subtree algorithm.
+	 * @throws ControlFlowGraphException 
 	 */
 	public void doTopDownMaxCommonAlg() throws ControlFlowGraphException {
 		
@@ -462,6 +508,10 @@ public class GraphMergeViewer extends ContentMergeViewer {
 			((VertexBase) entry.getKey().getData()).setColor(GREEN);
 			((VertexBase) entry.getValue().getData()).setColor(GREEN);
 		}
+		
+		/*add mouse listeners to highlight mapped nodes*/
+		mouseHighLightListeners(map);
+		
 	}
 
 	/**
@@ -551,6 +601,8 @@ public class GraphMergeViewer extends ContentMergeViewer {
 			((VertexBase) entry.getValue().getData()).setColor(GREEN);
 		}
 		
+		/*add mouse listeners to highlight mapped nodes*/
+		mouseHighLightListeners(map);
 	}
 	
 	/**
@@ -560,6 +612,8 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		setInput(fRight, diagramRight);
 		setInput(fLeft, diagramLeft);
 		
+		removeListeners();
+		
 		if(swaped){
 			swapHeader();
 			swaped = false;
@@ -567,23 +621,36 @@ public class GraphMergeViewer extends ContentMergeViewer {
 	}
 	
 	/**
-	 * Sets the nodes color in the diagram according the coloring marks.
+	 * Removes included listeners of Figure rootEditPart
+	 * because each time nodes can be mapped differently, and previous listeners will mixed mapped nodes
 	 */
-	public static void colorNodesByMarks(IDirectedGraphExt graph) {
-		for (int i = 0; i < graph.getNodeList().size(); i++) {
-			if (graph.getNodeList().getNodeExt(i).getMark() != null){
-				INodeExt node = graph.getNodeList().getNodeExt(i);
-				VertexBase vb = (VertexBase) node.getData();
-				
-				if(node.getMark() == MarkEnum.GREEN ) {
-					vb.setColor(GREEN);
-				}
-				else{
-					if(node.getMark() == MarkEnum.RED ) {
-						vb.setColor(RED);
-					}
-				}
+	public void removeListeners(){
+		/*remove previous mouse listeners because every time nodes mapped differently */
+		for (CompareMouseActions addedEvents : mouseEventsList){
+			addedEvents.removeListener();
+			addedEvents.removeMotionListener();
+		}
+
+		ScalableFreeformRootEditPart ScalableRootEditPart = (ScalableFreeformRootEditPart) fLeft.getRootEditPart();
+		final IFigure myFigure = (IFigure) ScalableRootEditPart.getFigure();
+		
+		handleToopTips(myFigure, false);
+	}
+	
+	/**
+	 * Removes/Adds tool tips after highlighting
+	 * Helps to reset marked nodes easily
+	 * @param figure
+	 * @param add
+	 */
+	public void handleToopTips(IFigure figure, boolean add){
+		if(add){
+			if(figure instanceof FreeformViewport){
+				figure.setToolTip(new Label("double click to remove highlight"));
 			}
+		}
+		else{
+			figure.setToolTip(null);
 		}
 	}
 

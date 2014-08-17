@@ -469,7 +469,7 @@ public class Algorithms {
 	}
 	
 	/**
-	 * transforms graph into tree structure 
+	 * Clears and transforms graph into tree structure using Spanning Tree Algorithm 
 	 * @param IDiredctedGraph
 	 * @return IDirectedGraphExt
 	 * @throws ControlFlowGraphException
