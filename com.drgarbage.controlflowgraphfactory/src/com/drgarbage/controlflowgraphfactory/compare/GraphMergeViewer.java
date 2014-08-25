@@ -461,7 +461,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		}
 		
 		/*add mouse listeners to highlight mapped nodes*/
-		mouseHighLightListeners(mapped);
+		//mouseHighLightListeners(mapped);
 		
 	}
 	
@@ -510,7 +510,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		}
 		
 		/*add mouse listeners to highlight mapped nodes*/
-		mouseHighLightListeners(map);
+		//mouseHighLightListeners(map);
 		
 	}
 
