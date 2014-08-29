@@ -29,7 +29,7 @@ Features
 
 * Multiple algorithms for automatic layout (serial, hierarchical)
 * Export in GraphXML, DOT format or as an image (JPEG, BMP, ICO, PNG)
-* Possibility to compare trees and investigate the subtree similarity (See more: [tree comparison][cfgc-compare])
+* [Graph comparison][cfgc-compare]
 * Printing support
 
 
@@ -95,4 +95,4 @@ Tutorial
 [tut-pre]: {{ site.url }}/howto/cfgf-tutorial/#pre
 [tut-gen]: {{ site.url }}/howto/cfgf-tutorial/#gen
 [tut-editexport]: {{ site.url }}/howto/cfgf-tutorial/#editexport
-[cfgc-compare]: {{ site.url }}/control-flow-graph-factory/tree-compare/
+[cfgc-compare]: {{ site.url }}/control-flow-graph-factory/graph-compare/
