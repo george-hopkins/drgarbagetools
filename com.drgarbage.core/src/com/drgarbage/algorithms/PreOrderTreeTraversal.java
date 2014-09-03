@@ -16,7 +16,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  * @version $Revision$
  * $Id$
  */
-public class TreeTraversal {
+public class PreOrderTreeTraversal {
 	
 	/**
 	 * Traverses a graph in pre-order and returns a node list in that order.

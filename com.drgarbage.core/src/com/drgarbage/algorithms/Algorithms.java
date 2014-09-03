@@ -42,7 +42,7 @@ import com.drgarbage.core.CorePlugin;
 public class Algorithms {
 
 	/* static algorithms */
-	private static KnuthStevensonTransformation fKnuthStevensonTransformation = new KnuthStevensonTransformation();
+	//private static KnuthStevensonTransformation fKnuthStevensonTransformation = new KnuthStevensonTransformation();
 	private static SpanningTreeBFS fSpanningTreeBFS;
 	private static FindBackEdgesDFS fFindBackEdgesDFS;
 
@@ -101,43 +101,6 @@ public class Algorithms {
 		return fFindBackEdgesDFS.getBackEdgeList();
 	}
 	
-//	public static List<INodeExt> doKnuthstevensonAlgorithm(IDirectedGraphExt graph){
-//		IDirectedGraphExt transformedGraph = doKnuthStevensonTransformation(graph);
-//
-//		if(debug)log("-- doKnuthStevensonTransformation ---");
-//		if(debug)printTransformedGraph(transformedGraph);
-//		if(debug)log("-------------------------------------");
-//
-//		List<IEdgeExt> edges = doSpanningTreeAlgorithm(transformedGraph);
-//		if(debug)log("--- doSpaningTreeAlgorithm ---");
-//		if(debug)log(" edges.size()=" + edges.size());
-//		if(debug)log("------------------------------");
-//
-//		/* get original nodes, they are assigned to the edges */
-//		List<INodeExt> nodes = new ArrayList<INodeExt>();
-//		for(IEdgeExt edge: edges){
-//			INodeExt originalNode = (INodeExt)edge.getData();
-//			nodes.add(originalNode);	
-//		}
-//
-//		if(debug)log("--- original nodes ---");
-//		if(debug)log(" nodes.size()=" + nodes.size());
-//		if(debug)log("----------------------");
-//
-//
-//		return nodes;
-//	}
-
-	public static IDirectedGraphExt doKnuthStevensonTransformation(IDirectedGraphExt graph){
-
-		try {
-			fKnuthStevensonTransformation.start(graph);
-		} catch (ControlFlowGraphException e) {
-			CorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR, CorePlugin.PLUGIN_ID, e.getMessage(), e));
-		}
-
-		return fKnuthStevensonTransformation.getTransformedGraph();
-	}
 
 	/**
 	 * <tt>edgeMap</tt> is mapping of byte code addresses to edge objects.

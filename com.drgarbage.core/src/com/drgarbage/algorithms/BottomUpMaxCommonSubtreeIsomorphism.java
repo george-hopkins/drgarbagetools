@@ -252,7 +252,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 		
 		HashMap<INodeExt, Integer> nodeToClassMap = new HashMap<INodeExt, Integer>();
 		
-		INodeListExt nodeList = TreeTraversal.doPostorderTreeListTraversal(graph);
+		INodeListExt nodeList = PreOrderTreeTraversal.doPostorderTreeListTraversal(graph);
 		
 		for (int i = 0; i < nodeList.size(); i++) {
 			INodeExt node = nodeList.getNodeExt(i);
@@ -376,7 +376,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 		
 		PriorityQueue<PriorityTuple> Q = new PriorityQueue<PriorityTuple>(50, new NodePriorityComparator());
 		
-		INodeListExt postorderNodeList = TreeTraversal.doPostorderTreeListTraversal(graph);
+		INodeListExt postorderNodeList = PreOrderTreeTraversal.doPostorderTreeListTraversal(graph);
 		Map<INodeExt, Integer> sizes= new HashMap<INodeExt, Integer>();
 		
 		for (int i = 0; i < postorderNodeList.size(); i++) {
@@ -421,7 +421,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 		
 		/* build preordered list of the nodes of the left subtree */
 		INodeExt leftSubtreeRoot = (INodeExt)M.keySet().toArray()[0]; /* map contains only one set with subtree roots */
-		INodeListExt leftPreorderNodeList = TreeTraversal.doPreorderTreeListTraversal(leftGraph, leftSubtreeRoot);
+		INodeListExt leftPreorderNodeList = PreOrderTreeTraversal.doPreorderTreeListTraversal(leftGraph, leftSubtreeRoot);
 		
 		Set<INodeExt> isMapped = new HashSet<INodeExt>();
 		

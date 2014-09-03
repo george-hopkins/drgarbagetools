@@ -208,7 +208,7 @@ public class BottomUpSubtreeIsomorphism {
 		
 		HashMap<INodeExt, Integer> nodeToClassMap = new HashMap<INodeExt, Integer>();
 		
-		INodeListExt postorderNodeList = TreeTraversal.doPostorderTreeListTraversal(graph);
+		INodeListExt postorderNodeList = PreOrderTreeTraversal.doPostorderTreeListTraversal(graph);
 		
 		for (int i = 0; i < postorderNodeList.size(); i++) {
 			INodeExt node = postorderNodeList.getNodeExt(i);
