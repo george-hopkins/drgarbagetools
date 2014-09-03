@@ -1,6 +1,6 @@
 ---
 layout:	page
-title:	"Control Flow Graph Factory Comparison"
+title:	"Control Flow Graph Factory - Graph Comparison"
 date:	2014-04-23 15:52
 categories: control-flow-graph-factory
 ---
@@ -14,7 +14,7 @@ Two graphs produced by [Control Flow Graph Factory][cfgf] can be compared by sel
 
 ![sd]({{ site.imgurl }}{{ page.url }}how-to-compare-graphs.png)
 
-Algorithms used for the graph comparison <a name="tda"></a>
+Algorithms used for the graph comparison: <a name="tda"></a>
 --------------
 
 * [Top-Down MaxCommon Subtree Isomorphism Algorithm][cfgc-tdmc]
