@@ -42,7 +42,6 @@ import com.drgarbage.core.CorePlugin;
 public class Algorithms {
 
 	/* static algorithms */
-	//private static KnuthStevensonTransformation fKnuthStevensonTransformation = new KnuthStevensonTransformation();
 	private static SpanningTreeBFS fSpanningTreeBFS;
 	private static FindBackEdgesDFS fFindBackEdgesDFS;
 

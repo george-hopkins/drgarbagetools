@@ -34,7 +34,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
 
 /**
- * This class implements the Bottom-Up Unordered Maximum Common Subtree Isomorphism algorithm.
+ * Implements the Bottom-Up Unordered Maximum Common Subtree Isomorphism algorithm.
  * The implementation is based on the algorithm published by Gabriel
  * Valiente in his book "Algorithms on Trees and Graphs".
  * The following example from this book is used as a reference:
@@ -53,8 +53,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  *       /  \                                  /  \
  *     (v2) (v3)                            (w6)  (w7)
  *      
- * </pre>
- * <pre>
+ * 
  * Nodes are numbered according to the order in which they are visited during a post order traversal.
  * The maximum common bottom-up subtree of <i>T_1</i> and <i>T_2</i> is depicted with enclosed brackets 
  * are mapped according to the algorithm. </pre>
@@ -62,6 +61,8 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  * 
  * A maximal bottom-up common subtree of two unordered trees <i>T_1</i> and <i>T_2</i> is an unordered tree <i>T</i> such
  * that there are bottom-up unordered subtree isomorphisms of T into <i>T_1</i> and into <i>T_2</i> with the largest number of nodes.
+ * 
+ * The algorithm uses Post Order Traversal: {@link TreeTraversal#doPostorderTreeListTraversal(IDirectedGraphExt)}  
  * 
  * @author Adam Kajrys
  * 
@@ -252,7 +253,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 		
 		HashMap<INodeExt, Integer> nodeToClassMap = new HashMap<INodeExt, Integer>();
 		
-		INodeListExt nodeList = PreOrderTreeTraversal.doPostorderTreeListTraversal(graph);
+		INodeListExt nodeList = TreeTraversal.doPostorderTreeListTraversal(graph);
 		
 		for (int i = 0; i < nodeList.size(); i++) {
 			INodeExt node = nodeList.getNodeExt(i);
@@ -376,7 +377,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 		
 		PriorityQueue<PriorityTuple> Q = new PriorityQueue<PriorityTuple>(50, new NodePriorityComparator());
 		
-		INodeListExt postorderNodeList = PreOrderTreeTraversal.doPostorderTreeListTraversal(graph);
+		INodeListExt postorderNodeList = TreeTraversal.doPostorderTreeListTraversal(graph);
 		Map<INodeExt, Integer> sizes= new HashMap<INodeExt, Integer>();
 		
 		for (int i = 0; i < postorderNodeList.size(); i++) {
@@ -421,7 +422,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 		
 		/* build preordered list of the nodes of the left subtree */
 		INodeExt leftSubtreeRoot = (INodeExt)M.keySet().toArray()[0]; /* map contains only one set with subtree roots */
-		INodeListExt leftPreorderNodeList = PreOrderTreeTraversal.doPreorderTreeListTraversal(leftGraph, leftSubtreeRoot);
+		INodeListExt leftPreorderNodeList = TreeTraversal.doPreorderTreeListTraversal(leftGraph, leftSubtreeRoot);
 		
 		Set<INodeExt> isMapped = new HashSet<INodeExt>();
 		

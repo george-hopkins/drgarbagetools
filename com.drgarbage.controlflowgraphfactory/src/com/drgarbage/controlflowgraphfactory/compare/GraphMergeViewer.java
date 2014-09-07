@@ -448,7 +448,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		TopDownSubtreeIsomorphism compareTD = new TopDownSubtreeIsomorphism();
 		Map<INodeExt, INodeExt> mapped = null;
 		try {
-			mapped = compareTD.topDownUnorderedSubtreeIsomorphism(cfgLeft, cfgRight);
+			mapped = compareTD.execute(cfgLeft, cfgRight);
 		} catch (ControlFlowGraphException e) {
 			ControlFlowFactoryPlugin.log(e);
 			Messages.error(e.getMessage());
@@ -483,7 +483,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
 		try {
-			map = compare.getMappedNodes(leftTree, rightTree);
+			map = compare.execute(leftTree, rightTree);
 		} catch (ControlFlowGraphException e) {
 			ControlFlowFactoryPlugin.log(e);
 			Messages.error(e.getMessage());
@@ -528,7 +528,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
 		try {
-			map = compare.bottomUpUnorderedSubreeIsomorphism(cfgLeft, cfgRight);
+			map = compare.execute(cfgLeft, cfgRight);
 		} catch (ControlFlowGraphException e) {
 			ControlFlowFactoryPlugin.log(e);
 			Messages.error(e.getMessage());

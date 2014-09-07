@@ -21,7 +21,7 @@ import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 
 /**
- *  Depth first search algorithm. Traversing 
+ *  Depth first search backward algorithm. Traversing 
  *  is allowed only in arc backward direction.
  *
  *  @author Sergej Alekseev  

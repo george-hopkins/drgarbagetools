@@ -401,7 +401,7 @@ public class BottomUpSubtreeIsomorphismTest extends TestCase {
 		printGraph(t.treeLeft);
 		printGraph(t.treeRight);
 		
-		Map<INodeExt, INodeExt> map = busi.bottomUpUnorderedSubreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = busi.execute(t.treeLeft, t.treeRight);
 		printMap(map);
 
 		assertEquals(6, map.size());
@@ -421,7 +421,7 @@ public class BottomUpSubtreeIsomorphismTest extends TestCase {
 		printGraph(t.treeLeft);
 		printGraph(t.treeRight);
 		
-		Map<INodeExt, INodeExt> map = busi.bottomUpUnorderedSubreeIsomorphism(t.treeRight, t.treeLeft);
+		Map<INodeExt, INodeExt> map = busi.execute(t.treeRight, t.treeLeft);
 		
 		assertNull(map);
 	}
@@ -438,7 +438,7 @@ public class BottomUpSubtreeIsomorphismTest extends TestCase {
 		printGraph(t.treeLeft);
 		printGraph(t.treeRight);
 		
-		Map<INodeExt, INodeExt> map = busi.bottomUpUnorderedSubreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = busi.execute(t.treeLeft, t.treeRight);
 		printMap(map);
 
 		assertEquals(3, map.size());
@@ -457,7 +457,7 @@ public class BottomUpSubtreeIsomorphismTest extends TestCase {
 		printGraph(t.treeRight);
 
 		try {
-			busi.bottomUpUnorderedSubreeIsomorphism(t.treeLeft, t.treeRight);
+			busi.execute(t.treeLeft, t.treeRight);
 		} catch (ControlFlowGraphException e) {
 			assertNotNull(e);
 			return;
@@ -476,7 +476,7 @@ public class BottomUpSubtreeIsomorphismTest extends TestCase {
 		BottomUpSubtreeIsomorphism busi = new BottomUpSubtreeIsomorphism();
 		TestSet t = createTestSet5();
 		
-		Map<INodeExt, INodeExt> map = busi.bottomUpUnorderedSubreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = busi.execute(t.treeLeft, t.treeRight);
 		
 		assertEquals(t.treeLeft.getNodeList().size(), map.size());
 	}

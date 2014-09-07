@@ -29,6 +29,9 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.MarkEnum;
 
 /**
+ * Algorithm for finding maximum-cardinality matching that contains 
+ * the largest possible number of edges.
+ * 
  * The general idea of the algorithm for construction of a maximum matching 
  * <code>M</code> for the bipartite graph <code>G = (A + B, E)</code> 
  * is presented in the following figure:

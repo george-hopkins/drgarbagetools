@@ -31,7 +31,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
 
 /**
- * The Bottom-Up Unordered Subtree Isomorphism algorithm. The implementation is
+ * Implements the Bottom-Up Unordered Subtree Isomorphism algorithm. The implementation is
  * based on the algorithm published by Gabriel Valiente in his book
  * "Algorithms on Trees and Graphs". The following example from this book is
  * used as a reference:
@@ -49,10 +49,15 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  *                                    (w8)
  *                                    /  \
  *                                  (w6) (w7)
+ * 
+ * Nodes are numbered according to the order in which they are visited during a post order traversal.
+ * The maximum common top-down subtree of <i>T_1</i> and <i>T_2</i> is depicted with enclosed brackets 
+ * are mapped according to the algorithm. 
  * </pre>
+ * The algorithm uses Post Order Tree Traversal: {@link TreeTraversal#doPostorderTreeListTraversal(IDirectedGraphExt)}
+ * </br>
  * 
  * @author Adam Kajrys
- * 
  * @version $Revision$
  * $Id$
  */
@@ -69,7 +74,7 @@ public class BottomUpSubtreeIsomorphism {
 	 * @return the map of matched nodes
 	 * @throws ControlFlowGraphException
 	 */
-	public Map<INodeExt, INodeExt> bottomUpUnorderedSubreeIsomorphism(
+	public Map<INodeExt, INodeExt> execute(
 			IDirectedGraphExt leftGraph, IDirectedGraphExt rightGraph)
 			throws ControlFlowGraphException {
 
@@ -208,7 +213,7 @@ public class BottomUpSubtreeIsomorphism {
 		
 		HashMap<INodeExt, Integer> nodeToClassMap = new HashMap<INodeExt, Integer>();
 		
-		INodeListExt postorderNodeList = PreOrderTreeTraversal.doPostorderTreeListTraversal(graph);
+		INodeListExt postorderNodeList = TreeTraversal.doPostorderTreeListTraversal(graph);
 		
 		for (int i = 0; i < postorderNodeList.size(); i++) {
 			INodeExt node = postorderNodeList.getNodeExt(i);

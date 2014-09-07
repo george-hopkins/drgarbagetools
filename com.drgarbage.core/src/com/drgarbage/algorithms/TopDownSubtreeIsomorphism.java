@@ -34,23 +34,30 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
 
 
 /**
- * The Top-Down-Subtree Isomorphism algorithm. The implementation is based 
+ * Implements the Top-Down Unordered Subtree Isomorphism algorithm. The implementation is based 
  * on the algorithm published by Gabriel Valiente in his book "Algorithms on Trees and Graphs". 
  * The following example from this book is used as a reference:
  * <pre>
  *   T_1                  T_2
- *          v7               _____ w18 ____________ 
- *        / |  \           /        |              \
- *      v1  v5  v6        w4        w12             w17
- *         /  \          /  \      /  \          /   |   \
- *        v3  v4       w1    w3   w5   w11    w13   w14   w16
- *        |                  |         /  \                |
- *        v2                 w2      w9   w10              w15
- *                                   |
- *                                   w8
- *                                  / \
- *                                w6   w7
+ *         _(v7)__             ______(w18)____________ 
+ *        /   |   \           /        |              \
+ *     (v1) (v5)  (v6)      (w4)      (w12)         _(w17)_
+ *          /  \           /  \       /  \         /   |   \
+ *       (v3) (v4)       w1    w3  (w5) (w11)    w13  w14  w16
+ *        |                    |         /  \               |
+ *      (v2)                   w2     (w9)  w10             w15
+ *                                     |
+ *                                     w8
+ *                                    / \
+ *                                  w6   w7
+ *                                  
+ * Nodes are numbered according to the order in which they are visited during a post order traversal.
+ * The maximum common top-down subtree of <i>T_1</i> and <i>T_2</i> is depicted with enclosed brackets 
+ * are mapped according to the algorithm.                                  
  * </pre> 
+ * 
+ * In order to find proper matched nodes according to the algorithm, the maximum cardinality bipartite 
+ * matching problem {@link MaxCardBipartiteMatching } is used. 
  * 
  * @author Sergej Alekseev
  * 
@@ -91,7 +98,7 @@ public class TopDownSubtreeIsomorphism {
 	 * @return the map of matched nodes
 	 * @throws ControlFlowGraphException 
 	 */
-	public Map<INodeExt, INodeExt> topDownUnorderedSubtreeIsomorphism(
+	public Map<INodeExt, INodeExt> execute(
 			IDirectedGraphExt leftTree, IDirectedGraphExt rightTree) throws ControlFlowGraphException {
 		
 		/* get root nodes */
@@ -132,7 +139,7 @@ public class TopDownSubtreeIsomorphism {
 	 * @param rootRight the root node of the right tree
 	 * @return the map of matched nodes
 	 */
-	public Map<INodeExt, INodeExt> topDownUnorderedSubtreeIsomorphism(
+	private Map<INodeExt, INodeExt> topDownUnorderedSubtreeIsomorphism(
 			IDirectedGraphExt leftTree, 
 			INodeExt rootLeft, 
 			IDirectedGraphExt rightTree,

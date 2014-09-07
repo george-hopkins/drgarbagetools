@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
@@ -36,7 +37,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
 
 
 /**
- * This class implements the Top-down maximum common Subtree Isomorphism algorithm. The implementation is based 
+ * Implements the Top-Down Unordered Maximum Common Subtree Isomorphism algorithm. The implementation is based 
  * on the algorithm published by Gabriel Valiente in his book "Algorithms on Trees and Graphs". 
  * 
  * The following example from this book is used as a reference:
@@ -47,23 +48,23 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  *      (v6)            (v11)           w4       (w12)            __(w17)__
  *      /               /   \          /  \      /  \            /    |    \
  *    (v5)            (v9)  (v10)    w1    w3  w5   (w11)      w13  (w14) (w16)
- *    /  \            /  \                  |       /   \                    |
- * (v1)  (v4)       (v7)  v8               w2     (w9)  (w10)              (w15)
+ *    /  \            /  \                  |       /   \                   |
+ * (v1)  (v4)       (v7)  v8               w2     (w9)  (w10)             (w15)
  *       /  \                                      |
- *     (v2)  v3                                   (w8)
+ *     (v2) (v3)                                  (w8)
  *                                                /  \
  *                                              w6    w7
- * </pre>  
- * <pre>
+ *
  * Nodes are numbered according to the order in which they are visited during a post order traversal.
  * The maximum common top-down subtree of <i>T_1</i> and <i>T_2</i> is depicted with enclosed brackets 
- * are mapped according to the algorithm.
+ * are mapped according to the algorithm. 
  * </pre>
  * 
  * A maximal top-down common subtree of two unordered trees <i>T_1</i> and <i>T_2</i> is an unordered tree <i>T</i> such
  * that there are top-down unordered subtree isomorphisms of T into <i>T_1</i> and into <i>T_2</i> with the largest number of nodes.
  * 
- * 
+ * In order to find proper matched nodes according to the algorithm, the maximum weighted bipartite matching 
+ * problem algorithm {@link MaxWeightedBipartiteMatching Maximum Weighted Bipartite Matching} is used. 
  *  
  * @author Artem Garishin
  * 
@@ -91,7 +92,7 @@ public class TopDownMaxCommonSubTreeIsomorphism {
 	 * @return map of matched nodes <i>T_1</i> to <i>T_2</i>
 	 * @throws ControlFlowGraphException 
 	 */
-	public Map<INodeExt, INodeExt> getMappedNodes(
+	public Map<INodeExt, INodeExt> execute(
 			IDirectedGraphExt leftTree, IDirectedGraphExt rightTree) throws ControlFlowGraphException {
 		
 		/* get root nodes */

@@ -402,7 +402,7 @@ public class TopDownSubtreeIsomorthismTest extends TestCase {
 		TestSet t = createTestSet1();
 		printGraph(t.treeLeft);
 		printGraph(t.treeRight);
-		Map<INodeExt, INodeExt> map = tsi.topDownUnorderedSubtreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = tsi.execute(t.treeLeft, t.treeRight);
 		printMap(map);
 
 		assertEquals(7, map.size());
@@ -420,7 +420,7 @@ public class TopDownSubtreeIsomorthismTest extends TestCase {
 		TestSet t = createTestSet1();
 		printGraph(t.treeLeft);
 		printGraph(t.treeRight);
-		Map<INodeExt, INodeExt> map = tsi.topDownUnorderedSubtreeIsomorphism(t.treeRight, t.treeLeft);
+		Map<INodeExt, INodeExt> map = tsi.execute(t.treeRight, t.treeLeft);
 		assertNull(map);
 	}
 
@@ -434,7 +434,7 @@ public class TopDownSubtreeIsomorthismTest extends TestCase {
 		TestSet t = createTestSet3();
 		printGraph(t.treeLeft);
 		printGraph(t.treeRight);
-		Map<INodeExt, INodeExt> map = tsi.topDownUnorderedSubtreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = tsi.execute(t.treeLeft, t.treeRight);
 		printMap(map);
 
 		assertEquals(3, map.size());
@@ -452,7 +452,7 @@ public class TopDownSubtreeIsomorthismTest extends TestCase {
 		printGraph(t.treeRight);
 
 		try {
-			tsi.topDownUnorderedSubtreeIsomorphism(t.treeLeft, t.treeRight);
+			tsi.execute(t.treeLeft, t.treeRight);
 		} catch (ControlFlowGraphException e) {
 			assertNotNull(e);
 			return;
@@ -474,7 +474,7 @@ public class TopDownSubtreeIsomorthismTest extends TestCase {
 		printGraph(t.treeLeft);
 		printGraph(t.treeRight);
 		
-		Map<INodeExt, INodeExt> map = tsi.topDownUnorderedSubtreeIsomorphism(t.treeLeft, t.treeRight);
+		Map<INodeExt, INodeExt> map = tsi.execute(t.treeLeft, t.treeRight);
 		
 		assertEquals(t.treeLeft.getNodeList().size(), map.size());
 	}

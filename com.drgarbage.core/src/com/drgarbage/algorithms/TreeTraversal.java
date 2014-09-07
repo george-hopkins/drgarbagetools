@@ -1,6 +1,4 @@
 package com.drgarbage.algorithms;
-
-import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
@@ -8,15 +6,57 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
 
 
 /**
- * Class for Tree Traversal.
- * Combines Post and Pre-order tree traversal methods
+ * Class for Tree Traversal includes Post-order and Pre-order tree traversal methods on trees.
+ * 
+ * </br>
+ * <b>Pre Order Tree Traversal: </b>
+ * {@link #doPreorderTreeListTraversal(IDirectedGraphExt) }
+ * <pre> 
+ * Example:
+ * 
+ *
+ *      ______ 1 __________ 
+ *    /        |           \
+ *   2         6          __14 __
+ *  / \       / \        /   |   \
+ * 3   4     7   8      15   16   17
+ *     |       /  \               |
+ *     5      9    13             18
+ *            |
+ *            10
+ *           /  \
+ *          11   12
+ *      
+ * </pre>
+ * 
+ * </br>
+ * <b>Post order Tree Traversal: </b>
+ * {@link #doPostorderTreeListTraversal(IDirectedGraphExt) }
+ * <pre> 
+ * Example:
+ * 
+ *
+ *      ______ 18__________ 
+ *    /        |           \
+ *   4         12          __17___
+ *  / \       / \        /   |    \
+ * 1   3     5  11      13   14   16
+ *     |       /  \               |
+ *     2      9    10             15
+ *            |
+ *            8
+ *           /  \
+ *          6    7
+ *      
+ * </pre>
+ * 
  * 
  * @author Artem Garishin, Adam Kajrys
  *
  * @version $Revision$
  * $Id$
  */
-public class PreOrderTreeTraversal {
+public class TreeTraversal {
 	
 	/**
 	 * Traverses a graph in pre-order and returns a node list in that order.
@@ -24,7 +64,7 @@ public class PreOrderTreeTraversal {
 	 * @param graph the graph
 	 * @return node list in pre-order
 	 */
-	public static INodeListExt doPreorderTreeListTraversal(IDirectedGraphExt graph) {
+	 static INodeListExt doPreorderTreeListTraversal(IDirectedGraphExt graph) {
 		INodeExt root = null;
 		for (int i = 0; i < graph.getNodeList().size(); i++) {
 			INodeExt n = graph.getNodeList().getNodeExt(i);
