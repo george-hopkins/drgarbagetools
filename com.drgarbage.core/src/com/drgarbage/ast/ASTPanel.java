@@ -257,17 +257,6 @@ public class ASTPanel extends Composite {
 				IResourceChangeEvent.POST_CHANGE);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.widgets.Widget#dispose()
-	 */
-	public void dispose () {
-		
-		/* Remove the resource listener */
-		JavaCore.removePreProcessingResourceChangedListener(resourceChangeListener);
-		
-		super.dispose();
-	}
-	
 	/**
 	 * Provide updates to the viewer, inside the UI thread.
 	 */
@@ -389,6 +378,9 @@ public class ASTPanel extends Composite {
 		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 		 */
 		public void dispose() {
+			/* FIX: bug#46 Exception : Abstract Syntax Tree */
+			/*  Remove the resource listener from the JavaCore*/
+			JavaCore.removePreProcessingResourceChangedListener(resourceChangeListener);
 		}
 
 		/* (non-Javadoc)
