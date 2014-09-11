@@ -27,27 +27,18 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.contentmergeviewer.ContentMergeViewer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.FreeformViewport;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.MouseEvent;
-import org.eclipse.draw2d.MouseMotionListener;
-import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.LayerConstants;
-import org.eclipse.gef.RootEditPart;
-import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
-import org.eclipse.gef.editparts.SimpleRootEditPart;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -59,29 +50,24 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 
+import com.drgarbage.algorithms.Algorithms;
 import com.drgarbage.algorithms.BottomUpMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.BottomUpSubtreeIsomorphism;
 import com.drgarbage.algorithms.TopDownMaxCommonSubTreeIsomorphism;
 import com.drgarbage.algorithms.TopDownSubtreeIsomorphism;
-import com.drgarbage.algorithms.Algorithms;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
-import com.drgarbage.controlflowgraph.figures.RectangleFigure;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
-import com.drgarbage.controlflowgraph.intf.INodeListExt;
-import com.drgarbage.controlflowgraph.intf.MarkEnum;
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryMessages;
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryPlugin;
 import com.drgarbage.controlflowgraphfactory.actions.LayoutAlgorithmsUtils;
 import com.drgarbage.controlflowgraphfactory.compare.actions.BottomUpMaxCommonAlgAction;
-import com.drgarbage.controlflowgraphfactory.compare.actions.BottomUpSubtreeAlgAction;
 import com.drgarbage.controlflowgraphfactory.compare.actions.CompareMouseActions;
-import com.drgarbage.controlflowgraphfactory.compare.actions.ResetCompareGraphsViewAction;
 import com.drgarbage.controlflowgraphfactory.compare.actions.CompareZoomInAction;
 import com.drgarbage.controlflowgraphfactory.compare.actions.CompareZoomOutAction;
+import com.drgarbage.controlflowgraphfactory.compare.actions.ResetCompareGraphsViewAction;
 import com.drgarbage.controlflowgraphfactory.compare.actions.SwapGraphsAction;
-import com.drgarbage.controlflowgraphfactory.compare.actions.TopDownAlgAction;
 import com.drgarbage.controlflowgraphfactory.compare.actions.TopDownMaxCommonAlgAction;
 import com.drgarbage.core.CoreMessages;
 import com.drgarbage.utils.Messages;
@@ -559,7 +545,6 @@ public class GraphMergeViewer extends ContentMergeViewer {
 	 * Executes the bottom up maximum common subtree algorithm
 	 * @throws ControlFlowGraphException 
 	 */
-	@SuppressWarnings("restriction")
 	public void doBottomUpMaxCommonAlg() throws ControlFlowGraphException {
 		
 		doResetViewer();
