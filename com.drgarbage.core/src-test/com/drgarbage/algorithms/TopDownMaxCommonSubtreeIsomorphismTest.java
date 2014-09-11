@@ -19,11 +19,9 @@ import java.util.Map.Entry;
 
 import junit.framework.TestCase;
 
-import com.drgarbage.algorithms.TopDownSubtreeIsomorthismTest.TestSet;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
-import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 
 /**
@@ -43,30 +41,6 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 		IDirectedGraphExt treeRight = GraphExtentionFactory.createDirectedGraphExtention();
 	}
 
-	/**
-	 * Prints the graph.
-	 * @param g the graph
-	 */
-	private static void printGraph(IDirectedGraphExt g) {
-
-		System.out.println("Print Graph:");
-
-		System.out.println("Nodes:");
-		for (int i = 0; i < g.getNodeList().size(); i++) {
-			System.out.println("  " + g.getNodeList().getNodeExt(i).getData());
-		}
-
-		System.out.println("Edges:");
-		for (int i = 0; i < g.getEdgeList().size(); i++) {
-			IEdgeExt e = g.getEdgeList().getEdgeExt(i);
-			System.out.println("  " 
-					+ e.getSource().getData() 
-					+ " - "
-					+ e.getTarget().getData());
-		}
-	}
-
-	
 	/**
 	 * Prints the map of matched tree nodes.
 	 * @param map the map

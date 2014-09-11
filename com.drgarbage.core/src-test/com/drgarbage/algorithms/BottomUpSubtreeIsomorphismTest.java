@@ -19,14 +19,13 @@ package com.drgarbage.algorithms;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.drgarbage.algorithms.BottomUpMaxCommonSubtreeIsomorphismTest.TestSet;
+import junit.framework.TestCase;
+
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
-
-import junit.framework.TestCase;
 
 /**
  * Test class for {@link com.drgarbage.algorithms.BottomUpSubtreeIsomorphism}

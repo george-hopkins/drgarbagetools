@@ -20,7 +20,6 @@ import java.util.Map.Entry;
 
 import junit.framework.TestCase;
 
-import com.drgarbage.algorithms.BottomUpSubtreeIsomorphismTest.TestSet;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
