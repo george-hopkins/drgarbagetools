@@ -25,7 +25,7 @@ import com.drgarbage.core.CorePlugin;
 
 
 /**
- *  Basis class for the Deth First Search algorithm.
+ *  The Depth First Search algorithm.
  *
  *  @author Sergej Alekseev  
  *  @version $Revision$
@@ -45,7 +45,6 @@ public abstract class DFSBase {
     protected static void log(String message) {
         if (debug) {
         	CorePlugin.log(CorePlugin.createInfoStatus(message));
-        	//System.out.println(message);
         }
     }
 

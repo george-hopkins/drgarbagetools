@@ -29,7 +29,7 @@ import com.drgarbage.core.CorePlugin;
 
 
 /**
- *  Basis class for the Breadth First Search algorithm.
+ *  Breadth First Search algorithm.
  *
  *  @author Sergej Alekseev  
  *  @version $Revision$

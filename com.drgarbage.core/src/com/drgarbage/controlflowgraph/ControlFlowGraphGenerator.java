@@ -424,7 +424,7 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 				sourceCodeNode.setByteCodeOffset(line);
 				
 				/* set text */
-				/* bug #108 �N line� to just �N�*/
+				/* bug #108 */
 				/* sourceCodeNode.setByteCodeString("line"); */
 
 				/* set line number as y coordinate*/
@@ -449,7 +449,7 @@ public class ControlFlowGraphGenerator  implements Opcodes{
 		Integer source, target;
 		IEdgeExt newEdge = null;
 		INodeExt sourceNode = null, targetNode = null;
-		Map<String, IEdgeExt> treeEdgeTable = new HashMap();
+		Map<String, IEdgeExt> treeEdgeTable = new HashMap<String, IEdgeExt>();
 		IEdgeListExt byteCodeEdges = cfg.getEdgeList();
 		for(int i = 0; i < byteCodeEdges.size(); i++){
 			byteCodeEdge = byteCodeEdges.getEdgeExt(i);

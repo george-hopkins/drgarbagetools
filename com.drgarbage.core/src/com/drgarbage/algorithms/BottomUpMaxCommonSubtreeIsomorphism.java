@@ -27,7 +27,6 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
-import com.drgarbage.controlflowgraph.intf.GraphUtils;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;

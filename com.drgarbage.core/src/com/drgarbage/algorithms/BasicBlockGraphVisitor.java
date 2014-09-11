@@ -27,11 +27,10 @@ import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
-import com.drgarbage.core.CorePlugin;
 import com.drgarbage.logger.TraceTopics;
 
 /**
- *  Find Basic Block in the graph.
+ *  Creates a basic block graph.
  *
  *  @author Sergej Alekseev  
  *  @version $Revision$

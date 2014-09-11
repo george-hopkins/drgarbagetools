@@ -34,6 +34,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  * Complexity of the algorithm is <code>O(mn^2)</code>.
  * If the graph is not complete bipartite, missing edges are inserted 
  * with zero value.
+ * <br>
  * 
  * NOTE: The edge property counter is used for storing weights. 
  *  
