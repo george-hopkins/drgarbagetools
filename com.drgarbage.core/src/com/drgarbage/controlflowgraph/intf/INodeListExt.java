@@ -23,7 +23,7 @@ package com.drgarbage.controlflowgraph.intf;
  * @version $Revision$
  * $Id$
  */
-public interface INodeListExt extends Iterable<INodeExt>{
+public interface INodeListExt {
 
 	/**
 	 * Returns the Node extention object at the given index.

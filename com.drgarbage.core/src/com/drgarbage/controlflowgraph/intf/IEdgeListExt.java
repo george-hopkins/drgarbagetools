@@ -24,7 +24,7 @@ package com.drgarbage.controlflowgraph.intf;
  * @version $Revision$
  * $Id$
  */
-public interface IEdgeListExt extends Iterable<IEdgeExt>{
+public interface IEdgeListExt {
 
 	/**
 	 * Returns the edge extention object for the given index.
