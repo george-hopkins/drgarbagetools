@@ -482,7 +482,7 @@ public class OperandStack implements Opcodes{
 	 */
 	private void removeBackEdges(IDirectedGraphExt graph){
 		
-		backEdges = ArborescenceFinder.doFindBackEdgesAlgorithm(graph);
+		backEdges = ArborescenceFinder.findBackEdges(graph);
 		GraphUtils.clearGraph(graph);
 		GraphUtils.clearGraphColorMarks(graph);
 		

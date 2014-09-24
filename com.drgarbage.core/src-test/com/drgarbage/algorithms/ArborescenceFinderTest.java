@@ -6,6 +6,7 @@ import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.IArborescence;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
+import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 
 public class ArborescenceFinderTest extends TestCase {
@@ -234,5 +235,25 @@ public class ArborescenceFinderTest extends TestCase {
 			cfge = e;
 		}
 		assertTrue(cfge instanceof ControlFlowGraphException);
+	}
+	
+	
+	public final void testFindBackEdges() {
+		IEdgeListExt backEdges = ArborescenceFinder.findBackEdges(createTestTree0());
+		assertEquals(backEdges.size(), 1);
+		
+		
+		backEdges = ArborescenceFinder.findBackEdges(createTestTree1());
+		assertEquals(backEdges.size(), 1);
+		
+		backEdges = ArborescenceFinder.findBackEdges(createTestTree2());
+		assertEquals(backEdges.size(), 2);
+		
+		backEdges = ArborescenceFinder.findBackEdges(createTestTree3());
+		assertEquals(backEdges.size(), 0);
+		
+		backEdges = ArborescenceFinder.findBackEdges(createTestTree4());
+		assertEquals(backEdges.size(), 0);
+		
 	}
 }

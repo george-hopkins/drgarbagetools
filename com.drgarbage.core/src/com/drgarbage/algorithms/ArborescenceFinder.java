@@ -136,7 +136,7 @@ public class ArborescenceFinder {
 	 * @param graph
 	 * @return the spanning tree graph
 	 */
-	public static IEdgeListExt doFindBackEdgesAlgorithm(IDirectedGraphExt graph) {
+	public static IEdgeListExt findBackEdges(IDirectedGraphExt graph) {
 		if (fFindBackEdgesDFS == null) {
 			fFindBackEdgesDFS = new FindBackEdgesDFS();
 		}
