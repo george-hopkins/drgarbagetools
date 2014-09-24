@@ -32,6 +32,7 @@ import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.core.CorePlugin;
+import com.drgarbage.core.CoreMessages;
 
 /**
  * @author Sergej Alekseev
@@ -82,7 +83,7 @@ public class ArborescenceFinder {
 
 		if (!nodesToVisit.isEmpty()) {
 			throw new ControlFlowGraphException(
-					"Can't convert graph to arborescence.");
+					CoreMessages.ArborescenceFinder_cant_convert);
 		}
 
 		arborescence.setRoot(root);

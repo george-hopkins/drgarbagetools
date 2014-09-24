@@ -131,4 +131,6 @@ public class CoreMessages extends NLS {
 	public static String ASTView_Action_Generate_AST_Graph;
 	public static String ASTView_lbl_not_available;
 	
+	public static String ArborescenceFinder_cant_convert;
+	
 }
