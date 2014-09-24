@@ -50,13 +50,14 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 
-import com.drgarbage.algorithms.Algorithms;
+import com.drgarbage.algorithms.ArborescenceFinder;
 import com.drgarbage.algorithms.BottomUpMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.BottomUpSubtreeIsomorphism;
 import com.drgarbage.algorithms.TopDownMaxCommonSubTreeIsomorphism;
 import com.drgarbage.algorithms.TopDownSubtreeIsomorphism;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
+import com.drgarbage.controlflowgraph.intf.IArborescence;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryMessages;
@@ -462,8 +463,8 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		IDirectedGraphExt cfgRight = LayoutAlgorithmsUtils.generateGraph(diagramRight);
 		
 		/*convert graphs to trees */
-		IDirectedGraphExt leftTree = Algorithms.ConvertInputGraphsToTree(cfgLeft);
-		IDirectedGraphExt rightTree = Algorithms.ConvertInputGraphsToTree(cfgRight);
+		IArborescence leftTree = ArborescenceFinder.find(cfgLeft);
+		IArborescence rightTree = ArborescenceFinder.find(cfgRight);
 		
 		TopDownMaxCommonSubTreeIsomorphism compare = new TopDownMaxCommonSubTreeIsomorphism();
 		/* start to compare graphs */
@@ -554,8 +555,8 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		BottomUpMaxCommonSubtreeIsomorphism compare = new BottomUpMaxCommonSubtreeIsomorphism();
 
 		/*convert graphs to trees */
-		IDirectedGraphExt leftTree = Algorithms.ConvertInputGraphsToTree(cfgLeft);
-		IDirectedGraphExt rightTree = Algorithms.ConvertInputGraphsToTree(cfgRight);
+		IArborescence leftTree = ArborescenceFinder.find(cfgLeft);
+		IArborescence rightTree = ArborescenceFinder.find(cfgRight);
 		
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;

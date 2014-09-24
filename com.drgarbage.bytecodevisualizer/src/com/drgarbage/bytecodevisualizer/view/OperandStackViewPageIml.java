@@ -24,7 +24,7 @@ import java.util.TreeMap;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import com.drgarbage.algorithms.Algorithms;
+import com.drgarbage.algorithms.ArborescenceFinder;
 import com.drgarbage.algorithms.BasicBlockGraphVisitor;
 import com.drgarbage.asm.render.intf.IInstructionLine;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
@@ -41,6 +41,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeType;
 import com.drgarbage.controlflowgraph.intf.MarkEnum;
 import com.drgarbage.core.CoreMessages;
+import com.drgarbage.utils.Messages;
 
 /**
  * The implementation of the Operand Stack View Page.
@@ -172,7 +173,11 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
 		markNodes(graph);
 		GraphUtils.clearGraph(graph);
 		
-		Algorithms.doSpanningTreeAlgorithm(graph, false);
+		try {
+		graph = ArborescenceFinder.find(graph);
+		} catch (ControlFlowGraphException e) {
+			Messages.error(e.toString());
+		}
 		GraphUtils.clearGraph(graph);
 		
 		Node root = new Node();
@@ -207,7 +212,7 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
      * @param graph control flow graph
      */
     private void removeBackEdges(IDirectedGraphExt graph){    	
-    	IEdgeListExt backEdges = Algorithms.doFindBackEdgesAlgorithm(graph);
+    	IEdgeListExt backEdges = ArborescenceFinder.doFindBackEdgesAlgorithm(graph);
 		
 		IEdgeListExt edges = graph.getEdgeList();
 		for(int i = 0; i < backEdges.size(); i++){

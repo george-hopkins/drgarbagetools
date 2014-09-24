@@ -29,7 +29,7 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IStatus;
 
-import com.drgarbage.algorithms.Algorithms;
+import com.drgarbage.algorithms.ArborescenceFinder;
 import com.drgarbage.asm.render.intf.IInstructionLine;
 import com.drgarbage.asm.render.intf.ILocalVariableTable;
 import com.drgarbage.bytecode.ByteCodeConstants;
@@ -482,7 +482,7 @@ public class OperandStack implements Opcodes{
 	 */
 	private void removeBackEdges(IDirectedGraphExt graph){
 		
-		backEdges = Algorithms.doFindBackEdgesAlgorithm(graph);
+		backEdges = ArborescenceFinder.doFindBackEdgesAlgorithm(graph);
 		GraphUtils.clearGraph(graph);
 		GraphUtils.clearGraphColorMarks(graph);
 		
@@ -1514,13 +1514,13 @@ public class OperandStack implements Opcodes{
 
 		/* 
 		 * The type of every value stored by a putfield or putstatic instruction 
-		 * must be compatible with the descriptor of the field (¤4.3.2) of the class 
+		 * must be compatible with the descriptor of the field (ï¿½4.3.2) of the class 
 		 * instance or class being stored into. If the descriptor type is boolean, 
 		 * byte, char, short, or int, then the value must be an int. 
 		 * If the descriptor type is float, long, or double, then the value must 
 		 * be a float, long, or double, respectively. 
 		 * If the descriptor type is a reference type, then the value must be of 
-		 * a type that is assignment compatible (¤2.6.7) with the descriptor type.
+		 * a type that is assignment compatible (ï¿½2.6.7) with the descriptor type.
 		 */
 		ret[1] = replaceTypes(ret[1]);
 		
@@ -1534,7 +1534,7 @@ public class OperandStack implements Opcodes{
 	 * <br>
 	 * An instruction operating on values of type int is also 
 	 * permitted to operate on values of type boolean, byte, char, and short. 
-	 * As noted in ¤3.3.4 and ¤3.11.1 of the Class File specification, 
+	 * As noted in ï¿½3.3.4 and ï¿½3.11.1 of the Class File specification, 
 	 * the Java virtual machine internally converts values of types 
 	 * boolean, byte, char, and short to type int.
 	 * 
