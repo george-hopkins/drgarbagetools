@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -476,12 +477,15 @@ public class JDIExportFromJvmDialog {
 		
 		// fix for ticket 49
 		if (listOfClasses.size() > 1000) {
+			Collections.sort(listOfClasses);
 			// create a dialog
 			List<String> selectionList = new ArrayList<String>();
 			int low = 1;
 			for (int i = 1; i <= listOfClasses.size(); i++) {
 				if (i % 1000 == 0 || i == listOfClasses.size()) {
-					selectionList.add("Classes " + low + " to " + i);
+					selectionList.add("Classes " + low + " to " + i 
+							+ " (" + listOfClasses.get(low - 1) + " ... " 
+							+ listOfClasses.get(i - 1) + ")");
 					low = i;
 				}
 			}
