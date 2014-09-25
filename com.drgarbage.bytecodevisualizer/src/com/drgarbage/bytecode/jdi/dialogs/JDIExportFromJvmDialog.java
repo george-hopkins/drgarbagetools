@@ -455,7 +455,6 @@ public class JDIExportFromJvmDialog {
 
 	/**
 	 * Fill the {@link FilteredTree FilteredList} with classes from the JVM.<br />
-	 * Will only display the first 100 classes
 	 * 
 	 * @param fl the filtered checkbox list
 	 */
