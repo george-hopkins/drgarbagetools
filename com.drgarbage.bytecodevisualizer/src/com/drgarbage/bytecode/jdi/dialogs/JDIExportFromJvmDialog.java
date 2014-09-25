@@ -75,6 +75,7 @@ import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import com.drgarbage.bytecode.jdi.JDIUtils;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
+import com.drgarbage.utils.Messages;
 import com.sun.jdi.ReferenceType;
 
 /**
@@ -452,7 +453,8 @@ public class JDIExportFromJvmDialog {
 	}
 
 	/**
-	 * Fill the {@link FilteredTree FilteredList} with classes from the JVM
+	 * Fill the {@link FilteredTree FilteredList} with classes from the JVM.<br />
+	 * Will only display the first 100 classes
 	 * 
 	 * @param fl the filtered checkbox list
 	 */
@@ -469,6 +471,14 @@ public class JDIExportFromJvmDialog {
 
 			for (ReferenceType r : l) {
 				listOfClasses.add(r.name());
+			}
+		}
+		
+		// fix for ticket 49
+		if (listOfClasses.size() > 100) {
+			Messages.info(BytecodeVisualizerMessages.JDI_Export_JVM_too_many_classes);
+			for(int i = listOfClasses.size() - 1; listOfClasses.size() >= 100; i--) {
+				listOfClasses.remove(i);
 			}
 		}
 		
