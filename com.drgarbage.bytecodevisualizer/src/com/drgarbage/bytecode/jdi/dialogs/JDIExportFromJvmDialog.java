@@ -475,10 +475,32 @@ public class JDIExportFromJvmDialog {
 		}
 		
 		// fix for ticket 49
-		if (listOfClasses.size() > 100) {
-			Messages.info(BytecodeVisualizerMessages.JDI_Export_JVM_too_many_classes);
-			for(int i = listOfClasses.size() - 1; listOfClasses.size() >= 100; i--) {
+		if (listOfClasses.size() > 1000) {
+			// create a dialog
+			List<String> selectionList = new ArrayList<String>();
+			int low = 1;
+			for (int i = 1; i <= listOfClasses.size(); i++) {
+				if (i % 1000 == 0 || i == listOfClasses.size()) {
+					selectionList.add("Classes " + low + " to " + i);
+					low = i;
+				}
+			}
+			String selection = null;
+			while (selection == null) {
+				selection = Messages.openSelectDialog(BytecodeVisualizerMessages.JDI_Export_JVM_too_many_classes,
+						JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS), selectionList);
+			}
+
+			// only display selected range
+			low = Integer.parseInt(selection.split(" ")[1]);
+			low--;
+			int high = Integer.parseInt(selection.split(" ")[3]);
+			high--;
+			for (int i = listOfClasses.size() - 1; i > high; i--) {
 				listOfClasses.remove(i);
+			}
+			for (int i = 0; i < low; i ++) {
+				listOfClasses.remove(0);
 			}
 		}
 		
