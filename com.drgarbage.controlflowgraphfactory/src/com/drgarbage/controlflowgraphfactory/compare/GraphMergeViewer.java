@@ -53,7 +53,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import com.drgarbage.algorithms.ArborescenceFinder;
 import com.drgarbage.algorithms.BottomUpMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.BottomUpSubtreeIsomorphism;
-import com.drgarbage.algorithms.TopDownMaxCommonSubTreeIsomorphism;
+import com.drgarbage.algorithms.TopDownMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.TopDownSubtreeIsomorphism;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
@@ -466,7 +466,7 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		IArborescence leftTree = ArborescenceFinder.find(cfgLeft);
 		IArborescence rightTree = ArborescenceFinder.find(cfgRight);
 		
-		TopDownMaxCommonSubTreeIsomorphism compare = new TopDownMaxCommonSubTreeIsomorphism();
+		TopDownMaxCommonSubtreeIsomorphism compare = new TopDownMaxCommonSubtreeIsomorphism();
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;
 		try {

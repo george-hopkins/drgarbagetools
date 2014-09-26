@@ -72,7 +72,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  * $Id$
  */
 
-public class TopDownMaxCommonSubTreeIsomorphism {
+public class TopDownMaxCommonSubtreeIsomorphism {
 	
 	Map<INodeExt, List<IEdgeExt>> B = null;
 	
@@ -169,7 +169,7 @@ public class TopDownMaxCommonSubTreeIsomorphism {
 	 * 
 	 * This method goes recursively simultaneously through T1 and T2 till leafs of them are founded.
 	 * The example is based on:
-	 * {@link com.drgarbage.algorithms.TopDownMaxCommonSubTreeIsomorphism TopDownMaxCommonSubTreeIsomorphism}.
+	 * {@link com.drgarbage.algorithms.TopDownMaxCommonSubtreeIsomorphism TopDownMaxCommonSubTreeIsomorphism}.
 	 * </br>
 	 * Reach recursively the leaves of T1 or T2 and construct the follow matrix:
 	 * <pre>
@@ -395,7 +395,7 @@ public class TopDownMaxCommonSubTreeIsomorphism {
 	 * v_11: !w17!
 	 * v_12: !w18!
 	 * </pre>
-	 * @see  TopDownMaxCommonSubTreeIsomorphism
+	 * @see  TopDownMaxCommonSubtreeIsomorphism
 	 * 
 	 * @param root the root of the tree <code>T_1</code>
 	 * @param M the map of the matched nodes

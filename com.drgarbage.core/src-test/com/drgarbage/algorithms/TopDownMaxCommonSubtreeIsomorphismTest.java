@@ -25,7 +25,7 @@ import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 
 /**
- * Test class for {@link com.drgarbage.algorithms.TopDownMaxCommonSubTreeIsomorphism}
+ * Test class for {@link com.drgarbage.algorithms.TopDownMaxCommonSubtreeIsomorphism}
  * 
  * @author Artem Garishin
  * @version $Revision$
@@ -58,7 +58,7 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 	 * The test set 1. <br>
 	 * The trees to compare <code>T1</code> and <code>T2</code>
 	 *  are defined as described in 
-	 * {@link com.drgarbage.algorithms.TopDownMaxCommonSubTreeIsomorphism}.
+	 * {@link com.drgarbage.algorithms.TopDownMaxCommonSubtreeIsomorphism}.
 	 * 
 	 * Expected map is:
 	 * <pre>
@@ -276,13 +276,13 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 	}
 	
 	/**
-	 * Test method for {@link com.drgarbage.algorithms.TopDownMaxCommonSubTreeIsomorphism}
+	 * Test method for {@link com.drgarbage.algorithms.TopDownMaxCommonSubtreeIsomorphism}
 	 * @throws ControlFlowGraphException 
 	 * @see #createTestSet1()
 	 */
 	public final void testTopDownMaxCommonSubtreeIsomorthism1() throws ControlFlowGraphException {	
 		
-		TopDownMaxCommonSubTreeIsomorphism tdmcsi = new TopDownMaxCommonSubTreeIsomorphism();
+		TopDownMaxCommonSubtreeIsomorphism tdmcsi = new TopDownMaxCommonSubtreeIsomorphism();
 		TestSet t = createTestSet1();
 		Map<INodeExt, INodeExt> map = tdmcsi.execute(t.treeLeft, t.treeRight);
 		assertEquals(10, map.size());
@@ -296,7 +296,7 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 	 */
 	public final void testTopDownMaxCommonSubtreeIsomorthism2() throws ControlFlowGraphException {	
 		
-		TopDownMaxCommonSubTreeIsomorphism tdmcsi = new TopDownMaxCommonSubTreeIsomorphism();
+		TopDownMaxCommonSubtreeIsomorphism tdmcsi = new TopDownMaxCommonSubtreeIsomorphism();
 		TestSet t = createTestSet2();
 		Map<INodeExt, INodeExt> map = tdmcsi.execute(t.treeLeft, t.treeRight);
 		assertEquals(4, map.size());
@@ -309,7 +309,7 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 	 * @see #createTestSet3()
 	 */
 	public final void testTopDownSubtreeIsomorthism3() {		
-		TopDownMaxCommonSubTreeIsomorphism tdmcsi = new TopDownMaxCommonSubTreeIsomorphism();
+		TopDownMaxCommonSubtreeIsomorphism tdmcsi = new TopDownMaxCommonSubtreeIsomorphism();
 		TestSet t = createTestSet3();
 
 		try {
