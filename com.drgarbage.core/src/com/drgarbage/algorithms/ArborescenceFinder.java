@@ -40,6 +40,11 @@ import com.drgarbage.core.CoreMessages;
  *          salekseev $
  */
 public class ArborescenceFinder {
+	
+	// Suppress default constructor for noninstantiability
+	private ArborescenceFinder() {
+		throw new AssertionError();
+	}
 
 	/* static algorithms */
 	private static FindBackEdgesDFS fFindBackEdgesDFS;
