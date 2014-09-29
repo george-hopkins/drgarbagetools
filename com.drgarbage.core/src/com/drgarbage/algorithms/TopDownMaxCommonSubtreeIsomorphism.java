@@ -30,6 +30,7 @@ import java.util.Set;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
+import com.drgarbage.controlflowgraph.intf.IArborescence;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
@@ -93,56 +94,12 @@ public class TopDownMaxCommonSubtreeIsomorphism {
 	 * @throws ControlFlowGraphException 
 	 */
 	public Map<INodeExt, INodeExt> execute(
-			IDirectedGraphExt leftTree, IDirectedGraphExt rightTree) throws ControlFlowGraphException {
+			IDirectedGraphExt leftGraph, IDirectedGraphExt rightGraph) throws ControlFlowGraphException {
 		
-		/* get root nodes */
-		INodeExt rootLeft = getRoot(leftTree);
-		INodeExt rootRight = getRoot(rightTree);
-		
-		Map<INodeExt, INodeExt> mappedNodes = null;
-		mappedNodes = executeTopDownMaxCommon(leftTree, rootLeft, rightTree, rootRight);
-		
-		return mappedNodes;
-		
-	}
-	
-	/**
-	 * gets root from spanning tree 
-	 * @param SpanningTree
-	 * @return INodeExt
-	 * @throws ControlFlowGraphException 
-	 */
-	private INodeExt getRoot(IDirectedGraphExt SpanningTree) throws ControlFlowGraphException{
-		INodeExt root = null;
-		for(int i = 0; i < SpanningTree.getNodeList().size(); i++){
-			INodeExt n = SpanningTree.getNodeList().getNodeExt(i);
-			if(n.getIncomingEdgeList().size() == 0){
-				root = n;
-			}
-		}
-		if(root == null){
-			throw new ControlFlowGraphException("This tree has no root. The graph is propably not a tree.");
-		}
-		return root;
-	}
-	
-	/**
-	 * Gets mapped nodes according to 
-	 * the Top Down Subtree isomorphism algorithm.
-	 * 
-	 * @param leftTree the tree <code>T_1</code>
-	 * @param rootLeft the root node of the left tree
-	 * @param rightTree the tree <code>T_2</code>
-	 * @param rootRight the root node of the right tree
-	 * @return the map of matched nodes
-	 */
-	private Map<INodeExt, INodeExt> executeTopDownMaxCommon(
-			IDirectedGraphExt leftTree, 
-			INodeExt rootLeft, 
-			IDirectedGraphExt rightTree,
-			INodeExt rootRight) {
+		IArborescence leftTree = ArborescenceFinder.find(leftGraph);
+		IArborescence rightTree = ArborescenceFinder.find(rightGraph);
 
-		/* clear tree graphs */
+		
 		GraphUtils.clearGraph(leftTree);
 		GraphUtils.clearGraphColorMarks(leftTree);
 		GraphUtils.clearGraph(rightTree);
@@ -150,18 +107,14 @@ public class TopDownMaxCommonSubtreeIsomorphism {
 		
 		/*partial injection*/
 		B = new HashMap<INodeExt, List<IEdgeExt>>();
-		
-		Map<INodeExt, INodeExt> M  = new HashMap<INodeExt, INodeExt>();
-		traverseTopDown(rootLeft, rootRight);
-		
-		/*debug*/
-		printMap(B);
+		traverseTopDown(leftTree.getRoot(), rightTree.getRoot());
 		
 		/* reconstruct the subtree */
-		M.put(rootLeft, rootRight);
-		reconstruct(rootLeft, M);
+		Map<INodeExt, INodeExt> mappedNodes = new HashMap<INodeExt, INodeExt>();
+		mappedNodes.put(leftTree.getRoot(), rightTree.getRoot());
+		reconstruct(leftTree.getRoot(), mappedNodes);
 
-		return M;
+		return mappedNodes;
 	}
 	
 	/**

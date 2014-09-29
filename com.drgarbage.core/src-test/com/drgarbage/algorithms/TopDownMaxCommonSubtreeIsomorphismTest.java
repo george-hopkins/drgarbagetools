@@ -269,8 +269,7 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 
 		t.treeRight.getEdgeList().add(GraphExtentionFactory.createEdgeExtention(w1, w2));
 		t.treeRight.getEdgeList().add(GraphExtentionFactory.createEdgeExtention(w1, w3));
-		t.treeRight.getEdgeList().add(GraphExtentionFactory.createEdgeExtention(w3, w4));
-		t.treeRight.getEdgeList().add(GraphExtentionFactory.createEdgeExtention(w4, w1));
+		t.treeRight.getEdgeList().add(GraphExtentionFactory.createEdgeExtention(w4, w3));
 
 		return t;
 	}
@@ -305,7 +304,7 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 	
 	/**
 	 * testTopDownSubtreeIsomorthism3
-	 * The input is not a tree.
+	 * The input can't be converted to a tree.
 	 * @see #createTestSet3()
 	 */
 	public final void testTopDownSubtreeIsomorthism3() {		
@@ -319,7 +318,7 @@ public class TopDownMaxCommonSubtreeIsomorphismTest extends TestCase {
 			return;
 		}
 
-		fail("ControlFlowGraphException has not been throwen.");
+		fail("ControlFlowGraphException has not been thrown.");
 	}
 
 }
