@@ -61,39 +61,51 @@ public class ArborescenceFinder {
 	public static IArborescence find(IDirectedGraphExt graph)
 			throws ControlFlowGraphException {
 		IArborescence arborescence = new Arborescence();
-		INodeExt root = findRoot(graph);
+		arborescence.setRoot(findRoot(graph));
 
-		Set<INodeExt> nodesToVisit = new HashSet<INodeExt>();
-		for (int i = 0; i < graph.getNodeList().size(); i++) {
-			INodeExt n = graph.getNodeList().getNodeExt(i);
-			nodesToVisit.add(n);
-		}
+		Set<INodeExt> unvisitedNodes = extractAllNodes(graph);
 
-		// Traverse graph (breath first), add nodes and edges (not cycles)
 		Queue<INodeExt> queuedNodes = new LinkedList<INodeExt>();
-		queuedNodes.add(root);
+		queuedNodes.add(arborescence.getRoot());
 		while (!queuedNodes.isEmpty()) {
 			INodeExt node = queuedNodes.remove();
-			nodesToVisit.remove(node);
+			unvisitedNodes.remove(node);
 			arborescence.getNodeList().add(node);
-			IEdgeListExt outgoingEdges = node.getOutgoingEdgeList();
-			for (int i = 0; i < outgoingEdges.size(); i++) {
-				IEdgeExt e = outgoingEdges.getEdgeExt(i);
-				if (nodesToVisit.contains(e.getTarget())) {
-					arborescence.getEdgeList().add(e);
-					queuedNodes.add(e.getTarget());
-				}
-			}
+			queueNodesAndAddEdges(queuedNodes, unvisitedNodes, node.getOutgoingEdgeList(),
+					arborescence);
 		}
 
-		if (!nodesToVisit.isEmpty()) {
+		checkIfArborescenceComplete(unvisitedNodes);
+		return arborescence;
+	}
+
+	private static void checkIfArborescenceComplete(Set<INodeExt> unvisitedNodes)
+			throws ControlFlowGraphException {
+		if (!unvisitedNodes.isEmpty()) {
 			throw new ControlFlowGraphException(
 					CoreMessages.ArborescenceFinder_cant_convert);
 		}
+	}
 
-		arborescence.setRoot(root);
-		return arborescence;
+	private static void queueNodesAndAddEdges(Queue<INodeExt> queuedNodes,
+			Set<INodeExt> unvisitedNodes, IEdgeListExt outgoingEdges,
+			IArborescence arborescence) {
+		for (int i = 0; i < outgoingEdges.size(); i++) {
+			IEdgeExt edge = outgoingEdges.getEdgeExt(i);
+			if (unvisitedNodes.contains(edge.getTarget())) {
+				arborescence.getEdgeList().add(edge);
+				queuedNodes.add(edge.getTarget());
+			}
+		}
+	}
 
+	private static Set<INodeExt> extractAllNodes(IDirectedGraphExt graph) {
+		Set<INodeExt> nodes = new HashSet<INodeExt>();
+		for (int i = 0; i < graph.getNodeList().size(); i++) {
+			INodeExt n = graph.getNodeList().getNodeExt(i);
+			nodes.add(n);
+		}
+		return nodes;
 	}
 
 	/**
