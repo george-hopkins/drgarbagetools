@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.drgarbage.utils;
+package com.drgarbage.core.jface;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.swt.widgets.Shell;

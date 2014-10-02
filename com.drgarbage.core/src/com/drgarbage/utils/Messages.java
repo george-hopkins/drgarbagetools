@@ -19,6 +19,7 @@ package com.drgarbage.utils;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
@@ -26,10 +27,11 @@ import org.eclipse.ui.PlatformUI;
 
 import com.drgarbage.core.CoreMessages;
 import com.drgarbage.core.img.CoreImg;
+import com.drgarbage.core.jface.InputDialog;
 import com.drgarbage.core.jface.SelectDialog;
 
 /**
- * Message Boxes and dialogs
+ * Message Boxes and dialogs.
  * 
  * @author Sergej Alekseev
  * @version $Revision$
@@ -95,7 +97,7 @@ public class Messages {
 	}
 	
     /**
-     * Convenience method to open a simple confirm (OK/Cancel) dialog.
+     * Convenient method to open a simple confirm (OK/Cancel) dialog.
      * 
      * @param parent
      *            the parent shell of the dialog, or <code>null</code> if none
@@ -136,7 +138,7 @@ public class Messages {
     }
     
     /**
-     * Convenience method to open a select dialog.
+     * Convenient method to open a select dialog.
      * 
      * @param parentShell 
      * 						the parent shell of the dialog, or <code>null</code> if none
@@ -204,5 +206,42 @@ public class Messages {
     		List<String> elementList) {
     	return openSelectDialog(parent, title, message, new String[] { IDialogConstants.OK_LABEL,
                 IDialogConstants.CANCEL_LABEL}, selectionListImage, elementList);
+    }
+    
+    
+    /**
+     * Convenient method to open an input dialog.
+     * 
+     * @param parentShell 
+     * 						the parent shell of the dialog, or <code>null</code> if none
+     * @param title 
+     * 						the dialog's title, or <code>null</code> if none
+     * @param message 	
+     * 						the message
+     * @param initialValue	
+     * 						the initial value of the input field
+     * @param validator
+     * 						the validator object to validate the input
+     * @return				the given input
+     */
+    public static String openInputDialog(Shell parentShell, 
+    		String dialogTitle, 
+    		String dialogMessage, 
+    		String initialValue, 
+    		IInputValidator validator){
+		InputDialog dlg = new InputDialog(parentShell, dialogTitle, dialogMessage, initialValue, validator);
+		dlg.create();
+		dlg.open();
+		
+    	return dlg.getValue();	
+    }
+    
+    /**
+     * @see #openInputDialog(Shell, String, String, String, IInputValidator)
+     */
+    public static String openInputDialog(Shell parentShell, 
+    		String dialogTitle, 
+    		String dialogMessage){
+    	return openInputDialog(parentShell, dialogTitle, dialogMessage, null, null);
     }
 }
