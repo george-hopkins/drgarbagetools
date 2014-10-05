@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.drgarbage.bytecodevisualizer_4.4.2.qualifier.jar" id="com.drgarbage.bytecodevisualizer" version="4.4.2.qualifier">
+   <feature url="features/com.drgarbage.bytecodevisualizer_4.4.3.qualifier.jar" id="com.drgarbage.bytecodevisualizer" version="4.4.3.qualifier">
       <category name="com.drgarbage.bytecodevisualizer"/>
    </feature>
    <feature url="features/com.drgarbage.controlflowgraphfactory_4.4.2.qualifier.jar" id="com.drgarbage.controlflowgraphfactory" version="4.4.2.qualifier">
