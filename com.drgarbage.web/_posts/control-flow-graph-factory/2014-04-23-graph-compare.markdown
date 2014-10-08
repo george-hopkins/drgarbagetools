@@ -18,11 +18,12 @@ Two graphs produced by [Control Flow Graph Factory][cfgf] can be compared by the
 Graphical user interface <a name="how"></a>
 --------------
 
-After first steps of graph comparison a new tab *Compare* pops up.
+After the first steps of graph comparison a new tab *Compare* pops up.
 ![sd]({{ site.imgurl }}{{ page.url }}compare-opened.png)
 
-Two selected graphs are represented side by side in the opened tab. In the upper left corner the drop-down list indicates that current window presents **Graph compare**.
-In the upper right corner the management panel is placed.
+The graphical user interface represents these two selected graphs side by side in the new opened tab. On the upper left corner the drop-down list indicates that the current window presents **Graph compare**. In case the graphs keep any meta information, it makes possible to compare the as text-to-text.
+
+The management panel of actions is placed in the upper right corner and looks as follows:
 <div style="height: 20px; margin-top: -10px;" >
 	<center>
 		<h3>This button executes:  <a id="used"></a> </h3>
@@ -37,25 +38,31 @@ In the upper right corner the management panel is placed.
 
 <script type="text/javascript">
 $("#panel" ).click(function(event) {
-		//var currentMousePos = { x: -1, y: -1 };
-		//currentMousePos.x = event.pageX;
-        //currentMousePos.y = event.pageY;
 		var left = event.pageX - $(this).offset().left;
         var top = event.pageY - $(this).offset().top;
-		if(left < 33){
-			location.hash = "#topdown";
+		if(left < 33){			
+			$('html, body').animate({ scrollTop: $( $("#topdown") ).offset().top }, 1000);
+			return false;
 		}
 		if(left < 70 && left > 33){
-			location.hash = "#bottomup";
+			$('html, body').animate({ scrollTop: $( $("#bottomup") ).offset().top }, 1000);
+			return false;
 		}
 		if(left < 116 && left > 70){
-			location.hash = "#resetgraphs";
+			//location.hash = "#resetgraphs";
+			$('html, body').animate({ scrollTop: $( $("#resetgraphs") ).offset().top }, 1500);
+			return false;
 		}
 		if(left < 150 && left > 116){
-			location.hash = "#swapgraphs";
+			//location.hash = "#swapgraphs";
+			$('html, body').animate({ scrollTop: $( $("#swapgraphs") ).offset().top }, 1500);
+			return false;	
 		}
-		
-		
+		if(left < 230 && left > 150){
+			//location.hash = "#swapgraphs";
+			$('html, body').animate({ scrollTop: $( $("#zoomzoom") ).offset().top }, 1500);
+			return false;	
+		}
 });
 
  $('#panel').mouseover(function(event) { 
@@ -91,34 +98,55 @@ $('#panel').mousemove(function(event) {
 		if(left < 230 && left > 193){
 			$('#used').html("Zoom out");
 		}
-		
     });
-	
-		
-
 </script>
 
-Execute Top-Down Maximum Common SubTree Isomorphism <a name="topdown"></a>
+Execute Top-Down Maximum Common SubTree Isomorphism <a id = "topdown"></a>
 --------------
-After clicking the button "Execute Top-Down Maximum Common SubTree Isomorphism"
+
+The algorithm is able to define isomorphism under tree structures. Therefore after clicking on the button execute *Top-Down Algorithm* the input graph structures firstly converted into
+trees using **Spanning Tree Algorithm**. Thus all backward edges are being removed that ensures algorithm's execution on trees. 
+
+The algorithm finds the largest common subtree between two **unordered** trees starting from the root. This maximum common subtree is green highlighted.
+Notice that this subtree may not be unique, since there are different combinations of maximum common subtrees. However the number of nodes of this subtree is constant.
+
 ![sd]({{ site.imgurl }}{{ page.url }}top-down-executed.png)
+<div style=" margin-top: -10px; margin-bottom: 35px;" > <center> The picture above demonstrates a result of the algorithm's execution.</center></div>
 
-Execute Bottom-Up Maximum Common SubTree Isomorphism <a name="bottomup"></a>
+
+Execute Bottom-Up Maximum Common SubTree Isomorphism <a id="bottomup"></a>
 --------------
-After clicking this button 
+This button is responsible for execution of *Bottom-Up Algorithm*. The algorithm functions only with tree structures thereby the input graph are converted into trees using **Spanning Tree Algorithm**.  
 
-Reset compare graph <a name="resetgraphs"></a>
+Unlike Top-Down Algorithm, the search for the largest subtree is performed starting from leaves between two **unordered** trees. 
+
+![sd]({{ site.imgurl }}{{ page.url }}bottom-up-compared.png)
+<div style=" margin-top: -10px; margin-bottom: 35px;" >  <center> The picture above demonstrates a result of the algorithm's execution.</center></div>
+
+Reset compare graphs <a id="resetgraphs"></a>
 --------------
-After clicking this button 
+The reset button hides green highlighted subtrees after the maximum of algorithm's execution and recreates the original nodes colour of the trees.
+![sd]({{ site.imgurl }}{{ page.url }}compare-opened.png)
+<div style=" margin-top: -10px; margin-bottom: 35px;" >  <center> Reset input graphs. </center></div>
 
-Swap graphs inputs <a name="swapgraphs"></a>
+
+Swap inputs of the graphs  <a id="swapgraphs"></a>
 --------------
-After clicking this button 
+The button resets the colour of the graphs to original and then replaces them. The algorithms described above can be also applied for swapped graphs.
+![sd]({{ site.imgurl }}{{ page.url }}graphs-swaped.png)
+<div style=" margin-top: -10px; margin-bottom: 35px;" >  <center> The graphs are swapped.</center></div>
 
 
+Zoom in / Zoom out <a id="zoomzoom"></a>
+--------------
+If the input graphs are too small or large, this feature provides synchronized zoom it/out of input diagrams. 
+It allows to view the maximum common subtrees of large trees, for example **Abstract Syntax Tree**.
+
+![sd]({{ site.imgurl }}{{ page.url }}zoom-graphs.png)
+<div style=" margin-top: -10px; margin-bottom: 35px;" >  <center> The picture above demonstrates a result of the *Top-Down algorithm* in fitted zoomed out view.</center></div>
+For the detailed information please check our JavaDoc(here place the link)
 
 [//]: # (-------------Links used -------------)
-
 [cfgf]: {{ site.url }}/control-flow-graph-factory/
 [cfgc-tdmc]: {{ site.url }}/control-flow-graph-factory/graph-compare-tdmc/
 [cfgc-bumc]: {{ site.url }}/control-flow-graph-factory/graph-compare-bumc/
