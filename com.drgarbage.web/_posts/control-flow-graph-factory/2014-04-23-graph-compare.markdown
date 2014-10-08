@@ -65,6 +65,7 @@ $("#panel" ).click(function(event) {
 		}
 });
 
+
  $('#panel').mouseover(function(event) { 
             var left = event.pageX - $(this).offset().left;
             var top = event.pageY - $(this).offset().top;
@@ -81,13 +82,13 @@ $('#panel').mousemove(function(event) {
         var top = event.pageY - $(this).offset().top;
 		//$('#coord').html("left:" + left + " top:" + top );
 		if(left < 33){
-			$('#used').html("Top Down");
+			$('#used').html("Execute Top-Down Algorithm");
 		}
 		if(left < 70 && left > 33){
-			$('#used').html("Bottop up");
+			$('#used').html("Execute Bottom-Up Algorithm");
 		}
 		if(left < 116 && left > 70){
-			$('#used').html("Reset compare graph");
+			$('#used').html("Reset comparison of input graphs");
 		}
 		if(left < 150 && left > 116){
 			$('#used').html("Swap graphs inputs");
@@ -140,13 +141,25 @@ The button resets the colour of the graphs to original and then replaces them. T
 Zoom in / Zoom out <a id="zoomzoom"></a>
 --------------
 If the input graphs are too small or large, this feature provides synchronized zoom it/out of input diagrams. 
-It allows to view the maximum common subtrees of large trees, for example **Abstract Syntax Tree**.
+It allows to view the maximum common subtrees when the input graphs are large, for example **[Abstract Syntax Tree][ast]**.
 
 ![sd]({{ site.imgurl }}{{ page.url }}zoom-graphs.png)
 <div style=" margin-top: -10px; margin-bottom: 35px;" >  <center> The picture above demonstrates a result of the *Top-Down algorithm* in fitted zoomed out view.</center></div>
-For the detailed information please check our JavaDoc(here place the link)
 
+<div class = "backtop"> 
+	 <a href="#top"> back to top</a>
+</div>
+
+
+<script type="text/javascript">
+	$( ".backtop" ).click(function(event) {
+			$('html, body').animate({ scrollTop: $( $("#head") ).offset().top }, 1000);
+			return false;
+});
+</script>
+For the detailed information please check our JavaDoc(here place the link)
 [//]: # (-------------Links used -------------)
 [cfgf]: {{ site.url }}/control-flow-graph-factory/
 [cfgc-tdmc]: {{ site.url }}/control-flow-graph-factory/graph-compare-tdmc/
 [cfgc-bumc]: {{ site.url }}/control-flow-graph-factory/graph-compare-bumc/
+[ast]: {{ site.url }}/sourcecode-visualizer/abstract-syntax-tree/
