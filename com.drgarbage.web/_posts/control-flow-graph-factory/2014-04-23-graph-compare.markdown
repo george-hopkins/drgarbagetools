@@ -11,19 +11,19 @@ How to compare graphs <a name="how"></a>
 Two graphs produced by [Control Flow Graph Factory][cfgf] can be compared by the following way:
 
 * Select two graphs in Eclipse Package Explorer 
-* Right click at "Compare with: Each other" as depicted below
+* Right click over selected items, then **Compare with** > **Each other** as depicted below
 
 ![sd]({{ site.imgurl }}{{ page.url }}how-to-compare-graphs.png)
 
 Graphical user interface <a name="how"></a>
 --------------
 
-After the first steps of graph comparison a new tab *Compare* pops up.
+After the first steps of graph comparison a new Eclipse tab *Compare* pops up.
 ![sd]({{ site.imgurl }}{{ page.url }}compare-opened.png)
 
-The graphical user interface represents these two selected graphs side by side in the new opened tab. On the upper left corner the drop-down list indicates that the current window presents **Graph compare**. In case the graphs keep any meta information, it makes possible to compare the as text-to-text.
+The graphical user interface represents two selected graphs side by side in the new opened tab. On the upper-left corner the drop-down list indicates that the current window presents **Graph compare**. In case the graphs keep any meta information, it makes possible to choose text-to-text compare.
 
-The management panel of actions is placed in the upper right corner and looks as follows:
+The management panel of actions is placed in the upper-right corner and looks as follows:
 <div style="height: 20px; margin-top: -10px;" >
 	<center>
 		<h3>This button executes:  <a id="used"></a> </h3>
@@ -105,38 +105,45 @@ $('#panel').mousemove(function(event) {
 Execute Top-Down Maximum Common SubTree Isomorphism <a id = "topdown"></a>
 --------------
 
-The algorithm is able to define isomorphism under tree structures. Therefore after clicking on the button execute *Top-Down Algorithm* the input graph structures firstly converted into
+The algorithm described in book *Algorithms on Trees and Graphs* from Gabriel Valiente in is able to define isomorphism under tree structures. Therefore after clicking on the button execute *Top-Down Algorithm* the input graph structures firstly converted into
 trees using **Spanning Tree Algorithm**. Thus all backward edges are being removed that ensures algorithm's execution on trees. 
 
 The algorithm finds the largest common subtree between two **unordered** trees starting from the root. This maximum common subtree is green highlighted.
 Notice that this subtree may not be unique, since there are different combinations of maximum common subtrees. However the number of nodes of this subtree is constant.
 
+In order to define the largest subtree the algorithm uses an auxiliary *Maximum Weight Bipartite Matching* sub-algorithm. The *Maximum Weight Bipartite Matching* implements remarkable *Hungarian Method* that promotes to find edges in a weighted bipartite graph so that the sum of the weights in the matching has a maximal value.
+The *Hungarian Method* solves the assignment problem and uses a modified shortest path search in the augmenting path algorithm.
+
 ![sd]({{ site.imgurl }}{{ page.url }}top-down-executed.png)
-<div style=" margin-top: -10px; margin-bottom: 35px;" > <center> The picture above demonstrates a result of the algorithm's execution.</center></div>
-
-
+<div style=" margin-top: -10px; margin-bottom: 5px;" > <center> The picture above demonstrates a result of the algorithm's execution.</center></div>
+<div class = "backtop" style="text-align: right; margin-bottom: 30px;"> 
+	 <a href="#top"> back to top</a>
+</div>
 Execute Bottom-Up Maximum Common SubTree Isomorphism <a id="bottomup"></a>
 --------------
-This button is responsible for execution of *Bottom-Up Algorithm*. The algorithm functions only with tree structures thereby the input graph are converted into trees using **Spanning Tree Algorithm**.  
+This button is responsible for execution of *Bottom-Up Algorithm*. The algorithm is described from Gabriel Valiente in his book *Algorithms on Trees and Graphs*.
+The algorithm functions only with tree structures thereby the input graph are converted into trees using **Spanning Tree Algorithm**.  
 
 Unlike Top-Down Algorithm, the search for the largest subtree is performed starting from leaves between two **unordered** trees. 
 
 ![sd]({{ site.imgurl }}{{ page.url }}bottom-up-compared.png)
-<div style=" margin-top: -10px; margin-bottom: 35px;" >  <center> The picture above demonstrates a result of the algorithm's execution.</center></div>
-
-Reset compare graphs <a id="resetgraphs"></a>
+<div style=" margin-top: -10px; margin-bottom: 5px;" >  <center> The picture above demonstrates a result of the algorithm's execution.</center></div>
+<div class = "backtop" style="text-align: right;"> 
+	 <a href="#top"> back to top</a>
+</div>
+Reset the compared graphs <a id="resetgraphs"></a>
 --------------
-The reset button hides green highlighted subtrees after the maximum of algorithm's execution and recreates the original nodes colour of the trees.
+The reset button hides green highlighted subtrees after the algorithm's execution and recreates the original colour of nodes on the represented trees.
 ![sd]({{ site.imgurl }}{{ page.url }}compare-opened.png)
-<div style=" margin-top: -10px; margin-bottom: 35px;" >  <center> Reset input graphs. </center></div>
-
-
+<div style=" margin-top: -10px; margin-bottom: 5px;" >  <center> Reset input graphs. </center></div>
+<div class = "backtop" style="text-align: right; margin-bottom: 30px;"> 
+	 <a href="#top"> back to top</a>
+</div>
 Swap inputs of the graphs  <a id="swapgraphs"></a>
 --------------
-The button resets the colour of the graphs to original and then replaces them. The algorithms described above can be also applied for swapped graphs.
+The button firstly resets the colour of the graphs to original and then replaces them. The algorithms described above can be also applied for swapped graphs.
 ![sd]({{ site.imgurl }}{{ page.url }}graphs-swaped.png)
 <div style=" margin-top: -10px; margin-bottom: 35px;" >  <center> The graphs are swapped.</center></div>
-
 
 Zoom in / Zoom out <a id="zoomzoom"></a>
 --------------
@@ -144,20 +151,20 @@ If the input graphs are too small or large, this feature provides synchronized z
 It allows to view the maximum common subtrees when the input graphs are large, for example **[Abstract Syntax Tree][ast]**.
 
 ![sd]({{ site.imgurl }}{{ page.url }}zoom-graphs.png)
-<div style=" margin-top: -10px; margin-bottom: 35px;" >  <center> The picture above demonstrates a result of the *Top-Down algorithm* in fitted zoomed out view.</center></div>
-
-<div class = "backtop"> 
+<div style=" margin-top: -10px; margin-bottom: 5px;" >  <center> The picture above demonstrates a result of the *Top-Down algorithm* in fitted zoomed out view.</center></div>
+<div class = "backtop" style="text-align: right; margin-bottom: 30px;"> 
 	 <a href="#top"> back to top</a>
 </div>
 
 
 <script type="text/javascript">
 	$( ".backtop" ).click(function(event) {
-			$('html, body').animate({ scrollTop: $( $("#head") ).offset().top }, 1000);
+			$('html, body').animate({ scrollTop: $( $("#head") ).offset().top }, 1300);
 			return false;
 });
 </script>
-For the detailed information please check our JavaDoc(here place the link)
+
+For the detailed information about used algorithms please check our JavaDoc(here place the link)
 [//]: # (-------------Links used -------------)
 [cfgf]: {{ site.url }}/control-flow-graph-factory/
 [cfgc-tdmc]: {{ site.url }}/control-flow-graph-factory/graph-compare-tdmc/
