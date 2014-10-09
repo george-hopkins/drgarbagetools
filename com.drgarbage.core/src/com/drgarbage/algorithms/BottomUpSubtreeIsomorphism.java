@@ -55,7 +55,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  * are mapped according to the algorithm. 
  * </pre>
  * The algorithm uses Post Order Tree Traversal: {@link TreeTraversal#doPostorderTreeListTraversal(IDirectedGraphExt)}
- * </br>
+ * <br>
  * 
  * @author Adam Kajrys
  * @version $Revision$
@@ -72,7 +72,7 @@ public class BottomUpSubtreeIsomorphism {
 	 * @param leftGraph the graph <code>T_1</code>
 	 * @param rightGraph the graph <code>T_2</code>
 	 * @return the map of matched nodes
-	 * @throws ControlFlowGraphException
+	 * @throws ControlFlowGraphException in case The left or right tree has no root
 	 */
 	public Map<INodeExt, INodeExt> execute(
 			IDirectedGraphExt leftGraph, IDirectedGraphExt rightGraph)

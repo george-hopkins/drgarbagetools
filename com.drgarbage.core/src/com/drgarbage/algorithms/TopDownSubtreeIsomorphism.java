@@ -96,7 +96,7 @@ public class TopDownSubtreeIsomorphism {
 	 * @param leftTree the tree <code>T_1</code>
 	 * @param rightTree the tree <code>T_2</code>
 	 * @return the map of matched nodes
-	 * @throws ControlFlowGraphException 
+	 * @throws ControlFlowGraphException if the input left/right tree has no root
 	 */
 	public Map<INodeExt, INodeExt> execute(
 			IDirectedGraphExt leftTree, IDirectedGraphExt rightTree) throws ControlFlowGraphException {

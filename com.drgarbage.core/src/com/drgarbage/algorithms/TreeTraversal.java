@@ -24,7 +24,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
 /**
  * Class for Tree Traversal includes Post-order and Pre-order tree traversal methods on trees.
  * 
- * </br>
+ * <br>
  * <b>Pre Order Tree Traversal: </b>
  * {@link #doPreorderTreeListTraversal(IDirectedGraphExt) }
  * <pre> 
@@ -45,7 +45,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  *      
  * </pre>
  * 
- * </br>
+ * <br>
  * <b>Post order Tree Traversal: </b>
  * {@link #doPostorderTreeListTraversal(IDirectedGraphExt) }
  * <pre> 

@@ -51,7 +51,7 @@ public abstract class DFSBase {
 	/**
 	 * Starts dfs from any node.
 	 * @param graph the graph
-	 * @throws ControlFlowGraphException
+	 * @throws ControlFlowGraphException if the vertex List is empty
 	 */
 	public void start(IDirectedGraphExt graph) throws ControlFlowGraphException{
 		INodeListExt nodeList = graph.getNodeList();
@@ -71,7 +71,7 @@ public abstract class DFSBase {
 	 * Start bfs from the given node.
 	 * @param graph the graph
 	 * @param start the start node
-	 * @throws ControlFlowGraphException
+	 * @throws ControlFlowGraphException if Start vertex graph.getNodeList().contains(start) is not found
 	 */
 	public void start(IDirectedGraphExt graph, INodeExt start) throws ControlFlowGraphException{
 		

@@ -56,7 +56,7 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  * Nodes are numbered according to the order in which they are visited during a post order traversal.
  * The maximum common bottom-up subtree of <i>T_1</i> and <i>T_2</i> is depicted with enclosed brackets 
  * are mapped according to the algorithm. </pre>
- * </br>
+ * <br>
  * 
  * A maximal bottom-up common subtree of two unordered trees <i>T_1</i> and <i>T_2</i> is an unordered tree <i>T</i> such
  * that there are bottom-up unordered subtree isomorphisms of T into <i>T_1</i> and into <i>T_2</i> with the largest number of nodes.
@@ -113,7 +113,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 	 * gets a root from tree
 	 * @param tree
 	 * @return
-	 * @throws ControlFlowGraphException
+	 * @throws ControlFlowGraphException if the input structure has no root.
 	 */
 	private INodeExt getRootFromTree(IDirectedGraphExt tree) throws ControlFlowGraphException{
 		
@@ -141,7 +141,7 @@ public class BottomUpMaxCommonSubtreeIsomorphism {
 	 * @param leftTree spanning tree <i>T_1</i>
 	 * @param rightTree spanning tree <i>T_2</i>
 	 * @return map of matched nodes <i>T_1</i> to <i>T_2</i>
-	 * @throws ControlFlowGraphException
+	 * @throws ControlFlowGraphException if the input structure has no root. 
 	 */
 	public Map<INodeExt, INodeExt> getMappedNodes(
 			IDirectedGraphExt leftTree, IDirectedGraphExt rightTree)

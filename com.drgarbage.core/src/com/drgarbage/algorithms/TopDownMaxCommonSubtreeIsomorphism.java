@@ -88,10 +88,10 @@ public class TopDownMaxCommonSubtreeIsomorphism {
 	 * The Algorithm works only with spanning trees. Gets root nodes from each input spanning tree
 	 * and proceeds top-down maximum common algorithm.
 	 * 
-	 * @param leftTree spanning tree <i>T_1</i>
-	 * @param rightTree spanning tree <i>T_2</i>
+	 * @param leftGraph spanning tree <i>T_1</i>
+	 * @param rightGraph spanning tree <i>T_2</i>
 	 * @return map of matched nodes <i>T_1</i> to <i>T_2</i>
-	 * @throws ControlFlowGraphException 
+	 * @throws ControlFlowGraphException  if input graphs have no single root
 	 */
 	public Map<INodeExt, INodeExt> execute(
 			IDirectedGraphExt leftGraph, IDirectedGraphExt rightGraph) throws ControlFlowGraphException {
@@ -99,7 +99,6 @@ public class TopDownMaxCommonSubtreeIsomorphism {
 		IArborescence leftTree = ArborescenceFinder.find(leftGraph);
 		IArborescence rightTree = ArborescenceFinder.find(rightGraph);
 
-		
 		GraphUtils.clearGraph(leftTree);
 		GraphUtils.clearGraphColorMarks(leftTree);
 		GraphUtils.clearGraph(rightTree);
