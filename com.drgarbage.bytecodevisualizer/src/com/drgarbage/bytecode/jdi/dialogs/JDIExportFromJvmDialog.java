@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -76,7 +75,6 @@ import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import com.drgarbage.bytecode.jdi.JDIUtils;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerMessages;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
-import com.drgarbage.utils.Messages;
 import com.sun.jdi.ReferenceType;
 
 /**
@@ -117,9 +115,36 @@ public class JDIExportFromJvmDialog {
 	private Label hintLabel;
 	
 	/**
+	 * Message icon. 
+	 */
+	private Label messageIcon;
+	
+	/**
+	 * Message text of the class selection.
+	 */
+	private Label messageLabel;
+	
+	/**
+	 * Error image of the message icon.  
+	 */
+	private Image errorIcon = JavaPluginImages.DESC_OBJS_REFACTORING_ERROR.createImage();
+	
+	/**
+	 * Info image of the message icon.
+	 */
+	private Image infoIcon = JavaPluginImages.DESC_OBJS_REFACTORING_INFO.createImage();
+	
+	/**
 	 * The reference to the selected export class folder.
 	 */
 	private IFolder exportFolder;
+	
+	
+	/**
+	 * The constant of the maximum possible number of classes 
+	 * can be rendered the FilterdTree. 
+	 */
+	private final int MAX_POSSIBLE_NUMBER_OF_CLASSES = 100;
 
 	/**
 	 * Constructs the Export Class dialog.
@@ -169,6 +194,16 @@ public class JDIExportFromJvmDialog {
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new LabelProvider());
 		
+		/* create message label */
+		Composite c = new Composite(hintLabel.getParent(), SWT.NONE);
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
+		c.setLayout(gridLayout);
+		
+		messageIcon = new Label(c, SWT.NONE);
+		messageLabel = new Label(c, SWT.NONE);
+		
+		/* fill the viewer */
 		fillList(ft);
 		
 		Composite selectComposite = new Composite(shell, SWT.NONE);
@@ -458,58 +493,116 @@ public class JDIExportFromJvmDialog {
 	 * 
 	 * @param fl the filtered checkbox list
 	 */
-	private void fillList(FilteredTree fl) {
+	private void fillList(final FilteredTree fl) {
 		Object o = DebugUITools.getDebugContext();
-		List<String> listOfClasses = new ArrayList<String>();
 
 		if (o instanceof JDIDebugElement) {
 			JDIDebugElement jdiDebugElement = (JDIDebugElement) o;
 			com.sun.jdi.VirtualMachine vm = jdiDebugElement
 					.getJavaDebugTarget().getVM();
+			final List<ReferenceType> allClasses = vm.allClasses();
 
-			List<ReferenceType> l = vm.allClasses();
+			final List<String> listOfClasses = new ArrayList<String>();
 
-			for (ReferenceType r : l) {
-				listOfClasses.add(r.name());
-			}
-		}
-		
-		// fix for ticket 49
-		if (listOfClasses.size() > 1000) {
-			Collections.sort(listOfClasses);
-			// create a dialog
-			List<String> selectionList = new ArrayList<String>();
-			int low = 1;
-			for (int i = 1; i <= listOfClasses.size(); i++) {
-				if (i % 1000 == 0 || i == listOfClasses.size()) {
-					selectionList.add("Classes " + low + " to " + i 
-							+ " (" + listOfClasses.get(low - 1) + " ... " 
-							+ listOfClasses.get(i - 1) + ")");
-					low = i;
+			if(allClasses.size() < MAX_POSSIBLE_NUMBER_OF_CLASSES){
+				for (ReferenceType r : allClasses) {
+					listOfClasses.add(r.name());
 				}
-			}
-			String selection = null;
-			while (selection == null) {
-				selection = Messages.openSelectDialog(BytecodeVisualizerMessages.JDI_Export_JVM_too_many_classes,
-						JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS), selectionList);
-			}
 
-			// only display selected range
-			low = Integer.parseInt(selection.split(" ")[1]);
-			low--;
-			int high = Integer.parseInt(selection.split(" ")[3]);
-			high--;
-			for (int i = listOfClasses.size() - 1; i > high; i--) {
-				listOfClasses.remove(i);
+				viewer.setInput(listOfClasses.toArray());
 			}
-			for (int i = 0; i < low; i ++) {
-				listOfClasses.remove(0);
+			else {
+				/* 
+				 * Handle the case if more then MAX_POSSIBLE_NUMBER_OF_CLASSES 
+				 * have to be rendered. 
+				 */				
+				messageIcon.setImage(errorIcon);
+				
+				String s = "The list is too long: " + allClasses.size() + " classes of " + allClasses.size() + " are chosen for display.";				
+				messageLabel.setText(s);
+				
+				viewer.setInput(null);
+				
+				fl.getFilterControl().addModifyListener(new ModifyListener(){
+
+					 boolean initListener = false;
+					 
+					/* (non-Javadoc)
+					 * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
+					 */
+					public void modifyText(ModifyEvent arg0) {
+						if(initListener){
+							String filter = fl.getFilterControl().getText();
+							listOfClasses.clear();
+							for (ReferenceType r : allClasses) {
+								String name = r.name();
+								if(name.startsWith(filter))
+									listOfClasses.add(name);
+							}
+
+							if(listOfClasses.size() > MAX_POSSIBLE_NUMBER_OF_CLASSES){
+								messageIcon.setImage(errorIcon);
+								
+								String s = "The list is too long: " + listOfClasses.size() + " classes of " + allClasses.size() + " are chosen for display.";
+								messageLabel.setText( s );
+								
+								viewer.setInput(null);								
+							}
+							else{
+								messageIcon.setImage(infoIcon);
+								
+								String s = listOfClasses.size() + " classes of " + allClasses.size() + " are displayed.";
+								messageLabel.setText(s);
+								
+								viewer.setInput(listOfClasses.toArray());
+							}
+						}
+						else{
+							String filter = fl.getFilterControl().getText();
+							if(filter.equals("")){
+								initListener = true;
+							}
+						}
+					}
+				});
 			}
 		}
-		
-		viewer.setInput(listOfClasses.toArray());
+//		// fix for ticket 49
+//		if (listOfClasses.size() > 1000) {
+//			Collections.sort(listOfClasses);
+//			// create a dialog
+//			List<String> selectionList = new ArrayList<String>();
+//			int low = 1;
+//			for (int i = 1; i <= listOfClasses.size(); i++) {
+//				if (i % 1000 == 0 || i == listOfClasses.size()) {
+//					selectionList.add("Classes " + low + " to " + i 
+//							+ " (" + listOfClasses.get(low - 1) + " ... " 
+//							+ listOfClasses.get(i - 1) + ")");
+//					low = i;
+//				}
+//			}
+//			String selection = null;
+//			while (selection == null) {
+//				selection = Messages.openSelectDialog(BytecodeVisualizerMessages.JDI_Export_JVM_too_many_classes,
+//						JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS), selectionList);
+//			}
+//
+//			// only display selected range
+//			low = Integer.parseInt(selection.split(" ")[1]);
+//			low--;
+//			int high = Integer.parseInt(selection.split(" ")[3]);
+//			high--;
+//			for (int i = listOfClasses.size() - 1; i > high; i--) {
+//				listOfClasses.remove(i);
+//			}
+//			for (int i = 0; i < low; i ++) {
+//				listOfClasses.remove(0);
+//			}
+//		}
+//		
+//		viewer.setInput(listOfClasses.toArray());
 	}
-	
+	 
 	/**
 	 * Returns the class file content as a byte array for
 	 * the given class name.
