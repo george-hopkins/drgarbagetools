@@ -60,8 +60,28 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  * 
  * A maximal bottom-up common subtree of two unordered trees <i>T_1</i> and <i>T_2</i> is an unordered tree <i>T</i> such
  * that there are bottom-up unordered subtree isomorphisms of T into <i>T_1</i> and into <i>T_2</i> with the largest number of nodes.
+ * <br>
+ * <b>Algorithms steps:</b>
+ * <br>
+ * <b>1.</b> Contents of the map of known equivalence classes. The map contains a list of integers (equivalence classes of children
+ * nodes) as keys and integers (equivalence class of the children's parent) as values. See the trees above. <br>
+ * <pre>
+ * 		key      value
+ * 		--------------
+ * 		[1,1]        2
+ * 		[2]          3
+ * 		[1,3]        4
+ * 		[1,4]        5
+ * 		[4,5]        6
+ * 		[1]          7
+ * 		[1,7]        8
+ * 		[1,1,7]      9
+ * 		[5,8,9]     10
+ * </pre>
  * 
- * The algorithm uses Post Order Traversal: {@link TreeTraversal#doPostorderTreeListTraversal(IDirectedGraphExt)}  
+ * <b>2.</b> Find the root nodes in the trees <i>T_1</i> and <i>T_2</i> of the largest common bottom-up Subtree.<br>
+ * <b>3.</b> Prioritizes nodes in a trees <i>T_1</i> and <i>T_2</i>. <br>
+ * <b>4.</b> Map isomorphic nodes inserting equivalent nodes of <i>T_1</i> and <i>T_2</i> into the passed map M. <br>
  * 
  * @author Adam Kajrys
  * 

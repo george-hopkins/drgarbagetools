@@ -66,7 +66,15 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  * 
  * In order to find proper matched nodes according to the algorithm, the maximum weighted bipartite matching 
  * problem algorithm {@link MaxWeightedBipartiteMatching Maximum Weighted Bipartite Matching} is used. 
- *  
+ *  <br>
+ * <b>Algorithm steps:</b><br>
+ * <ol>
+ * <li>Traverse recursively with Breath First Search nodes of <i>T_1</i> and <i>T_2</i> starting from roots. All leaves get size equal to one</li>
+ * <li>Going up recursively from leaves at each level i for nodes n &isin;<i>T_1</i> and for each node m &isin;<i>T_2</i> create a weighted bipartite graph. 
+ * The graph presents a Cartesian product of edges on relation A &times; B where n &isin; A and m &isin; B. </li>
+ * <li>Using maximum weighted bipartite matching algorithm {@link MaxWeightedBipartiteMatching} find the edges with max value of the graph </li>
+ * <li>All parent node relations of <i>n(i + 1)</i> and <i>m(i + 1)</i> get size plus one. </li>
+ * </ol> 
  * @author Artem Garishin
  * 
  * @version $Revision$ 

@@ -49,13 +49,50 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  *                                    (w8)
  *                                    /  \
  *                                  (w6) (w7)
- * 
+ * </pre>
  * Nodes are numbered according to the order in which they are visited during a post order traversal.
  * The maximum common top-down subtree of <i>T_1</i> and <i>T_2</i> is depicted with enclosed brackets 
  * are mapped according to the algorithm. 
- * </pre>
- * The algorithm uses Post Order Tree Traversal: {@link TreeTraversal#doPostorderTreeListTraversal(IDirectedGraphExt)}
  * <br>
+ * <b>Algorithms steps:</b>
+ * <br>
+ * <b>1.</b> Contents of the map of known equivalence classes. The map contains a list of integers (equivalence classes of children
+ * nodes) as keys and integers (equivalence class of the children's parent) as values. See the trees above.
+ * <pre>
+ * 		key      value
+ * 		--------------
+ * 		[1,1]        2
+ * 		[2]          3
+ * 		[1,3]        4
+ * 		[1,4]        5
+ * 		[4,5]        6
+ * 		[1]          7
+ * 		[1,7]        8
+ * 		[1,1,7]      9
+ * 		[5,8,9]     10
+ * </pre>
+ * <b>2.</b>Creates a map of bottom-up subtree isomorphic nodes.<br>
+ * Citation from: "Algorithms on Trees and Graphs":
+ * <pre>
+ * An actual bottom-up subtree isomorphism mapping M &sube; V_1 &times; V_2
+ * of T_1 = (V_1, E_1) into the subtree of T_2 = (V_2, E_2) rooted at node
+ * v [<code>rightNode</code>] can be constructed by mapping the root of T_1
+ * to node v, and then mapping the remaining nodes in T_1 to the remaining
+ * nodes in the subtree of T_2 rooted at node v, such that mapped nodes
+ * belong to the same equivalence class of bottom-up subtree isomorphism.
+ * </pre>
+ * 
+ * The returned map of the unordered trees T_1 and T_2:
+ * <pre>
+ * 		key   value
+ * 		-----------
+ * 		v3      w7
+ *		v2      w6
+ *		v6      w11
+ *		v4      w8
+ *		v5      w9
+ *		v1      w10
+ * </pre>
  * 
  * @author Adam Kajrys
  * @version $Revision$

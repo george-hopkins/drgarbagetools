@@ -58,6 +58,15 @@ import com.drgarbage.controlflowgraph.intf.INodeListExt;
  * 
  * In order to find proper matched nodes according to the algorithm, the maximum cardinality bipartite 
  * matching problem {@link MaxCardBipartiteMatching } is used. 
+ *  <br>
+ * <b>Algorithm steps:</b><br>
+ * <ol>
+ * <li>Traverse recursively with Breath First Search nodes of <i>T_1</i> and <i>T_2</i> starting from roots. </li>
+ * <li>Going up recursively from leaves at each level i for nodes n &isin;<i>T_1</i> and for each node m &isin;<i>T_2</i> create a non-weighted bipartite graph. 
+ * The graph presents A &times; B where n &isin; A and m &isin; B. The edges in the graph are result of previous <i>(i-1)</i> level matching of parents</li>
+ * <li> Using maximum-cardinality matching algorithm {@link MaxCardBipartiteMatching} find the edges with the largest possible number of them</li>
+ * <li> Those nodes which have been mapped with highest cardinality number according to {@link MaxCardBipartiteMatching}  are result of trees isomorphism</li> 
+ * </ol> 
  * 
  * @author Sergej Alekseev
  * 

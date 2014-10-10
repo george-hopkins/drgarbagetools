@@ -27,7 +27,8 @@ import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 
 /**
- * Algorithm for finding a maximum weighted matching in a bipartite graph.
+ * Finds a maximum weighted matching in a bipartite graph.
+ * 
  * The maximum weighted matching is defined as a matching where the sum 
  * of the edge values in the matching have a maximal value. 
  * This algorithm uses the {@link HungarianMethod Hungarian method}.

@@ -30,13 +30,43 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.INodeListExt;
 
 /**
- * An implementation of the Hungarian method for solving Optimal Assignment
- * Problems (Finding the minimum weighted matching in a bipartite graph).
+ * Provides the implementation of Hungarian method to solve Optimal Assignment
+ * Problem (Finding of the Minimum Weighted Matching in a bipartite weighted graph).
  * 
  * Complexity of the algorithm is <code>O(mn^2)</code>, where <code>m</code> 
  * the number of edges and <code>n</code> the number of nodes 
  * in the graph <code>G</code>.
  * <br>
+ * <b>Algorithm steps:</b><br>
+ *<b> 1</b>. Reduction the graph is done in two steps: <br>
+ * <ul>
+ * <li>
+ * Find in the first partition for each node the minimum value, 
+ * assigned to it's edges and subtract this value from all edges 
+ * of that node.
+ * </li>
+ * <li>
+ * Find in the second partition for each node the minimum value, 
+ * assigned to it's edges and subtract this value from all edges 
+ * of that node.
+ * </li>
+ * </ul>
+ *
+ *<b> 2</b>. Return the list of nodes as minimum coverage of the zero elements.<br>
+ *<b> 3</b>. While cardinality of covered node is not equal to cardinality of second bipartite graph do the following:
+ * <ul>
+ * <li>
+ * 	Find the minimum weight value of the uncovered edges and add this minimum value to every covered edge. If an element is covered twice then add the minimum element to it twice.
+ * </li>
+ * <li>
+ * Find the minimum weight value of all edges in the graph and subtract this minimum value from every edge in the graph.
+ * </li>
+ * <li>
+ * Repeat step <b>3</b>: return the list of nodes as minimum coverage of the zero elements.
+ * </li>
+ * </ul>
+ * 
+ * 
  * 
  * NOTE: The edge property counter is used for storing weights. 
  * 

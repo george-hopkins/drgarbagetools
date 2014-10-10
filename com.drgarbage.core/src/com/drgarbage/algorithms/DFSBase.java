@@ -25,8 +25,20 @@ import com.drgarbage.core.CorePlugin;
 
 
 /**
- *  The Depth First Search algorithm.
- *
+ *  Implements the Depth First Search algorithm.
+ *  
+ *  The algorithm traverses trees in order as example below shows.<br>
+ *	<b>Example:</b>
+ *	 <pre>
+ *            ___ 1 ____
+ *          /     |     \
+ *         2      7      8
+ *        / \           / \
+ *       3   6         9   12
+ *      / \           / \
+ *     4   5        10   11
+ *  </pre>            
+ *               
  *  @author Sergej Alekseev  
  *  @version $Revision$
  *  $Id$

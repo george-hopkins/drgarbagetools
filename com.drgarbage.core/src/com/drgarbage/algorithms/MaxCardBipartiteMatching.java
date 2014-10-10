@@ -29,7 +29,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraph.intf.MarkEnum;
 
 /**
- * Algorithm for finding maximum-cardinality matching that contains 
+ * Provides an algorithm for finding maximum-cardinality matching that contains 
  * the largest possible number of edges.
  * 
  * The general idea of the algorithm for construction of a maximum matching 
