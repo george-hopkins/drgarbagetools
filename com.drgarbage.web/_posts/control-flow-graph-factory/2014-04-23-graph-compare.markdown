@@ -131,7 +131,7 @@ Unlike Top-Down Algorithm, the search for the largest subtree is performed start
 <div class = "backtop" style="text-align: right;"> 
 	 <a href="#top"> back to top</a>
 </div>
-Reset the compared graphs <a id="resetgraphs"></a>
+Compared graphs are reset from comparison<a id="resetgraphs"></a>
 --------------
 The reset button hides green highlighted subtrees after the algorithm's execution and recreates the original colour of nodes on the represented trees.
 ![sd]({{ site.imgurl }}{{ page.url }}compare-opened.png)
@@ -164,7 +164,7 @@ It allows to view the maximum common subtrees when the input graphs are large, f
 });
 </script>
 
-For the detailed information about used algorithms please check our JavaDoc(here place the link)
+For detailed information about used algorithms please check our <a href="http://www.drgarbage.com/javadoc/core/doc/index.html">JavaDoc</a>
 [//]: # (-------------Links used -------------)
 [cfgf]: {{ site.url }}/control-flow-graph-factory/
 [cfgc-tdmc]: {{ site.url }}/control-flow-graph-factory/graph-compare-tdmc/
