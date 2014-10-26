@@ -34,7 +34,7 @@ import com.drgarbage.controlflowgraph.intf.INodeExt;
  */
 public class MaxWeightedBipartiteMatchingTest extends TestCase{
 
-	protected boolean DEBUG = true;
+	protected boolean DEBUG = false;
 	
 	/**
 	 * Test set consists of a bipartite graph and two partitions.
@@ -83,19 +83,19 @@ public class MaxWeightedBipartiteMatchingTest extends TestCase{
 	}
 	/**
 	 * Checks whether the input matrix squared
-	 * @param weights
-	 * @return
+	 * @param input matrix weights
+	 * @return boolean 
 	 */
 	private boolean isSquared(int [][] weights){
 		boolean squared = true;
 			for(int i = 0; i < weights.length; i++){
 				if(weights.length != weights[i].length){
 					squared = false;
-					if(DEBUG){
-						System.out.println("matrix is not squared");
-					}
 				}
 			}
+		if(!squared && DEBUG){
+			System.out.println("matrix is not squared");
+		}	
 			
 		return squared;
 	}
@@ -738,177 +738,75 @@ public class MaxWeightedBipartiteMatchingTest extends TestCase{
 			System.out.println("------------");
 		}
 	}
-	//TODO: define test cases
+	
+	public void testFromUser() {
+		System.out.println("------------");
+		
+		int [][] weights = new int[][]{
+	            {6,14,4,1,1,16,4,5,1,1,3,1,7,6,4,1,1},
+	            {6,12,4,1,1,15,4,5,1,1,3,1,7,6,4,1,1},
+	            {6,17,4,1,1,7,4,5,1,1,3,1,7,8,4,1,1},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},       
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		};
+		
+		/*check if matrix squared*/		
+		if(isSquared(weights))
+		{
+			System.out.println("Input:");
+			//printMatrix(weights);
 
+			TestSet t = createTestSet(weights);
+			if(DEBUG)printGraph(t.graph);
+			
+			List<IEdgeExt> edges  = new MaxWeightedBipartiteMatching(DEBUG).execute(t.graph, t.partA, t.partB);
+			//assertEquals(16, edges.size());
+			
+			System.out.println("Output:");
+			int weight = 0;
+	    	for(IEdgeExt e : edges){
+	    		weight += e.getCounter();
+	    		System.out.println(e.getSource().getData() + "-" + e.getTarget().getData() + ": " + e.getCounter());
+	    	}
+			
+	    	//
+			//assertEquals(29, weight);
+			
+			System.out.println("\nOK, sum = " + weight);
+			System.out.println("------------");
+		}
+		
+		
+	}
 	
-	/*
-	 * 5) MAXIMUM
-	 * 
-	 * <pre>
-	 *   a1 --- b1
-	 *       /
-	 *      /
-	 *   a2     b2
-	 *       /
-	 *      /  
-	 *   a3 --- b3
-	 * </pre>
-	 * 
-	 * Find maximum:
-	 * <pre>
-	 *  	b1  b2  b3
-	 *  a1	 1   0   0
-	 *  a2	 5   0   0
-	 *  a3	 0   6   1
-	 *  </pre>
-	 *  
-	 * <pre>
-	 *  	  b1  b2   b3
-	 *  a1	 -1    0    0
-	 *  a2	 -5    0    0
-	 *  a3	  0   -6   -1
-	 *  </pre> 
-	 *  
-	 *  +7
-	 *  <pre>
-	 *  	  b1  b2   b3
-	 *  a1	  6    7    7
-	 *  a2	  2    7    7
-	 *  a3	  7    1    6
-	 *  </pre> 
-	 *  
-	 *  
-	 *  
-	 *  
-	 * <li> <b>Reduce the matrix values</b><br>
-	 * 	<pre>
-	 *  	  b1  b2   b3
-	 *  a1	  0    1    1
-	 *  a2	  0    5    5
-	 *  a3	  6    0    5
-	 *  </pre>
-	 *  Reduce the columns by subtracting the minimum value of each column from that column.
-	 *	<pre>
-	 *  	b1  b2  b3
-	 *  a1	  0    1    0
-	 *  a2	  0    5    4
-	 *  a3	  6    0    4
-	 *  </pre> 
-	 * </li>
-	 * 
-	 * <li> <b>Start loop</b><br>
-	 *	<pre>
-	 *  	  b1  b2  b3
-	 *  	  |
-	 *  a1	--0---1---0--
-	 *  	  |
-	 *  a2	  0   5   4
-	 *  	  |
-	 *  a3	--6---0---4--
-	 *  	  |
-	 *  </pre> 
-	 * </li>
-	 *  
-	 *  	  b1  b2  b3
-	 *  a1	  0    1   (0)
-	 *  a2	 (0)   5    4
-	 *  a3	  6   (0)   4
-	 *  
-	 *  Matching:
-	 * <pre>
-	 *  	b1  b2  b3
-	 *  a1	 1   0  (0)
-	 *  a2	(5)  1   1
-	 *  a3	 0  (6)   1
-	 *  </pre>
-	 *  
-	 */
 	
-	/*
-	 * 6) MAXIMUM
-	 * 
-	 * <pre>
-	 *   a1 --- b1
-	 *       /
-	 *      /
-	 *   a2  -- b2
-	 *      \ /
-	 *      / \
-	 *   a3 --- b3
-	 * </pre>
-	 * 
-	 * Find maximum:
-	 * <pre>
-	 *  	b1  b2  b3
-	 *  a1	 3   0   0
-	 *  a2	 1   3   1
-	 *  a3	 0   1   3
-	 *  </pre>
-	 *  
-	 * <pre>
-	 *  	  b1  b2   b3
-	 *  a1	 -3    0    0
-	 *  a2	 -1   -3   -1
-	 *  a3	  0   -1   -3
-	 *  </pre> 
-	 *  
-	 *  +4
-	 *  <pre>
-	 *  	  b1  b2   b3
-	 *  a1	  1    4    4
-	 *  a2	  3    1    3
-	 *  a3	  4    3    1
-	 *  </pre> 
-	 *  
-	 *  
-	 *  
-	 *  
-	 * <li> <b>Reduce the matrix values</b><br>
-	 * 	<pre>
-	 *  	  b1  b2   b3
-	 *  a1	  0    3    3
-	 *  a2	  2    0    2
-	 *  a3	  3    2    0
-	 *  </pre>
-	 *  Reduce the columns by subtracting the minimum value of each column from that column.
-	 *	<pre>
-	 *  	b1  b2  b3
-	 *  a1	  0    3    3
-	 *  a2	  2    0    2
-	 *  a3	  3    2    0
-	 *  </pre> 
-	 *  NO changes
-	 * </li>
-	 * 
-	 * <li> <b>Start loop</b><br>
-	 *	<pre>
-	 *  	  b1  b2  b3
-	 *  a1	--0---3---3--
-	 *  a2	--2---0---2--
-	 *  a3	--3---2---0--
-	 *  </pre> 
-	 * </li>
-	 *  
-	 *  	  b1  b2  b3
-	 *  a1	 (0)   3    3
-	 *  a2	  2   (0)   2
-	 *  a3	  3    2   (0)
-	 *  
-	 *  Matching:
-	 * <pre>
-	 *  	b1  b2  b3
-	 *  a1	(3)  0   0
-	 *  a2	 1  (3)  1
-	 *  a3	 0   1  (3)
-	 *  </pre>
-	 *  
-	 *  OK
-	 *  
-	 */
-	/* 
-	 * The Methods in this section are used for purely debugging purposes 
-	 */
-	
+	public void testFromUser2() {
+		int [][] weights2 = {
+				{ 1, 1, 2, 0 },
+				{ 1, 1, 1, 1 },
+				{ 0, 0, 0, 3 }
+		};
+		TestSet t = createTestSet(weights2);
+		MaxWeightedBipartiteMatching m = new MaxWeightedBipartiteMatching();
+		List<IEdgeExt> edges  = new MaxWeightedBipartiteMatching(DEBUG).execute(t.graph, t.partA, t.partB);
+		
+		List<INodeExt> partAnew = new ArrayList<INodeExt>();
+		List<INodeExt> partBnew = new ArrayList<INodeExt>();
+		//m.createSymetricalCompleteBipartiteGraph(t1.partA, partAnew, t1.partB, partBnew);
+		
+	}
 	
 	/**
 	 * For debugging purposes only.

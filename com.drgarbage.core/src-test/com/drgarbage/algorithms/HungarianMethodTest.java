@@ -417,5 +417,42 @@ public class HungarianMethodTest extends TestCase {
 		System.out.println("-------------");
 	}
 	
+	public void testExecuteHungarianMethod7() {
+		System.out.println("-------------");
+		int [][] weights = new int[][]{
+	            {6,14,4,1,1,16,4,5,1,1,3,1,7,6,4,1,1},
+	            {6,12,4,1,1,15,4,5,1,1,3,1,7,6,4,1,1},
+	            {6,13,4,1,1,7,4,5,1,1,3,1,7,8,4,1,1},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},       
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		};
+		
+		System.out.println("Input:");
+		//printMatrix( weights);
+		
+		TestSet t = createTestSet(weights);
+		List<IEdgeExt> edges = new HungarianMethod(DEBUG).execute(t.graph, t.partA, t.partB);
+		
+		int weight = 0;
+    	for(IEdgeExt e : edges){
+    		weight += e.getCounter();
+    		System.out.println(e.getSource().getData() + "-" + e.getTarget().getData() + " " + e.getCounter());
+    	}
+    	System.out.println("OK: sum = " + weight);
+	}
+	
+	
 	
 }
