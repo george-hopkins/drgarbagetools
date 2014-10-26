@@ -24,7 +24,7 @@ import java.util.TreeMap;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import com.drgarbage.algorithms.ArborescenceFinder;
+import com.drgarbage.algorithms.SpanningTreeFinder;
 import com.drgarbage.algorithms.BasicBlockGraphVisitor;
 import com.drgarbage.asm.render.intf.IInstructionLine;
 import com.drgarbage.bytecodevisualizer.BytecodeVisualizerPlugin;
@@ -174,7 +174,7 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
 		GraphUtils.clearGraph(graph);
 		
 		try {
-		graph = ArborescenceFinder.find(graph);
+		graph = new SpanningTreeFinder(graph).find();
 		} catch (ControlFlowGraphException e) {
 			Messages.error(e.toString());
 		}
@@ -212,7 +212,7 @@ public class OperandStackViewPageIml extends OperandStackViewPage {
      * @param graph control flow graph
      */
     private void removeBackEdges(IDirectedGraphExt graph){    	
-    	IEdgeListExt backEdges = ArborescenceFinder.findBackEdges(graph);
+    	IEdgeListExt backEdges = SpanningTreeFinder.findBackEdges(graph);
 		
 		IEdgeListExt edges = graph.getEdgeList();
 		for(int i = 0; i < backEdges.size(); i++){

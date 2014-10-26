@@ -4,12 +4,12 @@ import junit.framework.TestCase;
 
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
-import com.drgarbage.controlflowgraph.intf.IArborescence;
+import com.drgarbage.controlflowgraph.intf.ISpanningTree;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 
-public class ArborescenceFinderTest extends TestCase {
+public class SpanningTreeFinderTest extends TestCase {
 	/**
 	 * Creates a test graph
 	 * 
@@ -188,49 +188,49 @@ public class ArborescenceFinderTest extends TestCase {
 
 	public final void testFind() {
 		IDirectedGraphExt testTree = createTestTree0();
-		IArborescence arborescence = null;
+		ISpanningTree spanningTree = null;
 		try {
-			arborescence = ArborescenceFinder.find(testTree);
+			spanningTree = new SpanningTreeFinder(testTree).find();
 		} catch (ControlFlowGraphException e) {
 			System.out.println(e);
 		}
-		assertEquals(1, arborescence.getNodeList().size());
-		assertEquals(0, arborescence.getEdgeList().size());
-		assertEquals(arborescence.getRoot().getData(), "v0");
+		assertEquals(1, spanningTree.getNodeList().size());
+		assertEquals(0, spanningTree.getEdgeList().size());
+		assertEquals(spanningTree.getRoot().getData(), "v0");
 		
 		testTree = createTestTree1();
 		try {
-			arborescence = ArborescenceFinder.find(testTree);
+			spanningTree = new SpanningTreeFinder(testTree).find();
 		} catch (ControlFlowGraphException e) {
 			System.out.println(e);
 		}
-		assertEquals(8, arborescence.getNodeList().size());
-		assertEquals(7, arborescence.getEdgeList().size());
+		assertEquals(8, spanningTree.getNodeList().size());
+		assertEquals(7, spanningTree.getEdgeList().size());
 		
 		testTree = createTestTree2();
 		try {
-			arborescence = ArborescenceFinder.find(testTree);
+			spanningTree = new SpanningTreeFinder(testTree).find();
 		} catch (ControlFlowGraphException e) {
 			System.out.println(e);
 		}
-		assertEquals(8, arborescence.getNodeList().size());
-		assertEquals(7, arborescence.getEdgeList().size());
-		assertEquals(arborescence.getRoot().getData(), "v7");
+		assertEquals(8, spanningTree.getNodeList().size());
+		assertEquals(7, spanningTree.getEdgeList().size());
+		assertEquals(spanningTree.getRoot().getData(), "v7");
 		
 		testTree = createTestTree3();
 		try {
-			arborescence = ArborescenceFinder.find(testTree);
+			spanningTree = new SpanningTreeFinder(testTree).find();
 		} catch (ControlFlowGraphException e) {
 			System.out.println(e);
 		}
-		assertEquals(8, arborescence.getNodeList().size());
-		assertEquals(7, arborescence.getEdgeList().size());
-		assertEquals(arborescence.getRoot().getData(), "v3");
+		assertEquals(8, spanningTree.getNodeList().size());
+		assertEquals(7, spanningTree.getEdgeList().size());
+		assertEquals(spanningTree.getRoot().getData(), "v3");
 		
 		testTree = createTestTree4();
 		Exception cfge = null;
 		try {
-			arborescence = ArborescenceFinder.find(testTree);
+			spanningTree = new SpanningTreeFinder(testTree).find();
 		} catch (ControlFlowGraphException e) {
 			cfge = e;
 		}
@@ -239,20 +239,20 @@ public class ArborescenceFinderTest extends TestCase {
 	
 	
 	public final void testFindBackEdges() {
-		IEdgeListExt backEdges = ArborescenceFinder.findBackEdges(createTestTree0());
+		IEdgeListExt backEdges = SpanningTreeFinder.findBackEdges(createTestTree0());
 		assertEquals(backEdges.size(), 1);
 		
 		
-		backEdges = ArborescenceFinder.findBackEdges(createTestTree1());
+		backEdges = SpanningTreeFinder.findBackEdges(createTestTree1());
 		assertEquals(backEdges.size(), 1);
 		
-		backEdges = ArborescenceFinder.findBackEdges(createTestTree2());
+		backEdges = SpanningTreeFinder.findBackEdges(createTestTree2());
 		assertEquals(backEdges.size(), 2);
 		
-		backEdges = ArborescenceFinder.findBackEdges(createTestTree3());
+		backEdges = SpanningTreeFinder.findBackEdges(createTestTree3());
 		assertEquals(backEdges.size(), 0);
 		
-		backEdges = ArborescenceFinder.findBackEdges(createTestTree4());
+		backEdges = SpanningTreeFinder.findBackEdges(createTestTree4());
 		assertEquals(backEdges.size(), 0);
 		
 	}

@@ -1,9 +1,9 @@
 package com.drgarbage.controlflowgraph;
 
-import com.drgarbage.controlflowgraph.intf.IArborescence;
+import com.drgarbage.controlflowgraph.intf.ISpanningTree;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 
-public class Arborescence extends DirectedGraphExt implements IArborescence {
+public class SpanningTree extends DirectedGraphExt implements ISpanningTree {
 
 	private INodeExt root;
 	

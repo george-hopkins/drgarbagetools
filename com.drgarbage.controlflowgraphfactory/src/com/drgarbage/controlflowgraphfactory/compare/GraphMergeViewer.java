@@ -50,14 +50,14 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 
-import com.drgarbage.algorithms.ArborescenceFinder;
+import com.drgarbage.algorithms.SpanningTreeFinder;
 import com.drgarbage.algorithms.BottomUpMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.BottomUpSubtreeIsomorphism;
 import com.drgarbage.algorithms.TopDownMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.TopDownSubtreeIsomorphism;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
-import com.drgarbage.controlflowgraph.intf.IArborescence;
+import com.drgarbage.controlflowgraph.intf.ISpanningTree;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
 import com.drgarbage.controlflowgraphfactory.ControlFlowFactoryMessages;
@@ -463,8 +463,8 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		IDirectedGraphExt cfgRight = LayoutAlgorithmsUtils.generateGraph(diagramRight);
 		
 		/*convert graphs to trees */
-		IArborescence leftTree = ArborescenceFinder.find(cfgLeft);
-		IArborescence rightTree = ArborescenceFinder.find(cfgRight);
+		ISpanningTree leftTree = new SpanningTreeFinder(cfgLeft).find();
+		ISpanningTree rightTree = new SpanningTreeFinder(cfgRight).find();
 		
 		TopDownMaxCommonSubtreeIsomorphism compare = new TopDownMaxCommonSubtreeIsomorphism();
 		/* start to compare graphs */
@@ -555,8 +555,8 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		BottomUpMaxCommonSubtreeIsomorphism compare = new BottomUpMaxCommonSubtreeIsomorphism();
 
 		/*convert graphs to trees */
-		IArborescence leftTree = ArborescenceFinder.find(cfgLeft);
-		IArborescence rightTree = ArborescenceFinder.find(cfgRight);
+		ISpanningTree leftTree = new SpanningTreeFinder(cfgLeft).find();
+		ISpanningTree rightTree = new SpanningTreeFinder(cfgRight).find();
 		
 		/* start to compare graphs */
 		Map<INodeExt, INodeExt> map = null;

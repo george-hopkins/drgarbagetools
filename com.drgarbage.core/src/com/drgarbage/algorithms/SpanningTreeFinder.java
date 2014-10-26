@@ -24,9 +24,9 @@ import java.util.Set;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import com.drgarbage.controlflowgraph.Arborescence;
+import com.drgarbage.controlflowgraph.SpanningTree;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
-import com.drgarbage.controlflowgraph.intf.IArborescence;
+import com.drgarbage.controlflowgraph.intf.ISpanningTree;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
@@ -39,67 +39,68 @@ import com.drgarbage.core.CoreMessages;
  * @version $Revision$ $Id: Algorithms.java 651 2014-09-11 07:11:46Z
  *          salekseev $
  */
-public class ArborescenceFinder {
+public class SpanningTreeFinder {
 	
-	// Suppress default constructor for noninstantiability
-	private ArborescenceFinder() {
-		throw new AssertionError();
+	private IDirectedGraphExt graph;
+	private ISpanningTree spanningTree;
+	private Set<INodeExt> unvisitedNodes;
+
+	public SpanningTreeFinder(IDirectedGraphExt graph) {
+		this.graph = graph;
+		spanningTree = new SpanningTree();
 	}
 
 	/* static algorithms */
 	private static FindBackEdgesDFS fFindBackEdgesDFS;
-
+	
 	/**
-	 * Finds and returns an arborescence of a directed graph.
+	 * Finds and returns a spanning tree (arborescence) of a directed graph.
 	 * 
 	 * @param graph
-	 * @return an arborescence of the given graph
+	 * @return spanning tree
 	 * @throws ControlFlowGraphException
 	 *             if graph has no single root
 	 * @author Kevin Baxmann
 	 */
-	public static IArborescence find(IDirectedGraphExt graph)
+	public ISpanningTree find()
 			throws ControlFlowGraphException {
-		IArborescence arborescence = new Arborescence();
-		arborescence.setRoot(findRoot(graph));
 
-		Set<INodeExt> unvisitedNodes = extractAllNodes(graph);
+		unvisitedNodes = extractAllNodes(graph);
+		spanningTree.setRoot(findRoot());
 
 		Queue<INodeExt> queuedNodes = new LinkedList<INodeExt>();
-		queuedNodes.add(arborescence.getRoot());
+		queuedNodes.add(spanningTree.getRoot());
 		while (!queuedNodes.isEmpty()) {
 			INodeExt node = queuedNodes.remove();
 			unvisitedNodes.remove(node);
-			arborescence.getNodeList().add(node);
-			queueNodesAndAddEdges(queuedNodes, unvisitedNodes, node.getOutgoingEdgeList(),
-					arborescence);
+			spanningTree.getNodeList().add(node);
+			queueNodesAndAddEdges(queuedNodes, node.getOutgoingEdgeList());
 		}
 
-		checkIfArborescenceComplete(unvisitedNodes);
-		return arborescence;
+		checkIfArborescenceComplete();
+		return spanningTree;
 	}
 
-	private static void checkIfArborescenceComplete(Set<INodeExt> unvisitedNodes)
+	private void checkIfArborescenceComplete()
 			throws ControlFlowGraphException {
 		if (!unvisitedNodes.isEmpty()) {
 			throw new ControlFlowGraphException(
-					CoreMessages.ArborescenceFinder_cant_convert);
+					CoreMessages.SpanningTreeFinder_cant_convert);
 		}
 	}
 
-	private static void queueNodesAndAddEdges(Queue<INodeExt> queuedNodes,
-			Set<INodeExt> unvisitedNodes, IEdgeListExt outgoingEdges,
-			IArborescence arborescence) {
+	private void queueNodesAndAddEdges(Queue<INodeExt> queuedNodes,
+			IEdgeListExt outgoingEdges) {
 		for (int i = 0; i < outgoingEdges.size(); i++) {
 			IEdgeExt edge = outgoingEdges.getEdgeExt(i);
 			if (unvisitedNodes.contains(edge.getTarget())) {
-				arborescence.getEdgeList().add(edge);
+				spanningTree.getEdgeList().add(edge);
 				queuedNodes.add(edge.getTarget());
 			}
 		}
 	}
 
-	private static Set<INodeExt> extractAllNodes(IDirectedGraphExt graph) {
+	private Set<INodeExt> extractAllNodes(IDirectedGraphExt graph) {
 		Set<INodeExt> nodes = new HashSet<INodeExt>();
 		for (int i = 0; i < graph.getNodeList().size(); i++) {
 			INodeExt n = graph.getNodeList().getNodeExt(i);
@@ -116,7 +117,7 @@ public class ArborescenceFinder {
 	 * @return a node with no incoming edges (considers cycles)
 	 * @author Kevin Baxmann
 	 */
-	private static INodeExt findRoot(IDirectedGraphExt graph) {
+	private INodeExt findRoot() {
 		Queue<IEdgeExt> queuedEdges = new LinkedList<IEdgeExt>();
 		Set<INodeExt> usedRoots = new HashSet<INodeExt>();
 		INodeExt root = graph.getNodeList().getNodeExt(0);

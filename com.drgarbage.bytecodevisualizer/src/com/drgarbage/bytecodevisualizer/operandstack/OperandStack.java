@@ -29,7 +29,7 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IStatus;
 
-import com.drgarbage.algorithms.ArborescenceFinder;
+import com.drgarbage.algorithms.SpanningTreeFinder;
 import com.drgarbage.asm.render.intf.IInstructionLine;
 import com.drgarbage.asm.render.intf.ILocalVariableTable;
 import com.drgarbage.bytecode.ByteCodeConstants;
@@ -482,7 +482,7 @@ public class OperandStack implements Opcodes{
 	 */
 	private void removeBackEdges(IDirectedGraphExt graph){
 		
-		backEdges = ArborescenceFinder.findBackEdges(graph);
+		backEdges = SpanningTreeFinder.findBackEdges(graph);
 		GraphUtils.clearGraph(graph);
 		GraphUtils.clearGraphColorMarks(graph);
 		

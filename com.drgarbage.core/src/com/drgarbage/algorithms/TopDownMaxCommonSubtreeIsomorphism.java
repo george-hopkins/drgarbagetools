@@ -30,7 +30,7 @@ import java.util.Set;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphExtentionFactory;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
-import com.drgarbage.controlflowgraph.intf.IArborescence;
+import com.drgarbage.controlflowgraph.intf.ISpanningTree;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeExt;
 import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
@@ -104,8 +104,8 @@ public class TopDownMaxCommonSubtreeIsomorphism {
 	public Map<INodeExt, INodeExt> execute(
 			IDirectedGraphExt leftGraph, IDirectedGraphExt rightGraph) throws ControlFlowGraphException {
 		
-		IArborescence leftTree = ArborescenceFinder.find(leftGraph);
-		IArborescence rightTree = ArborescenceFinder.find(rightGraph);
+		ISpanningTree leftTree = new SpanningTreeFinder(leftGraph).find();
+		ISpanningTree rightTree = new SpanningTreeFinder(rightGraph).find();
 
 		GraphUtils.clearGraph(leftTree);
 		GraphUtils.clearGraphColorMarks(leftTree);
