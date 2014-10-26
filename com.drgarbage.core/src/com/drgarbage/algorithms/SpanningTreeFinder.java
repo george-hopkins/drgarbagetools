@@ -47,7 +47,6 @@ public class SpanningTreeFinder {
 
 	public SpanningTreeFinder(IDirectedGraphExt graph) {
 		this.graph = graph;
-		spanningTree = new SpanningTree();
 	}
 
 	/* static algorithms */
@@ -65,6 +64,7 @@ public class SpanningTreeFinder {
 	public ISpanningTree find()
 			throws ControlFlowGraphException {
 
+		spanningTree = new SpanningTree();
 		unvisitedNodes = extractAllNodes(graph);
 		spanningTree.setRoot(findRoot());
 
@@ -113,7 +113,6 @@ public class SpanningTreeFinder {
 	 * Finds a possible root for an out-tree. It is not checked that all nodes
 	 * are reachable from the root.
 	 * 
-	 * @param graph
 	 * @return a node with no incoming edges (considers cycles)
 	 * @author Kevin Baxmann
 	 */
