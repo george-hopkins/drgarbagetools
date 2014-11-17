@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -57,6 +58,8 @@ import com.drgarbage.algorithms.TopDownMaxCommonSubtreeIsomorphism;
 import com.drgarbage.algorithms.TopDownSubtreeIsomorphism;
 import com.drgarbage.controlflowgraph.ControlFlowGraphException;
 import com.drgarbage.controlflowgraph.intf.GraphUtils;
+import com.drgarbage.controlflowgraph.intf.IEdgeExt;
+import com.drgarbage.controlflowgraph.intf.IEdgeListExt;
 import com.drgarbage.controlflowgraph.intf.ISpanningTree;
 import com.drgarbage.controlflowgraph.intf.IDirectedGraphExt;
 import com.drgarbage.controlflowgraph.intf.INodeExt;
@@ -462,9 +465,27 @@ public class GraphMergeViewer extends ContentMergeViewer {
 		IDirectedGraphExt cfgLeft = LayoutAlgorithmsUtils.generateGraph(diagramLeft);		
 		IDirectedGraphExt cfgRight = LayoutAlgorithmsUtils.generateGraph(diagramRight);
 		
+		
 		/*convert graphs to trees */
 		ISpanningTree leftTree = new SpanningTreeFinder(cfgLeft).find();
 		ISpanningTree rightTree = new SpanningTreeFinder(cfgRight).find();
+		
+		IEdgeListExt edgeLeftGraph = cfgLeft.getEdgeList();
+		IEdgeListExt edgeLeftTree = leftTree.getEdgeList();
+		List removedEdges = new ArrayList();
+		
+		boolean flag = false;
+		for(int i = 0; i < edgeLeftGraph.size(); i++){
+			for(int j = 0; j < edgeLeftTree.size(); j++){
+				if(edgeLeftGraph.getEdgeExt(i).equals(edgeLeftTree.getEdgeExt(j))){
+					flag = true;
+				}	
+			}
+			if(!flag){
+				removedEdges.add(edgeLeftGraph.getEdgeExt(i));
+			}
+			flag = false;
+		}
 		
 		TopDownMaxCommonSubtreeIsomorphism compare = new TopDownMaxCommonSubtreeIsomorphism();
 		/* start to compare graphs */
