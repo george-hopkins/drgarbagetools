@@ -11,5 +11,5 @@ Bundle-Name: Dr. Garbage ASM Distribution
 Bundle-ManifestVersion: 2
 Created-By: 14.0-b16 (Sun Microsystems Inc.)
 Bundle-SymbolicName: com.drgarbage.asm
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 

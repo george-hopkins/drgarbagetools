@@ -4,3 +4,4 @@ Bundle-Name: ASM Library
 Bundle-SymbolicName: com.drgarbage.asm.src
 Bundle-Version: 5.0.3
 Bundle-Vendor: Dr. Garbage
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
