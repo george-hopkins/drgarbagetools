@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.drgarbage.bytecodevisualizer_4.4.3.qualifier.jar" id="com.drgarbage.bytecodevisualizer" version="4.4.3.qualifier">
+   <feature url="features/com.drgarbage.bytecodevisualizer_4.5.0.qualifier.jar" id="com.drgarbage.bytecodevisualizer" version="4.5.0.qualifier">
       <category name="Bytecode Visualizer"/>
    </feature>
-   <feature url="features/com.drgarbage.controlflowgraphfactory_4.4.2.qualifier.jar" id="com.drgarbage.controlflowgraphfactory" version="4.4.2.qualifier">
+   <feature url="features/com.drgarbage.controlflowgraphfactory_4.5.0.qualifier.jar" id="com.drgarbage.controlflowgraphfactory" version="4.5.0.qualifier">
       <category name="Control Flow Graph Factory"/>
    </feature>
-   <feature url="features/com.drgarbage.sourcecodevisualizer_4.4.1.qualifier.jar" id="com.drgarbage.sourcecodevisualizer" version="4.4.1.qualifier">
+   <feature url="features/com.drgarbage.sourcecodevisualizer_4.5.0.qualifier.jar" id="com.drgarbage.sourcecodevisualizer" version="4.5.0.qualifier">
       <category name="Sourcecode Visualizer"/>
    </feature>
    <category-def name="Bytecode Visualizer" label="Bytecode Visualizer">
