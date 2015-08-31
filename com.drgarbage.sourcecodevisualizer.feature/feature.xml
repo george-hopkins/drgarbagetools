@@ -2,7 +2,7 @@
 <feature
       id="com.drgarbage.sourcecodevisualizer"
       label="%featureName"
-      version="4.4.1.qualifier"
+      version="4.5.0.qualifier"
       provider-name="%providerName"
       plugin="com.drgarbage.sourcecodevisualizer.plugin">
 

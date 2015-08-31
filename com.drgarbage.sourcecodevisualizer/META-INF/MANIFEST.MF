@@ -22,7 +22,7 @@ Ant-Version: Apache Ant 1.7.0
 Bundle-Vendor: %providerName
 Plugin-Class: com.drgarbage.sourcecodevisualizer.SourcecodeVisualizerP
  lugin
-Bundle-Version: 4.4.1.qualifier
+Bundle-Version: 4.5.0.qualifier
 Bundle-Activator: com.drgarbage.sourcecodevisualizer.SourcecodeVisuali
  zerPlugin
 Bundle-ManifestVersion: 2

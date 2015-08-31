@@ -2,7 +2,7 @@
 <feature
       id="com.drgarbage.bytecodevisualizer"
       label="%featureName"
-      version="4.4.3.qualifier"
+      version="4.5.0.qualifier"
       provider-name="%providerName"
       plugin="com.drgarbage.bytecodevisualizer.plugin">
    <install-handler/>
