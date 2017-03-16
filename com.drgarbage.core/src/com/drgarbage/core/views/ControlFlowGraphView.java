@@ -15,10 +15,10 @@
  */
 package com.drgarbage.core.views;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.internal.views.ViewsPlugin;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.part.IPageBookViewPage;
 import org.eclipse.ui.part.MessagePage;
@@ -52,7 +52,10 @@ public class ControlFlowGraphView extends PageBookView {
 	 */
 	protected PageRec doCreatePage(IWorkbenchPart part) {
         // Try to get a view page.
-        Object obj = ViewsPlugin.getAdapter(part, IControlFlowGraphViewPage.class, false);
+        Object obj = part.getAdapter(IControlFlowGraphViewPage.class);
+        if (obj == null) {
+            obj = Platform.getAdapterManager().getAdapter(part, IControlFlowGraphViewPage.class);
+        }
         if (obj instanceof IControlFlowGraphViewPage) {
             IControlFlowGraphViewPage page = (IControlFlowGraphViewPage) obj;
             if (page instanceof IPageBookViewPage) {

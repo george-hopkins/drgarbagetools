@@ -15,10 +15,10 @@
  */
 package com.drgarbage.bytecodevisualizer.view;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.internal.views.ViewsPlugin;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.part.IPageBookViewPage;
 import org.eclipse.ui.part.MessagePage;
@@ -50,7 +50,10 @@ public class OperandStackView extends PageBookView {
         if(part instanceof BytecodeEditor){
         	BytecodeEditor be = (BytecodeEditor) part;
         	OperandStackViewPage page = null;
-        	Object obj = ViewsPlugin.getAdapter(part, OperandStackViewPage.class, false);
+            Object obj = part.getAdapter(OperandStackViewPage.class);
+            if (obj == null) {
+                obj = Platform.getAdapterManager().getAdapter(part, OperandStackViewPage.class);
+            }
             if (obj instanceof OperandStackViewPage) {
             	page = (OperandStackViewPage) obj;
             }
