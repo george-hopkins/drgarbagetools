@@ -19,29 +19,24 @@ package com.drgarbage.bytecodevisualizer;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 import com.drgarbage.bytecodevisualizer.actions.DynamicPartsManager;
 import com.drgarbage.bytecodevisualizer.preferences.BytecodeVisualizerPreferenceConstats;
-import com.drgarbage.bytecodevisualizer.sourcelookup.SourceDisplayAdapterFactory;
 import com.drgarbage.core.CoreConstants;
 
 /**
  * The activator class controls the plug-in life cycle
  */
 @SuppressWarnings("restriction")
-public class BytecodeVisualizerPlugin extends AbstractUIPlugin implements BytecodeVisualizerPreferenceConstats, IStartup {
+public class BytecodeVisualizerPlugin extends AbstractUIPlugin implements BytecodeVisualizerPreferenceConstats {
 
 	private static String ICONS_PATH = "img/"; //$NON-NLS-1$
 	
@@ -124,31 +119,11 @@ public class BytecodeVisualizerPlugin extends AbstractUIPlugin implements Byteco
 	 */
 	private DebugSupport d = new DebugSupport();
 
-	private DynamicPartsManager debugActionManager;
-
 	/**
 	 * The constructor
 	 */
 	public BytecodeVisualizerPlugin() {
 		plugin = this;
-	}
-
-    /* (non-Javadoc)
-	 * @see org.eclipse.ui.IStartup#earlyStartup()
-	 */
-	public void earlyStartup() {
-		
-		/* make sure the org.eclipse.debug.internal.ui.DebugUIPlugin gets loaded
-		 * so that it registers its org.eclipse.core.runtime.adapters */
-		org.eclipse.debug.internal.ui.DebugUIPlugin.getDefault();
-
-		/* In the following, we want to overwrite one of the DebugUIPlugin's adapters */
-		IAdapterManager manager= Platform.getAdapterManager();
-		SourceDisplayAdapterFactory actionFactory = new SourceDisplayAdapterFactory();
-		manager.registerAdapters(actionFactory, JDIStackFrame.class);
-
-		debugActionManager = new DynamicPartsManager();
-
 	}
 
 	/**
@@ -197,6 +172,7 @@ public class BytecodeVisualizerPlugin extends AbstractUIPlugin implements Byteco
 	 */
 	public void stop(BundleContext context) throws Exception {
 		
+		DynamicPartsManager debugActionManager = DynamicPartsManager.getInstance();
 		if (debugActionManager != null) {
 			debugActionManager.dispose();
 		}

@@ -39,6 +39,11 @@ import com.drgarbage.core.CorePlugin;
 import com.drgarbage.core.preferences.CorePreferenceConstants;
 
 public class DynamicPartsManager {
+	private static DynamicPartsManager instance;
+	
+	public static DynamicPartsManager getInstance() {
+		return instance;
+	}
 	
 	private static class DebugActionContributionItem extends ActionContributionItem {
 
@@ -172,6 +177,7 @@ public class DynamicPartsManager {
 	};
 	public DynamicPartsManager() {
 		super();
+		instance = this;
 		setup();
 	}
 	public void dispose() {
@@ -212,6 +218,7 @@ public class DynamicPartsManager {
 				}
 			});
 		}
+		instance = null;
 	}
 	
 	private void setup() {

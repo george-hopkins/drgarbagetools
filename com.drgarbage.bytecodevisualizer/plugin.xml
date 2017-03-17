@@ -93,7 +93,7 @@
    
    <extension
          point="org.eclipse.ui.startup">
-      <startup></startup>
+      <startup class="com.drgarbage.bytecodevisualizer.BytecodeVisualizerStartup"></startup>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
